@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Events — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --amber:#B8860B;
+  --c-harvest:#007C89;
+  --c-educator:#00B5AF;
+  --c-conference:#005A66;
+  --c-foodservice:#45C0BE;
+  --c-fisheries:#4F7A8C;
+  --c-farmer:#B8860B;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:#EBF5F4;-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:'Raleway';font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* TOPBAR / HEADER */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+.topbar a{color:var(--gold)}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a.active{color:var(--green)}
+.nav-links a.active::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:2px;background:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+
+/* TOP STRIP */
+.top-strip{padding:48px 0 18px}
+.crumb{font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.crumb a{color:var(--green)}
+.strip-row{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap}
+.strip-row h1{font-family:'Raleway',sans-serif;font-weight:900;font-size:clamp(48px,6.5vw,96px);color:var(--green-ink);line-height:.98;letter-spacing:-.03em}
+.strip-row h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent);font-size:.95em}
+.strip-row p{font-size:16px;color:var(--muted);max-width:480px;line-height:1.6}
+
+/* VIEW + FILTER CONTROLS */
+.controls{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:36px 0 28px;flex-wrap:wrap}
+.view-switcher{display:flex;gap:2px;background:#fff;padding:5px;border-radius:999px;border:1px solid var(--line)}
+.view-switcher button{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border-radius:999px;border:none;background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s}
+.view-switcher button:hover{color:var(--green-ink)}
+.view-switcher button.is-active{background:var(--green-ink);color:#fff}
+.view-switcher svg{width:12px;height:12px}
+
+.filter-toggle{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:999px;background:#fff;border:1.5px solid var(--green);color:var(--green);font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.2s}
+.filter-toggle:hover{background:var(--green);color:#fff}
+.filter-toggle .count{background:var(--accent);color:var(--green-ink);font-size:10px;font-weight:900;padding:2px 7px;border-radius:999px;margin-left:4px}
+.filter-toggle svg{width:14px;height:14px}
+
+/* FILTER PANEL (collapsed by default; .is-open to expand) */
+.filter-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:0;margin-bottom:32px;overflow:hidden;max-height:0;opacity:0;transition:max-height .4s ease,opacity .25s,margin .25s;margin-top:-12px;margin-bottom:0}
+.filter-panel.is-open{max-height:600px;opacity:1;margin-bottom:32px;margin-top:0;padding:26px 32px}
+.fp-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px;align-items:start}
+.fp-group .label{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block}
+.fp-search{position:relative}
+.fp-search input{width:100%;padding:11px 14px 11px 38px;border-radius:999px;border:1.5px solid var(--line);background:var(--cream);font-family:inherit;font-size:13px;color:var(--green-ink)}
+.fp-search input:focus{outline:none;border-color:var(--accent);background:#fff}
+.fp-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--muted)}
+.fp-cats{display:flex;flex-wrap:wrap;gap:6px}
+.cat-pill{display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:700;font-size:10px;letter-spacing:.06em;padding:6px 11px;border-radius:999px;background:var(--cream);color:var(--green-ink);border:1.5px solid transparent;cursor:pointer;text-transform:uppercase}
+.cat-pill .dot{width:6px;height:6px;border-radius:50%}
+.cat-pill[data-cat="harvest"] .dot{background:var(--c-harvest)}
+.cat-pill[data-cat="educator"] .dot{background:var(--c-educator)}
+.cat-pill[data-cat="conference"] .dot{background:var(--c-conference)}
+.cat-pill[data-cat="foodservice"] .dot{background:var(--c-foodservice)}
+.cat-pill[data-cat="fisheries"] .dot{background:var(--c-fisheries)}
+.cat-pill[data-cat="farmer"] .dot{background:var(--c-farmer)}
+.cat-pill.is-on{background:var(--green);color:#fff}
+.fp-select{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);font-family:inherit;font-size:13px;color:var(--green-ink);appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300662C' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;background-size:14px}
+.fp-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.fp-foot button{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:11px 22px;border-radius:999px;cursor:pointer;border:none}
+.fp-clear{background:transparent;color:var(--muted);text-decoration:underline}
+.fp-apply{background:var(--green);color:#fff}
+
+/* ===== FEATURED HERO CARD ===== */
+.featured{background:var(--green-ink);border-radius:24px;overflow:hidden;display:grid;grid-template-columns:1.1fr 1fr;min-height:520px;position:relative;color:#fff;margin-bottom:48px}
+.featured::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 20%,rgba(168,198,99,.16),transparent 50%),radial-gradient(ellipse at 10% 80%,rgba(69,192,190,.12),transparent 50%);pointer-events:none;z-index:1}
+.featured-body{padding:56px 56px 56px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.featured-flag{display:inline-flex;align-items:center;gap:10px;width:fit-content;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:24px}
+.featured-flag::before{content:'';width:28px;height:2px;background:var(--accent)}
+.featured-meta{display:inline-flex;align-items:center;gap:14px;font-family:'Raleway';font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.featured-meta .sep{width:4px;height:4px;border-radius:50%;background:rgba(69,192,190,.5)}
+.featured-meta .cat-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:rgba(168,198,99,.18);color:var(--accent);font-size:10px;letter-spacing:.1em}
+.featured h2{font-family:'Raleway';font-weight:900;font-size:clamp(40px,4.8vw,72px);color:#fff;line-height:.98;letter-spacing:-.02em;margin-bottom:16px}
+.featured h2 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.featured p{color:rgba(235,245,244,.78);font-size:16px;max-width:520px;line-height:1.65;margin-bottom:32px}
+.featured-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.feat-btn-primary{white-space:nowrap;display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:999px;background:var(--accent);color:var(--green-ink);font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;transition:.2s;border:2px solid var(--accent)}
+.feat-btn-primary:hover{background:#fff;border-color:#fff}
+.feat-btn-ghost{white-space:nowrap;display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:999px;border:2px solid rgba(235,245,244,.5);color:#EBF5F4;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;transition:.2s}
+.feat-btn-ghost:hover{background:#EBF5F4;color:var(--green-ink);border-color:#EBF5F4}
+.featured-img{position:relative;overflow:hidden;background:var(--green);min-height:360px}
+.featured-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.featured-img::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,58,64,.35),transparent 40%)}
+.featured-img .date-stamp{position:absolute;top:32px;right:32px;background:var(--accent);color:var(--green-ink);border-radius:18px;padding:18px 22px;text-align:center;z-index:2;min-width:120px;box-shadow:0 20px 40px -16px rgba(0,0,0,.4)}
+.featured-img .date-stamp .d{font-family:'Bebas Neue';font-size:56px;line-height:.9;letter-spacing:.02em;display:block}
+.featured-img .date-stamp .m{font-family:'Raleway';font-weight:900;font-size:13px;letter-spacing:.18em;text-transform:uppercase;display:block;margin-top:2px}
+.featured-img .date-stamp .y{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-top:3px;opacity:.7}
+
+/* ===== STREAM LIST ===== */
+.stream-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;gap:24px;flex-wrap:wrap}
+.stream-head h3{font-family:'Raleway';font-weight:900;font-size:26px;color:var(--green-ink);display:flex;align-items:center;gap:14px}
+.stream-head h3::before{content:'';width:24px;height:24px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.stream-head .right{font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+.stream{display:flex;flex-direction:column;gap:14px}
+.row{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:grid;grid-template-columns:140px 1fr auto;gap:24px;align-items:center;transition:.25s;cursor:pointer}
+.row:hover{transform:translateY(-2px);box-shadow:0 20px 40px -20px rgba(0,90,102,.18);border-color:var(--accent)}
+.row-img{position:relative;height:96px;border-radius:12px;overflow:hidden;background:var(--sand)}
+.row-img img{width:100%;height:100%;object-fit:cover}
+.row-img.placeholder{background:repeating-linear-gradient(45deg,var(--sand) 0 10px,#dccfa9 10px 20px);display:grid;place-items:center;color:rgba(0,58,64,.55);font-family:'Courier New',monospace;font-size:10px;text-align:center;padding:6px;letter-spacing:.04em}
+.row-cat-bar{position:absolute;left:0;top:0;bottom:0;width:5px}
+.row-cat-bar[data-cat="harvest"]{background:var(--c-harvest)}
+.row-cat-bar[data-cat="educator"]{background:var(--c-educator)}
+.row-cat-bar[data-cat="conference"]{background:var(--c-conference)}
+.row-cat-bar[data-cat="foodservice"]{background:var(--c-foodservice)}
+.row-cat-bar[data-cat="fisheries"]{background:var(--c-fisheries)}
+.row-cat-bar[data-cat="farmer"]{background:var(--c-farmer)}
+.row-content{display:flex;flex-direction:column;gap:6px;min-width:0}
+.row-meta{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.row-meta .cat{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:var(--cream);color:var(--green-ink);font-size:10px}
+.row-meta .cat .dot{width:6px;height:6px;border-radius:50%}
+.row-meta .cat[data-cat="harvest"] .dot{background:var(--c-harvest)}
+.row-meta .cat[data-cat="educator"] .dot{background:var(--c-educator)}
+.row-meta .cat[data-cat="conference"] .dot{background:var(--c-conference)}
+.row-meta .cat[data-cat="foodservice"] .dot{background:var(--c-foodservice)}
+.row-meta .cat[data-cat="fisheries"] .dot{background:var(--c-fisheries)}
+.row-meta .cat[data-cat="farmer"] .dot{background:var(--c-farmer)}
+.row-meta .sep{width:3px;height:3px;border-radius:50%;background:var(--muted);opacity:.5}
+.row h4{font-family:'Raleway';font-weight:900;font-size:18px;color:var(--green-ink);line-height:1.2;letter-spacing:-.01em}
+.row .desc{font-size:13px;color:var(--muted);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+.row-date{text-align:center;padding:0 8px;min-width:90px;border-left:1px solid var(--line)}
+.row-date .d{font-family:'Bebas Neue';font-size:48px;line-height:.9;color:var(--green-ink);letter-spacing:.02em;display:block}
+.row-date .m{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);display:block;margin-top:2px}
+.row-date .t{font-family:'Open Sans';font-weight:600;font-size:11px;color:var(--muted);display:block;margin-top:6px}
+
+/* Pagination + load more */
+.list-foot{display:flex;justify-content:space-between;align-items:center;margin-top:40px;flex-wrap:wrap;gap:20px}
+.pagination{display:flex;align-items:center;gap:4px;font-family:'Raleway';font-weight:800;font-size:13px}
+.pagination a{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--green-ink);transition:.2s}
+.pagination a:hover{background:#fff}
+.pagination a.is-active{background:var(--green);color:#fff}
+.pagination .next{display:inline-flex;align-items:center;gap:6px;width:auto;padding:0 16px;border-radius:999px;background:#fff}
+.load-more{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:13px 26px;border-radius:999px;background:var(--green);color:#fff;border:none;cursor:pointer}
+.load-more:hover{background:var(--green-deep)}
+
+/* Subscribe inline */
+.subscribe-inline{margin-top:48px;background:var(--sand);border-radius:var(--radius);padding:28px 32px;display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center}
+.subscribe-inline .icon{width:48px;height:48px;border-radius:12px;background:var(--green);display:grid;place-items:center;color:#fff}
+.subscribe-inline h4{font-family:'Raleway';font-weight:900;font-size:17px;color:var(--green-ink)}
+.subscribe-inline p{font-size:13px;color:var(--muted);margin-top:3px}
+.ics-btns{display:flex;gap:8px;flex-wrap:wrap}
+.ics-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--green-ink);cursor:pointer}
+.ics-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* PAST EVENTS CTA */
+.past-cta{margin-top:96px;padding:0 32px 96px}
+.past-card{background:var(--green-ink);color:#fff;border-radius:32px;padding:80px 80px;position:relative;overflow:hidden;display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:center}
+.past-card::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='gn'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='9'/><feColorMatrix values='0 0 0 0 0.53  0 0 0 0 0.69  0 0 0 0 0.25  0 0 0 0.14 0'/></filter><rect width='220' height='220' filter='url(%23gn)'/></svg>");opacity:.4;pointer-events:none}
+.past-card>*{position:relative;z-index:1}
+.past-card .eyebrow{color:var(--accent)}
+.past-card h2{font-family:'Raleway';font-weight:900;font-size:clamp(40px,5vw,68px);color:#fff;margin-top:18px;line-height:1.02}
+.past-card h2 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.past-card p{color:rgba(235,245,244,.8);font-size:16px;margin-top:20px;max-width:520px;line-height:1.65}
+.past-card .btn-primary{white-space:nowrap;display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:999px;background:var(--accent);color:var(--green-ink);font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--accent);margin-top:30px;transition:.2s}
+.past-card .btn-primary:hover{background:#fff;border-color:#fff}
+.past-card .big-num{font-family:'Bebas Neue';font-size:clamp(120px,16vw,240px);line-height:.85;color:rgba(168,198,99,.25);text-align:center;letter-spacing:.02em}
+.past-card .big-num small{display:block;font-family:'Raleway';font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:rgba(235,245,244,.7);margin-top:14px}
+
+/* FOOTER */
+footer{background:var(--green-ink);color:#b5c9b8;padding:64px 0 32px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand .logo-block{font-family:'Raleway';font-weight:900;font-size:20px;color:#fff}
+.foot-brand .logo-block span{color:var(--accent)}
+.foot-brand p{font-size:13px;max-width:300px;color:#8da89a;line-height:1.6;margin-top:14px}
+footer h5{font-family:'Raleway';color:#fff;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:13px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:22px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+
+/* RESPONSIVE */
+@media (max-width:1024px){
+  .featured{grid-template-columns:1fr}
+  .featured-img{min-height:280px}
+  .featured-body{padding:40px 36px}
+  .row{grid-template-columns:100px 1fr;gap:18px}
+  .row-date{display:none}
+  .fp-grid{grid-template-columns:1fr 1fr}
+  .past-card{grid-template-columns:1fr;padding:56px 40px;text-align:left}
+  .nav-links{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:640px){
+  .row{grid-template-columns:1fr;gap:14px}
+  .row-img{height:140px}
+  .fp-grid{grid-template-columns:1fr}
+  .subscribe-inline{grid-template-columns:1fr;text-align:left}
+  .foot-grid{grid-template-columns:1fr}
+}
+
+/* === Tidewater chrome + #a8c663 accents (default scheme) === */
+.topbar a{color:#A8C663}
+.topbar{border-bottom:3px solid #00662C}
+.foot-bottom a:hover{color:#00662C}
+
+/* dark-context #a8c663 pops */
+.featured .eyebrow{color:#A8C663}
+.featured h1 em,.featured h2 em{color:#A8C663}
+.past-card .eyebrow{color:#A8C663}
+.past-card h2 em{color:#A8C663}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li><a href="#">Local Food</a></li>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Learn</a></li>
+      <li><a href="#">Participate</a></li>
+      <li><a href="#" class="active">Events</a></li>
+      <li><a href="#">Make Change</a></li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</header>
+
+<section class="top-strip">
+  <div class="wrap">
+    <div class="crumb"><a href="#">Home</a> &nbsp;/&nbsp; Events</div>
+    <div class="strip-row">
+      <h1>What's <em style="font-size: 100px">next</em><br>at MFTS.</h1>
+      <p>One headline event up top, the full stream right below. Every gathering, workshop, and harvest celebration across the Commonwealth, in chronological order.</p>
+    </div>
+
+    <!-- CONTROLS: view switcher + filter toggle -->
+    <div class="controls">
+      <div class="view-switcher" role="tablist" aria-label="Calendar views">
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Month</button>
+        <button class="is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>List</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Day</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M9 5v14M15 5v14"/></svg>Week</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>Photo</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4l-6 2v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v16M15 6v16"/></svg>Map</button>
+      </div>
+
+      <button class="filter-toggle" id="filterToggle" onclick="document.getElementById('filterPanel').classList.toggle('is-open');this.classList.toggle('is-open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        Filter events
+        <span class="count">0</span>
+      </button>
+    </div>
+
+    <!-- FILTER PANEL (collapsed by default) -->
+    <div class="filter-panel" id="filterPanel">
+      <div class="fp-grid">
+        <div class="fp-group">
+          <span class="label">Keyword</span>
+          <div class="fp-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="search" placeholder="Search events">
+          </div>
+        </div>
+        <div class="fp-group">
+          <span class="label">Category</span>
+          <div class="fp-cats">
+            <span class="cat-pill is-on" data-cat="harvest"><span class="dot"></span>Harvest</span>
+            <span class="cat-pill" data-cat="educator"><span class="dot"></span>Educators</span>
+            <span class="cat-pill" data-cat="conference"><span class="dot"></span>Conference</span>
+            <span class="cat-pill" data-cat="foodservice"><span class="dot"></span>Food Service</span>
+            <span class="cat-pill" data-cat="fisheries"><span class="dot"></span>Fisheries</span>
+            <span class="cat-pill" data-cat="farmer"><span class="dot"></span>Farmers</span>
+          </div>
+        </div>
+        <div class="fp-group">
+          <span class="label">Venue</span>
+          <select class="fp-select">
+            <option>All venues</option>
+            <option>MFTS Farm at Hampshire County</option>
+            <option>Virtual via Zoom</option>
+            <option>UMass Amherst Campus Center</option>
+            <option>Boston Public Schools Central Kitchen</option>
+            <option>Worcester Public Market</option>
+          </select>
+        </div>
+        <div class="fp-group">
+          <span class="label">Date range</span>
+          <select class="fp-select">
+            <option>Next 90 days</option>
+            <option>This month</option>
+            <option>Next 6 months</option>
+            <option>This school year</option>
+            <option>Custom range…</option>
+          </select>
+        </div>
+      </div>
+      <div class="fp-foot">
+        <button class="fp-clear">Clear all</button>
+        <button class="fp-apply">Apply filters</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <!-- FEATURED HERO CARD -->
+  <a class="featured" href="MFTS-Event-Single-v3-StoryCard.html">
+    <div class="featured-body">
+      <span class="featured-flag">The next one</span>
+      <div class="featured-meta">
+        <span class="cat-tag"><span style="width:7px;height:7px;border-radius:50%;background:var(--c-harvest);display:inline-block"></span>Harvest of the Month</span>
+        <span>Saturday · October 18 · 10:00 AM</span>
+      </div>
+      <h2>October's harvest<br>lands on the <em>tray.</em></h2>
+      <p>The MFTS Education Team welcomes families, classrooms, and orchardists to a celebration of Massachusetts apples. Tasting flights, a kid-built cider press, classroom recipe cards, and a guided orchard walk.</p>
+      <div class="featured-ctas">
+        <span class="feat-btn-primary">RSVP for free
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+        <span class="feat-btn-ghost">Event details</span>
+      </div>
+    </div>
+    <div class="featured-img">
+      <img src="https://images.pexels.com/photos/33438410/pexels-photo-33438410.jpeg" alt="Apples being harvested">
+      <div class="date-stamp"><span class="d">18</span><span class="m">Oct</span><span class="y">Sat · 2026</span></div>
+    </div>
+  </a>
+
+  <!-- STREAM HEADER -->
+  <div class="stream-head">
+    <h3>Everything else, in order</h3>
+    <div class="right">5 more events · through April 2027</div>
+  </div>
+
+  <!-- STREAM LIST -->
+  <div class="stream">
+
+    <a class="row" href="MFTS-Event-Single-v2-CompactActionFirst.html">
+      <div class="row-img">
+        <span class="row-cat-bar" data-cat="educator"></span>
+        <img src="https://images.pexels.com/photos/8617899/pexels-photo-8617899.jpeg" alt="">
+      </div>
+      <div class="row-content">
+        <div class="row-meta">
+          <span class="cat" data-cat="educator"><span class="dot"></span>Educators</span>
+          <span>Thursday · 4:00–6:30 PM</span><span class="sep"></span><span>Virtual · Zoom</span><span class="sep"></span><span>Free · Register</span>
+        </div>
+        <h4>Farm-to-School Educator Workshop: Garden-Based Learning</h4>
+        <p class="desc">Practical methods to turn your school garden into a year-round classroom for math, ELA, and life science.</p>
+      </div>
+      <div class="row-date"><span class="d">06</span><span class="m">Nov</span><span class="t">4:00 PM</span></div>
+    </a>
+
+    <a class="row" href="MFTS-Event-Single-v1-EditorialLongForm.html">
+      <div class="row-img">
+        <span class="row-cat-bar" data-cat="conference"></span>
+        <img src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg" alt="">
+      </div>
+      <div class="row-content">
+        <div class="row-meta">
+          <span class="cat" data-cat="conference"><span class="dot"></span>Conference</span>
+          <span>Nov 14 &amp; 15 · 9:00–5:00</span><span class="sep"></span><span>UMass Amherst</span><span class="sep"></span><span>$25 / $45</span>
+        </div>
+        <h4>Massachusetts Farm-to-School Annual Summit 2026</h4>
+        <p class="desc">Two days of keynotes, breakout sessions, and a producer marketplace. Educators, food service, farmers, advocates.</p>
+      </div>
+      <div class="row-date"><span class="d">14</span><span class="m">Nov</span><span class="t">2 days</span></div>
+    </a>
+
+    <a class="row" href="#">
+      <div class="row-img placeholder">
+        <span class="row-cat-bar" data-cat="foodservice"></span>
+        Webinar<br>placeholder
+      </div>
+      <div class="row-content">
+        <div class="row-meta">
+          <span class="cat" data-cat="foodservice"><span class="dot"></span>Food Service</span>
+          <span>Tuesday · 1:00 PM</span><span class="sep"></span><span>Virtual</span><span class="sep"></span><span>Free</span>
+        </div>
+        <h4>Local Food Procurement Webinar for Food Service Directors</h4>
+        <p class="desc">A working session on contracts, buying windows, and the Massachusetts producers ready to supply your cafeteria this winter.</p>
+      </div>
+      <div class="row-date"><span class="d">02</span><span class="m">Dec</span><span class="t">1:00 PM</span></div>
+    </a>
+
+    <a class="row" href="#">
+      <div class="row-img placeholder">
+        <span class="row-cat-bar" data-cat="fisheries"></span>
+        Spring tasting<br>placeholder
+      </div>
+      <div class="row-content">
+        <div class="row-meta">
+          <span class="cat" data-cat="fisheries"><span class="dot"></span>Fisheries</span>
+          <span>Friday · 11:30 AM</span><span class="sep"></span><span>BPS Central Kitchen</span><span class="sep"></span><span>Invitation only</span>
+        </div>
+        <h4>Spring Tasting: Fish in Schools Initiative</h4>
+        <p class="desc">A tasting and operations preview for the BPS central kitchen rollout of locally landed haddock, pollock, and Atlantic mackerel.</p>
+      </div>
+      <div class="row-date"><span class="d">13</span><span class="m">Mar</span><span class="t">11:30 AM</span></div>
+    </a>
+
+    <a class="row" href="#">
+      <div class="row-img">
+        <span class="row-cat-bar" data-cat="farmer"></span>
+        <img src="https://images.pexels.com/photos/2255935/pexels-photo-2255935.jpeg" alt="">
+      </div>
+      <div class="row-content">
+        <div class="row-meta">
+          <span class="cat" data-cat="farmer"><span class="dot"></span>Farmers</span>
+          <span>Wednesday · 3:00–6:00 PM</span><span class="sep"></span><span>Worcester Public Market</span><span class="sep"></span><span>Free</span>
+        </div>
+        <h4>Farmer Open House: Connecting with School Buyers</h4>
+        <p class="desc">Meet the food service directors buying in your region. Bring samples, leave with introductions, contracts within reach.</p>
+      </div>
+      <div class="row-date"><span class="d">22</span><span class="m">Apr</span><span class="t">3:00 PM</span></div>
+    </a>
+
+  </div>
+
+  <div class="list-foot">
+    <div class="pagination">
+      <a href="#" class="is-active">1</a>
+      <a href="#">2</a>
+      <a href="#">3</a>
+      <a href="#" class="next">Next
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <button class="load-more">Load 5 more events</button>
+  </div>
+
+  <!-- SUBSCRIBE -->
+  <div class="subscribe-inline">
+    <div class="icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h2M8 18h2M14 14h2M14 18h2"/></svg>
+    </div>
+    <div>
+      <h4>Add the MFTS calendar to your week</h4>
+      <p>Subscribe to keep new MFTS events syncing automatically.</p>
+    </div>
+    <div class="ics-btns">
+      <a class="ics-btn" href="#">Google</a>
+      <a class="ics-btn" href="#">iCal</a>
+      <a class="ics-btn" href="#">Outlook</a>
+      <a class="ics-btn" href="#">.ics</a>
+    </div>
+  </div>
+</div>
+
+<!-- PAST EVENTS CTA -->
+<section class="past-cta">
+  <div class="past-card">
+    <div>
+      <span class="eyebrow">The archive</span>
+      <h2>Catch up on <em>past</em> MFTS events.</h2>
+      <p>Years of summits, harvest celebrations, educator workshops, and farmer convenings. Replays, recaps, and notes are all kept in the archive.</p>
+      <a class="btn-primary" href="?tribe_event_display=past">View past events
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <div class="big-num">
+      120+
+      <small>events archived</small>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo-block">MFTS<span>.</span></div>
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul><li><a href="#">Source Local Food</a></li><li><a href="#">Sell To Schools</a></li><li><a href="#">Terrific Tray Submission</a></li></ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul><li><a href="#">What is Farm to School?</a></li><li><a href="#">Mission &amp; Vision</a></li><li><a href="#">Impact</a></li></ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul><li><a href="#">Event Calendar</a></li><li><a href="#">Institute</a></li><li><a href="#">Harvest of the Month</a></li></ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- TEC IMPLEMENTATION NOTES
+================================================================================
+File: MFTS-Events-Main-v3-FeaturedStream.html
+Plugin: The Events Calendar (Pro tier)
+Template override path: [child-theme]/tribe/events/v2/list/*.php (with custom partials)
+Default view: List, modified so the FIRST event is rendered as a hero card and
+subsequent events render as a compact stream.
+
+ELEMENT MAPPING
+--------------------------------------------------------------------------------
+- Page hero "What's next at MFTS"          -> Custom WP page title; not a TEC field
+- Crumb                                     -> Theme breadcrumbs
+
+- View switcher (Month, List, Day, Week,    -> Pro: tribe_events_views() — class="is-active" on List
+  Photo, Map)                                  Mirrors data-js="tribe-events-view-link" hooks.
+
+- Filter toggle "Filter events [0]"         -> Custom toggle. Filter Bar (Pro) is rendered inside
+                                              #filterPanel but the panel is hidden until the user
+                                              clicks the toggle. Count badge updates via
+                                              Filter Bar's "active filter count" event hook
+                                              (Tribe.events.views.filterBar.activeFilters).
+
+- Filter Panel content                      -> tribe_filter_bar() shortcode contents:
+                                                * Keyword     -> filter type: search
+                                                * Category    -> filter type: taxonomy (tribe_events_cat)
+                                                * Venue       -> filter type: venue (rendered as <select>)
+                                                * Date range  -> filter type: date_range (rendered as preset
+                                                                  options; "Custom range..." opens datepicker)
+
+- FEATURED hero card                        -> First post in main loop:
+                                              if ( $tribe_query->current_post === 0 ) { include featured.php }
+                                              The "soonest upcoming event" is just the first item in
+                                              tribe_get_events() with default ASC start_date sort.
+                                              All inner fields:
+                                                * .featured-flag             -> "The next one" hardcoded
+                                                * .cat-tag                   -> first term get_the_terms( $e, 'tribe_events_cat' )
+                                                * meta "Saturday · Oct 18..."-> tribe_get_start_date( $e, false, 'l · M j · g:i A' )
+                                                * h2 title (with italic word) -> tribe_get_event_label( $e );
+                                                                                  italic emphasis word is wrapped in <em>
+                                                                                  by editorial choice in the description field
+                                                                                  OR by a child-theme filter that wraps the last
+                                                                                  word of the title in <em>.
+                                                                                  RECOMMENDED: store as a separate Pro Custom
+                                                                                  Field "emphasis_word" -> NOT NATIVE TEC.
+                                                * description excerpt        -> tribe_events_get_the_excerpt( $e )
+                                                * RSVP / Event details CTAs  -> tribe_get_event_website_link( $e ) for primary
+                                                                                  tribe_get_event_link( $e ) for "Event details"
+                                                * .date-stamp                -> tribe_get_start_date( $e, false, 'j / M / D · Y' )
+
+- STREAM rows                               -> Loop iterations 2..N. Each row:
+                                                * .row href          -> tribe_get_event_link( $event )
+                                                * .row-img           -> tribe_event_featured_image( null, 'thumbnail' )
+                                                                         placeholder when no image
+                                                * .row-cat-bar       -> first category slug -> data-cat
+                                                                         drives vertical color bar via CSS
+                                                                         (data-cat="harvest" -> --c-harvest, etc.)
+                                                * .cat tag           -> tribe_get_event_categories( $event_id, array('list'=>false) )
+                                                * "Thursday · 4:00–6:30 PM" -> tribe_get_start_date / tribe_get_end_date
+                                                * Venue chip         -> tribe_get_venue( $event )
+                                                * Cost chip          -> tribe_get_cost( $event, true ); "Free · Register"
+                                                                          is a child-theme composition (Free + reg required flag)
+                                                * .row-date          -> tribe_get_start_date( $event, false, 'j' ) /'M' /'g:i A'
+                                                                         t-line "2 days" for multi-day events
+
+- Pagination + load more                    -> Native Pro List view pagination; "Load 5 more" uses
+                                              data-js="tribe-events-view-loader" AJAX hook.
+
+- Subscribe block                           -> tribe_get_ical_link() + Google calendar wrapper URL.
+
+- "View Past Events" CTA                    -> href="<?php echo esc_url( add_query_arg( 'tribe_event_display',
+                                                'past', tribe_get_events_link() ) ); ?>"
+                                              "120+ events archived" stat: COUNT(*) from custom WP query,
+                                              not a native TEC field. Recommend a transient.
+
+NOTES ON FIELDS USED
+- All visible event fields are native TEC fields.
+- "Italic emphasis word" in featured headline: title-decorator. NOT NATIVE.
+  Either editorially wrap a span in the post title (WP allows HTML in titles via a filter)
+  or store as a Pro Custom Field "emphasis_word".
+- "Registration required" indicator: requires a custom boolean (Pro Custom Field or ACF).
+- Featured slot logic: native TEC ordering (start_date ASC) gives the soonest event for free.
+  No custom logic required to "pick" the featured event.
+================================================================================ -->
+
+</body>
+</html>

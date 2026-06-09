@@ -1,0 +1,428 @@
+<!DOCTYPE html><html lang="en"><head>
+
+
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Our Team — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F; /* green sliver homage to MFTS brand */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:'Raleway';font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--green-light)}
+.nav-links a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-light{background:var(--accent);color:var(--green-ink)}.btn-light:hover{background:var(--highlight);color:#fff;transform:translateY(-2px)}
+.btn-ghost-light{border-color:rgba(255,255,255,.5);color:#fff;background:transparent}.btn-ghost-light:hover{background:#fff;color:var(--green-ink)}
+
+/* ===== HERO (compact, centered, mission-forward) ===== */
+.hero{background:var(--green-ink);color:#fff;padding:80px 0 72px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:var(--gold)}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(44px,5.6vw,86px);color:#fff;line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent);font-size:.94em}
+.hero .lede{font-family:'Fraunces',serif;font-weight:400;font-size:22px;line-height:1.5;color:rgba(245,239,227,.9);max-width:680px;margin:28px auto 34px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;min-height:48px}
+
+/* ===== IMPACT BAND (proof-first, immediately below hero) ===== */
+.impact-band{background:var(--cream);padding:0 0 96px;margin-top:-44px;position:relative;z-index:2}
+.impact-lead{max-width:1320px;margin:0 auto;padding:0 32px}
+.impact-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.impact-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:48px 40px;box-shadow:0 30px 60px -40px rgba(0,90,102,.3);position:relative;overflow:hidden;transition:.25s}
+.impact-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:.35s}
+.impact-card:hover{transform:translateY(-4px)}
+.impact-card:hover::before{transform:scaleX(1)}
+.impact-card b{font-family:'Bebas Neue';font-size:96px;line-height:.85;color:var(--green);letter-spacing:.01em;display:block}
+.impact-card .lbl{font-family:'Raleway';font-weight:700;font-size:14px;color:var(--green-ink);margin-top:14px;display:block;line-height:1.4}
+.impact-card .sub{font-size:13.5px;color:#666;margin-top:8px;line-height:1.55}
+.impact-foot{text-align:center;margin-top:40px;font-family:'Raleway';font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+
+/* ===== SECTION HEADER shared ===== */
+.section-head{margin-bottom:48px}
+.section-head h2{font-size:clamp(34px,4.4vw,58px);color:var(--green-ink);line-height:1.04;display:flex;align-items:flex-start;gap:14px}
+.section-head h2 .accent-italic{font-size:1.02em}
+.section-head h2::before{content:'';flex-shrink:0;width:28px;height:28px;margin-top:.18em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.section-head.center{text-align:center;max-width:760px;margin-left:auto;margin-right:auto}
+.section-head.center h2{justify-content:center}
+.section-head p{font-size:17px;color:#444;margin-top:16px;max-width:620px;line-height:1.7}
+.section-head.center p{margin-left:auto;margin-right:auto}
+
+/* ===== WHAT IT IS (explainer, cream) ===== */
+.concept{padding:104px 0;background:#fff;border-top:1px solid var(--line)}
+.concept-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:start}
+.concept-copy .lede{font-family:'Fraunces',serif;font-weight:400;font-size:23px;line-height:1.5;color:var(--green-ink);margin-bottom:22px}
+.concept-copy p{font-size:16.5px;line-height:1.8;color:#2a2a2a}
+.concept-trio{display:flex;flex-direction:column;gap:14px}
+.concept-trio .c{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:26px 30px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;transition:.25s}
+.concept-trio .c:hover{border-color:var(--accent);transform:translateX(4px)}
+.concept-trio .c .n{font-family:'Bebas Neue';font-size:52px;color:var(--accent);line-height:.85;letter-spacing:.02em}
+.concept-trio .c h4{font-family:'Raleway';font-weight:800;font-size:18px;color:var(--green-ink);margin-bottom:5px}
+.concept-trio .c p{font-size:14px;color:#555;line-height:1.55}
+
+/* ===== MISSION & VISION ===== */
+.mv{padding:104px 0}
+.mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.mv-card{border-radius:24px;padding:48px 44px;position:relative;overflow:hidden}
+.mv-card.mission{background:var(--green);color:#fff}
+.mv-card.vision{background:#fff;color:var(--green-ink);border:1px solid var(--line)}
+.mv-card .lbl{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px;display:block}
+.mv-card.mission .lbl{color:var(--gold)}
+.mv-card.vision .lbl{color:var(--accent)}
+.mv-card p{font-family:'Fraunces',serif;font-weight:400;font-size:25px;line-height:1.45}
+.mv-card.mission p em{font-style:italic;color:var(--gold);font-weight:500}
+.mv-card.vision p em{font-style:italic;color:var(--accent);font-weight:500}
+.mv-card .deco{position:absolute;right:-40px;bottom:-40px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(255,255,255,.18)}
+.mv-card.vision .deco{border-color:rgba(0,90,102,.12)}
+
+/* ===== STORY (condensed, supporting) ===== */
+.story{padding:0 0 104px}
+.story-card{background:var(--cream);border:1px solid var(--line);border-radius:24px;padding:56px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.story-card .copy .lead{font-family:'Fraunces',serif;font-weight:400;font-size:23px;line-height:1.5;color:var(--green-ink);margin-bottom:20px}
+.story-card .copy p{font-size:16px;line-height:1.8;color:#2a2a2a;margin-bottom:16px}
+.story-mini-tl{display:flex;flex-direction:column;gap:12px}
+.smt{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 22px}
+.smt .y{font-family:'Bebas Neue';font-size:30px;color:var(--green);letter-spacing:.02em;line-height:1}
+.smt .t{font-family:'Raleway';font-weight:700;font-size:14.5px;color:var(--green-ink);line-height:1.3}
+.smt .t span{display:block;font-family:'Open Sans';font-weight:400;font-size:13px;color:#666;margin-top:3px}
+
+/* ===== TEAM ===== */
+.team{background:#fff;border-top:1px solid var(--line);padding:104px 0}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:64px}
+.person{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.25s}
+.person:hover{transform:translateY(-4px);box-shadow:0 20px 40px -22px rgba(0,90,102,.18)}
+.person .ph{aspect-ratio:1/1;overflow:hidden;background:var(--sand)}
+.person .ph img{width:100%;height:100%;object-fit:cover}
+.person .body{padding:22px 24px}
+.person h4{font-family:'Raleway';font-weight:900;font-size:19px;color:var(--green-ink)}
+.person .role{font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin-top:6px}
+.person .readmore{margin-top:14px;display:inline-flex;align-items:center;gap:7px;background:none;border:none;padding:0;cursor:pointer;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);transition:color .2s}
+.person .readmore:hover{color:var(--green-deep)}
+.person .readmore-chev{width:13px;height:13px;transition:transform .3s ease}
+.person.open .readmore-chev{transform:rotate(180deg)}
+.person .bio{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.person.open .bio{grid-template-rows:1fr}
+.person .bio-inner{overflow:hidden}
+.person .bio p{font-size:14.5px;line-height:1.7;color:#3a3a3a;margin-top:16px}
+.person .bio-contact{display:inline-block;margin-top:14px;font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--green);border-bottom:2px solid var(--gold);padding-bottom:2px;transition:.2s}
+.person .bio-contact:hover{color:var(--green-deep);border-color:var(--green)}
+.advisory{background:var(--green-ink);border-radius:24px;padding:52px 48px;color:#fff;position:relative;overflow:hidden}
+.advisory::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 10%,rgba(0,181,175,.18),transparent 55%);pointer-events:none}
+.advisory .wrap-inner{position:relative;z-index:1}
+.advisory .lbl{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:block}
+.advisory h3{font-family:'Raleway';font-weight:900;font-size:30px;color:#fff;margin-bottom:32px}
+.advisory h3 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.adv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.adv-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:22px 24px}
+.adv-item h5{font-family:'Raleway';font-weight:800;font-size:16px;color:#fff}
+.adv-item span{font-size:13px;color:#b5c9b8;display:block;margin-top:5px;line-height:1.45}
+
+/* ===== PARTNERS ===== */
+.partners{padding:104px 0}
+.partners-card{background:var(--cream);border:1px solid var(--line);border-radius:24px;padding:52px 48px}
+.partners-top{display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:center;margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid var(--line)}
+.partners-top h3{font-family:'Raleway';font-weight:900;font-size:28px;color:var(--green-ink);line-height:1.15}
+.partners-top h3 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.partners-top p{font-size:15.5px;color:#444;line-height:1.7;margin-top:14px}
+.fiscal{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px 32px}
+.fiscal .lbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:10px}
+.fiscal .name{font-family:'Bebas Neue';font-size:40px;color:var(--green);letter-spacing:.02em;line-height:1}
+.fiscal p{font-size:13.5px;color:#555;margin-top:10px;line-height:1.6}
+.partner-logos{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.plogo{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 18px;display:grid;place-items:center;text-align:center;min-height:96px;font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.04em;color:var(--green-ink);line-height:1.3}
+
+/* ===== CLOSING CTA (homepage Stand With MFTS) ===== */
+.stand-cta{background:#fff;color:var(--green-ink);padding:110px 0 100px;position:relative;overflow:hidden;border-top:1px solid var(--line)}
+.stand-pattern{position:absolute;inset:0;pointer-events:none;opacity:.55;background-image:radial-gradient(circle,rgba(0,90,102,.18) 1.4px,transparent 1.8px);background-size:26px 26px;mask-image:radial-gradient(ellipse at 30% 50%,rgba(0,0,0,.9),transparent 75%)}
+.stand-cta .wrap{position:relative;z-index:1;max-width:1140px}
+.stand-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:60px;align-items:center}
+.stand-eyebrow{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--bridge);display:inline-flex;align-items:center;gap:12px;margin-bottom:28px}
+.stand-eyebrow::before{content:'';width:28px;height:2px;background:var(--bridge)}
+.stand-headline{font-family:'Raleway';font-weight:900;font-size:clamp(44px,5vw,76px);line-height:1;color:var(--green-ink);letter-spacing:-.02em}
+.stand-headline em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--bridge)}
+.stand-lede{font-size:17px;line-height:1.65;color:rgba(0,58,64,.75);max-width:520px;margin:28px 0 38px}
+.stand-buttons{display:flex;gap:14px;flex-wrap:wrap}
+.stand-btn-primary{display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border-radius:999px;background:var(--bridge);color:#fff;font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;transition:.25s;border:2px solid var(--accent)}
+.stand-btn-primary:hover{background:#6E9233;border-color:#6E9233;transform:translateY(-2px)}{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:999px;border:2px solid var(--green-ink);color:var(--green-ink);background:transparent;font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;transition:.25s}
+.stand-btn-secondary:hover{background:var(--green-ink);color:#fff;transform:translateY(-2px)}
+.stand-right{display:flex;flex-direction:column;gap:14px}
+.stand-stat{background:var(--cream);border:1px solid rgba(0,90,102,.15);border-radius:18px;padding:26px 30px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:22px}
+.stand-stat-num{font-family:'Bebas Neue';font-size:56px;color:var(--bridge);line-height:1;letter-spacing:.02em}
+.stand-stat-label{font-family:'Raleway';font-weight:600;font-size:13px;color:rgba(0,58,64,.85);line-height:1.35}
+
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .impact-cards{grid-template-columns:1fr}
+  .concept-grid{grid-template-columns:1fr;gap:40px}
+  .mv-grid{grid-template-columns:1fr}
+  .story-card{grid-template-columns:1fr;gap:40px;padding:40px}
+  .team-grid{grid-template-columns:repeat(2,1fr)}
+  .adv-grid{grid-template-columns:repeat(2,1fr)}
+  .partners-top{grid-template-columns:1fr;gap:28px}
+  .partner-logos{grid-template-columns:repeat(2,1fr)}
+  .stand-grid{grid-template-columns:1fr;gap:48px}
+  .nav-links{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:600px){
+  .impact-card b{font-size:74px}
+  .team-grid{grid-template-columns:1fr}
+  .adv-grid{grid-template-columns:1fr}
+  .partner-logos{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr}
+}
+</style>
+<link id="gfont-Open-Sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&amp;display=swap"></head>
+<body style="">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li><a href="#">Local Food</a></li>
+      <li><a href="#" class="active">About Us</a></li>
+      <li><a href="#">Learn</a></li>
+      <li><a href="#">Participate</a></li>
+      <li><a href="#">Explore</a></li>
+      <li><a href="#">Make Change</a></li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- PAGE HERO -->
+<section class="hero" data-screen-label="Team hero" style="padding:72px 0 56px">
+  <div class="wrap">
+    <span class="hero-flag" style="color: rgb(168, 198, 99);">About Massachusetts Farm to School</span>
+    <h1 style="color: rgb(168, 198, 99);"><span style="color: rgb(255, 255, 255);">Team &amp; </span><em style=""><span style="color: rgb(168, 198, 99);">Advisory</span></em></h1>
+    <p class="lede" style="font-family: &quot;Open Sans&quot;;">A small staff and a wide circle of advisors carry the work across Massachusetts, connecting farms, fisheries, classrooms, and cafeterias.</p>
+  </div>
+</section>
+
+<!-- TEAM & ADVISORY -->
+<section class="team">
+  <div class="wrap">
+    <div class="team-grid">
+      <div class="person">
+        <div class="ph"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2017/09/090312-SimcaHeadshot-07-e1346784877419.jpg" alt="Simca Horwitz, Co-Director"></div>
+        <div class="body">
+          <h4>Simca Horwitz</h4><div class="role">Co-Director</div>
+          <button class="readmore" type="button" aria-expanded="false" aria-controls="bio-simca"><span class="readmore-label">Read More</span><svg class="readmore-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="bio" id="bio-simca"><div class="bio-inner">
+            <p>Simca manages the Farm to School Network and provides procurement assistance and workshops to food service professionals, farmers, food distributors, and community advocates in eastern and southeastern Mass. Simca has worked in a variety of non-profit organizations in the Boston area that focus on food and agriculture, including three years as a farmer and farm-based educator at a community farm and two years running a shared use community kitchen for culinary entrepreneurs. She holds an M.S. in Food and Agriculture Policy from the Tufts Friedman School of Nutrition Science and Policy. In her free time she loves making desserts out of vegetables.</p>
+            <a class="bio-contact" href="mailto:simca@massfarmtoschool.org">Contact Simca</a>
+          </div></div>
+        </div>
+      </div>
+      <div class="person">
+        <div class="ph"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2017/09/Lisa-Damon-200.jpg" alt="Lisa Damon, Co-Director"></div>
+        <div class="body">
+          <h4>Lisa Damon</h4><div class="role">Co-Director</div>
+          <button class="readmore" type="button" aria-expanded="false" aria-controls="bio-lisa"><span class="readmore-label">Read More</span><svg class="readmore-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="bio" id="bio-lisa"><div class="bio-inner">
+            <p>As the Co-Director, Lisa works with farmers, food service operators, food distributors, and farm to school advocates in central and western Massachusetts to assist in local food procurement efforts. Growing up on a farm in the Hudson Valley, Lisa spent her free time milking cows, selling pumpkins, and picking beans. After successfully transitioning to urban life in Boston, while attending Boston University for degrees in Environmental Policy, Lisa decided to return to agriculture by earning an M.S. in Agriculture and Nutrition Policy from the Tufts' Friedman School of Nutrition Science and Policy. Before joining the Mass. Farm to School, Lisa worked for the Mass. Department of Agricultural Resources for five years where she coordinated the Department's nutrition programs, the Federal-State Marketing Improvement Program (FSMIP), and various other marketing initiatives within the Division of Agricultural Markets.</p>
+            <a class="bio-contact" href="mailto:Lisa@massfarmtoschool.org">Contact Lisa</a>
+          </div></div>
+        </div>
+      </div>
+      <div class="person">
+        <div class="ph"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2017/09/dena-headshot.jpg" alt="Dena Stearns, Communications Director"></div>
+        <div class="body">
+          <h4>Dena Stearns</h4><div class="role">Communications Director</div>
+          <button class="readmore" type="button" aria-expanded="false" aria-controls="bio-dena"><span class="readmore-label">Read More</span><svg class="readmore-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="bio" id="bio-dena"><div class="bio-inner">
+            <p>Dena is responsible for making sure everyone is aware of the great work that Mass. Farm to School is doing. She is a graduate of Tulane University and has previous non-profit experience at the Essex County Greenbelt Association, Women's Bar Association of Massachusetts, and the American Institute of Architects, New York Chapter. Born and raised in Los Angeles, she is continually adapting to living in cold weather. She enjoys gardening, sharing recipes with her sister, reading, and spending time with her family.</p>
+            <a class="bio-contact" href="mailto:Dena@massfarmtoschool.org">Contact Dena</a>
+          </div></div>
+        </div>
+      </div>
+      <div class="person">
+        <div class="ph"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2022/01/dinah-pic-929x1024.jpg" alt="Dinah Mack, Education Program Manager"></div>
+        <div class="body">
+          <h4>Dinah Mack</h4><div class="role">Education Program Manager</div>
+          <button class="readmore" type="button" aria-expanded="false" aria-controls="bio-dinah"><span class="readmore-label">Read More</span><svg class="readmore-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="bio" id="bio-dinah"><div class="bio-inner">
+            <p>As Education Program Manager, Dinah oversees the Harvest of the Month for Educators program, the Institute, professional development offerings for educators and supports a broad range of programmatic efforts to strengthen school partnerships. As a middle school Social Studies teacher for 18 years, Dinah's career has been rooted in public education. She holds Masters degrees in both Education and Cultural Anthropology, is the author of two books, and has worked as a freelance curriculum writer, technology integrationist, and K-12 teaching coach. In her free time, Dinah enjoys hiking, growing flowers and food, traveling, building things and being around dogs.</p>
+            <a class="bio-contact" href="mailto:dinah@massfarmtoschool.org">Contact Dinah</a>
+          </div></div>
+        </div>
+      </div>
+      <div class="person">
+        <div class="ph"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2023/06/Abby-765x1024.png" alt="Abby Getman Skillicorn, Special Projects Manager"></div>
+        <div class="body">
+          <h4>Abby Getman Skillicorn</h4><div class="role">Special Projects Manager</div>
+          <button class="readmore" type="button" aria-expanded="false" aria-controls="bio-abby"><span class="readmore-label">Read More</span><svg class="readmore-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="bio" id="bio-abby"><div class="bio-inner">
+            <p>Abby focuses on supporting prospective &amp; current grantees of the MA Dept. of Elementary and Secondary Education's MA FRESH Grant and Northeast Food for Schools program by connecting with school districts, early child care centers, food hubs, and farmers to support local food purchasing, professional development, and more. Abby has been working on food access, justice, and systems work in Massachusetts for well over a decade and is motivated by the work to bring nourishing, local foods to everyone-- especially kids. Prior to joining Mass. Farm to School, she worked with Springfield Public Schools food service department for five years bringing about student learning opportunities and student choice to the breakfast and lunch programs, supported the Healthy Incentives Program's state-wide launch at the Department of Transitional Assistance, served as a policy advocate for The Food Bank of Western Massachusetts, and has previously worked for Community Involved in Sustaining Agriculture, and Pioneer Valley Grows Investment Fund. Abby received her MBA from Fitchburg State University and lives in Western Massachusetts with her husband, daughter, and dog.</p>
+            <a class="bio-contact" href="mailto:abby@massfarmtoschool.org">Contact Abby</a>
+          </div></div>
+        </div>
+      </div>
+    </div>
+    <div class="advisory">
+      <div class="wrap-inner">
+        <span class="lbl" style="color: rgb(168, 198, 99)">Advisory Committee</span>
+        <h3>Guidance from across the <em style="color: rgb(168, 198, 99)">food system.</em></h3>
+        <div class="adv-grid">
+          <div class="adv-item"><h5>Alden Cadwell</h5><span>Business Development Specialist<br>Commonwealth Kitchen</span></div>
+          <div class="adv-item"><h5>Mark Patrick Duffy</h5><span>Dir. of College, Career &amp; Technical Education<br>Plymouth Public Schools</span></div>
+          <div class="adv-item"><h5>Mateo Rull Garza</h5><span>Constituent Advocate<br>Office of Congresswoman Ayana Pressley</span></div>
+          <div class="adv-item"><h5>Mellissa Honeywood</h5><span>Deputy Director<br>City of Boston, Office of Food Justice</span></div>
+          <div class="adv-item"><h5>Sam Icklan</h5><span>Dir. of Community Nutrition Services<br>Project Bread</span></div>
+          <div class="adv-item"><h5>Jake Levin</h5><span>Local Food Systems Program Manager<br>Berkshire Agricultural Ventures</span></div>
+          <div class="adv-item"><h5>Catalina Lopez-Ospina</h5><span>VP of Engagement<br>Project Bread</span></div>
+          <div class="adv-item"><h5>Alexandra Nicolas</h5><span>Director of Advancement<br>The Food Project</span></div>
+          <div class="adv-item"><h5>Tracy Skelly</h5><span>Founder<br>Little Cocoa Bean</span></div>
+          <div class="adv-item"><h5>Andrew Stratton</h5><span>General Manager<br>Sodexo Springfield Public Schools</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="#">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="#">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="#">What is Farm to School?</a></li>
+          <li><a href="#">Mission &amp; Vision</a></li>
+          <li><a href="#">Impact</a></li>
+          <li><a href="MFTS-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="#">Event Calendar</a></li>
+          <li><a href="#">Institute</a></li>
+          <li><a href="#">Conference</a></li>
+          <li><a href="#">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="#">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================================
+IMPLEMENTATION NOTES — MFTS-Team.html  (Our Team page)
+WordPress build (standard page template, NOT The Events Calendar)
+==============================================================================
+- Lives under the "About Us" nav group (keep .current-menu-item on About Us, or add
+  a "Team" child menu item -> .current-menu-item maps to .active here).
+- Shared chrome (topbar + header + footer) = theme template parts header.php / footer.php.
+- PAGE HERO (.hero) ........... ACF: page_heading / page_emphasis / page_lede.
+- TEAM (.team-grid) .......... CPT "team_member" {name(title), role(ACF text), bio(ACF wysiwyg),
+                               contact_email(ACF email), headshot(featured image)}. Query loop
+                               ordered by menu_order. Each card has a "Read More" accordion
+                               (vanilla JS, closed by default) revealing bio + Contact link.
+- ADVISORY (.adv-grid) ....... CPT "advisor" {name(title), role(ACF text), organization(ACF text)}
+                               OR ACF repeater "advisors". No bios, no accordion: static cards.
+- Tokens / fonts / .btn / .eyebrow / .accent-italic / leaf glyph / footer = inherited verbatim
+  from the MFTS Nova v2 (Tidewater) shared theme stylesheet. No em dashes in copy.
+============================================================================ -->
+
+
+
+<script>
+(function(){
+  document.querySelectorAll('.person .readmore').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var person=btn.closest('.person');
+      var open=person.classList.toggle('open');
+      btn.setAttribute('aria-expanded',open?'true':'false');
+      var label=btn.querySelector('.readmore-label');
+      if(label)label.textContent=open?'Read Less':'Read More';
+    });
+  });
+})();
+</script>
+
+</body></html>

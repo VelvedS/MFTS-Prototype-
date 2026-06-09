@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Garden-Based Learning Workshop — MFTS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --amber:#B8860B;
+  --c-educator:#00B5AF;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:#EBF5F4;-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+
+/* TOPBAR / HEADER */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+.topbar a{color:var(--gold)}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a.active{color:var(--green)}
+.nav-links a.active::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:2px;background:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+
+/* BACK + BREADCRUMB */
+.back-bar{padding:22px 0 18px}
+.back-bar .row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.back-link{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);display:inline-flex;align-items:center;gap:8px}
+.back-link:hover{color:var(--green-deep)}
+.back-link svg{width:13px;height:13px}
+.crumb-right{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ===== COMPACT SPLIT HERO ===== */
+.split-hero{padding:0 0 32px}
+.split-card{background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;min-height:560px;box-shadow:0 40px 80px -50px rgba(0,90,102,.18)}
+.split-img{position:relative;overflow:hidden;background:var(--green-ink)}
+.split-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.split-img::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,58,64,.05),rgba(0,58,64,.45))}
+.split-img .cat-pill{position:absolute;top:24px;left:24px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--green-ink);z-index:2}
+.split-img .cat-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--c-educator)}
+.split-img .virtual-flag{position:absolute;bottom:24px;left:24px;display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:rgba(0,58,64,.85);backdrop-filter:blur(8px);color:#fff;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;z-index:2}
+.split-img .virtual-flag svg{width:13px;height:13px}
+
+.split-body{padding:48px 52px;display:flex;flex-direction:column;justify-content:center;gap:24px;background:#fff}
+
+/* Date badge: oversized Bebas day + Raleway month/weekday */
+.date-badge{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.date-badge .day{font-family:'Bebas Neue';font-size:112px;line-height:.85;color:var(--green);letter-spacing:.01em}
+.date-badge .right{display:flex;flex-direction:column;gap:1px}
+.date-badge .month{font-family:'Raleway';font-weight:900;font-size:22px;color:var(--green-ink);letter-spacing:.02em;text-transform:uppercase}
+.date-badge .weekday{font-family:'Raleway';font-weight:700;font-size:14px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:1px}
+.date-badge .time{font-family:'Open Sans';font-weight:600;font-size:15px;color:var(--green-ink);margin-top:5px;display:inline-flex;align-items:center;gap:8px}
+.date-badge .time svg{width:14px;height:14px;color:var(--green)}
+
+.split-body h1{font-family:'Raleway';font-weight:900;font-size:clamp(32px,3.4vw,46px);color:var(--green-ink);line-height:1.05;letter-spacing:-.02em}
+.split-body h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent);font-size:.95em}
+.split-body .lede{font-size:15px;color:var(--muted);line-height:1.65;max-width:480px}
+
+.quick-info{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.quick-info .item{display:flex;gap:12px;align-items:flex-start}
+.quick-info .ico{width:36px;height:36px;border-radius:10px;background:var(--cream);display:grid;place-items:center;color:var(--green);flex-shrink:0}
+.quick-info .ico svg{width:15px;height:15px}
+.quick-info .lbl{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px}
+.quick-info .val{font-family:'Open Sans';font-weight:600;font-size:13px;color:var(--green-ink);line-height:1.35}
+.quick-info .val a{color:var(--green)}
+
+.action-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.action-primary{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;background:var(--green);color:#fff;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--green);transition:.2s;cursor:pointer}
+.action-primary svg{width:14px;height:14px}
+.action-primary:hover{background:var(--green-deep);border-color:var(--green-deep);transform:translateY(-2px)}
+.action-secondary{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;background:transparent;color:var(--green);font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--green);transition:.2s;cursor:pointer}
+.action-secondary:hover{background:var(--green);color:#fff}
+.action-secondary svg{width:14px;height:14px}
+
+.spots-warning{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:rgba(184,134,11,.12);color:var(--amber);font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;width:fit-content}
+.spots-warning .pulse{width:8px;height:8px;border-radius:50%;background:var(--amber);position:relative}
+.spots-warning .pulse::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:var(--amber);opacity:.3;animation:pulse 2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.6);opacity:.5}100%{transform:scale(1.6);opacity:0}}
+
+/* ===== DESCRIPTION SECTION ===== */
+.desc-section{padding:64px 0 56px;background:#fff}
+.desc-grid{display:grid;grid-template-columns:1fr;max-width:760px;margin:0 auto}
+.desc-section h2{font-family:'Raleway';font-weight:900;font-size:30px;color:var(--green-ink);margin:36px 0 14px;display:flex;align-items:center;gap:12px}
+.desc-section h2::before{content:'';width:22px;height:22px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.desc-section h2:first-child{margin-top:0}
+.desc-section p{font-size:16px;line-height:1.75;color:#2a2a2a;margin-bottom:18px}
+.desc-section ul{margin:0 0 22px 4px;padding-left:0}
+.desc-section li{font-size:16px;line-height:1.65;color:#2a2a2a;margin-bottom:8px;list-style:none;position:relative;padding-left:22px}
+.desc-section li::before{content:'';position:absolute;left:0;top:.65em;width:8px;height:8px;background:var(--accent);border-radius:50%}
+.desc-section .takeaway{margin:36px 0;padding:24px 28px;background:var(--cream);border-radius:var(--radius);border-left:4px solid var(--accent)}
+.desc-section .takeaway b{font-family:'Raleway';font-weight:900;color:var(--green-ink);font-size:13px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:8px}
+.desc-section .takeaway p{font-size:15px;margin:0;color:var(--green-ink)}
+
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:36px;padding-top:28px;border-top:1px solid var(--line)}
+.tag-row .lbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:10px;align-self:center}
+.tag-row .tag{display:inline-flex;align-items:center;padding:6px 13px;border-radius:999px;background:var(--cream);font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.06em;color:var(--green-ink);text-transform:uppercase}
+
+.share-row{margin-top:24px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.share-row span.lbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.share-btns{display:flex;gap:8px}
+.share-btns a{width:38px;height:38px;border-radius:50%;background:var(--cream);display:grid;place-items:center;color:var(--green);transition:.2s}
+.share-btns a:hover{background:var(--green);color:#fff}
+.share-btns svg{width:14px;height:14px}
+
+/* ===== VENUE / MAP (virtual variant) ===== */
+.venue-section{padding:64px 0;background:var(--cream);border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.venue-section::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='gn'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0.4  0 0 0 0 0.17  0 0 0 0.03 0'/></filter><rect width='220' height='220' filter='url(%23gn)'/></svg>");opacity:.55;pointer-events:none}
+.venue-section .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.venue-section .label{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.venue-section h3{font-family:'Raleway';font-weight:900;font-size:32px;color:var(--green-ink);margin-bottom:14px}
+.venue-section .vmeta{font-family:'Open Sans';font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.virtual-card{background:#fff;border-radius:var(--radius);padding:36px;border:1px solid var(--line)}
+.virtual-card .lbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block}
+.virtual-card .platform{display:flex;align-items:center;gap:16px;padding-bottom:24px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.virtual-card .platform .pico{width:56px;height:56px;border-radius:14px;background:var(--green);display:grid;place-items:center;color:#fff;flex-shrink:0}
+.virtual-card .platform .pico svg{width:24px;height:24px}
+.virtual-card .platform .pname{font-family:'Raleway';font-weight:900;font-size:20px;color:var(--green-ink)}
+.virtual-card .platform .pmeta{font-size:13px;color:var(--muted);margin-top:3px}
+.virtual-card .access-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.virtual-card .access-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 16px;background:var(--cream);border-radius:10px}
+.virtual-card .access-row .k{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.virtual-card .access-row .v{font-family:'Open Sans';font-weight:700;font-size:13px;color:var(--green-ink);font-variant-numeric:tabular-nums}
+.virtual-card .access-row .v.link{color:var(--green);text-decoration:underline}
+.virtual-card .note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.55}
+
+/* ===== ORGANIZER COMPACT ===== */
+.organizer{padding:64px 0;background:#fff}
+.organizer .wrap{display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:center}
+.organizer .label{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.organizer .avatar{width:88px;height:88px;border-radius:50%;background:var(--green-ink);display:grid;place-items:center;color:#fff;font-family:'Bebas Neue';font-size:42px;letter-spacing:.04em;line-height:1;flex-shrink:0}
+.organizer h3{font-family:'Raleway';font-weight:900;font-size:24px;color:var(--green-ink);margin-bottom:6px}
+.organizer .ometa{font-size:14px;color:var(--muted);line-height:1.55}
+.organizer .ometa a{color:var(--green)}
+.organizer .right{display:flex;gap:10px;flex-wrap:wrap}
+.organizer .right a{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;border:2px solid var(--green);color:var(--green);font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:.2s}
+.organizer .right a svg{width:14px;height:14px}
+.organizer .right a:hover{background:var(--green);color:#fff}
+
+/* ===== RELATED EVENTS ===== */
+.related{padding:72px 0 96px;background:var(--cream)}
+.related .head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;gap:24px;flex-wrap:wrap}
+.related h3{font-family:'Raleway';font-weight:900;font-size:28px;color:var(--green-ink);display:flex;align-items:center;gap:14px}
+.related h3::before{content:'';width:22px;height:22px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.related .all{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--green)}
+.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.rel-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:10px;transition:.25s;cursor:pointer}
+.rel-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px -20px rgba(0,90,102,.18);border-color:var(--accent)}
+.rel-card .date-tag{font-family:'Bebas Neue';font-size:32px;color:var(--green);letter-spacing:.02em;line-height:.9;display:flex;align-items:baseline;gap:8px}
+.rel-card .date-tag small{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.rel-card h4{font-family:'Raleway';font-weight:900;font-size:17px;color:var(--green-ink);line-height:1.25}
+.rel-card .meta{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* ===== FOOTER (canonical, matches MFTS Nova) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+
+/* RESPONSIVE */
+@media (max-width:1024px){
+  .split-card{grid-template-columns:1fr}
+  .split-img{min-height:320px}
+  .split-body{padding:36px 32px}
+  .date-badge .day{font-size:88px}
+  .venue-section .wrap,.organizer .wrap{grid-template-columns:1fr;gap:24px}
+  .organizer .right{justify-content:flex-start}
+  .quick-info{grid-template-columns:1fr}
+  .rel-grid{grid-template-columns:repeat(2,1fr)}
+  .nav-links{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:640px){
+  .date-badge{grid-template-columns:1fr}
+  .date-badge .day{font-size:72px}
+  .rel-grid{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr}
+  .action-primary,.action-secondary{flex:1 1 100%}
+}
+
+/* === Tidewater chrome + #a8c663 accents (default scheme) === */
+.topbar a{color:#A8C663}
+.topbar{border-bottom:3px solid #00662C}
+.foot-bottom a:hover{color:#00662C}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li><a href="#">Local Food</a></li>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Learn</a></li>
+      <li><a href="#">Participate</a></li>
+      <li><a href="MFTS-Events-Main-v1-CalendarForward.html" class="active">Events</a></li>
+      <li><a href="#">Make Change</a></li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</header>
+
+<!-- BACK BAR -->
+<div class="back-bar">
+  <div class="wrap row">
+    <a class="back-link" href="MFTS-Events-Main-v2-EditorialListing.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      All events
+    </a>
+    <div class="crumb-right">Educators · Workshop · Virtual</div>
+  </div>
+</div>
+
+<!-- COMPACT SPLIT HERO -->
+<section class="split-hero">
+  <div class="wrap">
+    <div class="split-card">
+      <div class="split-img">
+        <span class="cat-pill"><span class="dot"></span>Educators</span>
+        <img src="https://images.pexels.com/photos/8617899/pexels-photo-8617899.jpeg" alt="Students in school garden">
+        <span class="virtual-flag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Virtual · Zoom
+        </span>
+      </div>
+
+      <div class="split-body">
+
+        <!-- DATE BADGE: oversized Bebas day -->
+        <div class="date-badge">
+          <span class="day">06</span>
+          <div class="right">
+            <span class="month">November</span>
+            <span class="weekday">Thursday · 2026</span>
+            <span class="time">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              4:00 PM – 6:30 PM EST
+            </span>
+          </div>
+        </div>
+
+        <h1>Farm-to-School Educator Workshop: Garden-Based Learning.</h1>
+
+        <p class="lede">A two-and-a-half hour working session for K-12 educators on turning your school garden into a year-round outdoor classroom for math, ELA, life science, and food literacy.</p>
+
+        <div class="quick-info">
+          <div class="item">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            <div><span class="lbl">Venue</span><span class="val">Virtual via Zoom<br>(link sent on registration)</span></div>
+          </div>
+          <div class="item">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M5 6h11a3 3 0 1 1 0 6H8a3 3 0 1 0 0 6h11"/></svg></div>
+            <div><span class="lbl">Cost</span><span class="val">Free<br><a href="#">Registration required</a></span></div>
+          </div>
+        </div>
+
+        <span class="spots-warning">
+          <span class="pulse"></span>
+          12 spots remaining
+        </span>
+
+        <div class="action-row">
+          <button class="action-primary">
+            Register now
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <button class="action-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4"/></svg>
+            Add to calendar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESCRIPTION -->
+<section class="desc-section">
+  <div class="wrap">
+    <div class="desc-grid">
+      <h2>What we'll cover</h2>
+      <p>This workshop is built for the educator who has a garden plot (or wants one), wants to use it as a teaching surface, and needs a starting point that does not require a horticulture degree. We work in small breakout rooms with a facilitator and live demo of curriculum.</p>
+
+      <ul>
+        <li>A 5-minute mental model for mapping your existing standards onto garden activities.</li>
+        <li>Three ready-to-run lesson plans for K-2, 3-5, and 6-8 that we have piloted in MA schools this past year.</li>
+        <li>How to time garden curriculum to the MA growing season so cold-weather months are productive too.</li>
+        <li>Working with food service: getting your harvest onto a cafeteria tray, even occasionally.</li>
+        <li>The "winter classroom": indoor sprouting, seed saving, and herb walls that keep the garden alive November through March.</li>
+      </ul>
+
+      <div class="takeaway">
+        <b>You'll leave with</b>
+        <p>A workbook with all three pilot lesson plans (downloadable PDFs), a planning template for mapping your standards to the garden calendar, and a private Slack channel for follow-up with the cohort.</p>
+      </div>
+
+      <h2>Who it's for</h2>
+      <p>Classroom teachers (K-8 most common), garden coordinators, after-school program leads, and curriculum specialists. No previous garden experience required. School administrators are welcome to join in observation mode.</p>
+
+      <h2>Format</h2>
+      <p>Two and a half hours on Zoom. Forty-five minutes of group session, three rotating breakout rooms (fifteen minutes each), a working break, and a final question-and-answer period with the facilitators. Sessions are recorded and shared with registrants only.</p>
+
+      <div class="tag-row">
+        <span class="lbl">Tags</span>
+        <span class="tag">Educators</span>
+        <span class="tag">Garden</span>
+        <span class="tag">K-12</span>
+        <span class="tag">Curriculum</span>
+        <span class="tag">Workshop</span>
+        <span class="tag">Virtual</span>
+      </div>
+
+      <div class="share-row">
+        <span class="lbl">Share this event</span>
+        <div class="share-btns">
+          <a href="#" aria-label="Copy link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 14a5 5 0 0 0 7 0l4-4a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-4 4a5 5 0 0 0 7 7l1-1"/></svg></a>
+          <a href="#" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+          <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h4v2c.6-1.2 2-2.5 4-2.5 4 0 5 2.5 5 6V21h-4v-5.5c0-1.5-.5-2.5-2-2.5s-2.5 1-2.5 2.5V21h-4z"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORGANIZER COMPACT -->
+<section class="organizer">
+  <div class="wrap">
+    <div class="avatar">MF</div>
+    <div>
+      <span class="label">Organized by</span>
+      <h3>MFTS Education Team</h3>
+      <div class="ometa">
+        Lead: Yuki Park, Director of Curriculum<br>
+        <a href="mailto:education@massfarmtoschool.org">education@massfarmtoschool.org</a> · (413) 555-0184
+      </div>
+    </div>
+    <div class="right">
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        All events by this organizer
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+        Email
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED EVENTS -->
+<section class="related">
+  <div class="wrap">
+    <div class="head">
+      <h3>Related events</h3>
+      <a class="all" href="MFTS-Events-Main-v1-CalendarForward.html">All MFTS events →</a>
+    </div>
+    <div class="rel-grid">
+      <a class="rel-card" href="MFTS-Event-Single-v3-StoryCard.html">
+        <div class="date-tag">18 <small>Oct 2026</small></div>
+        <h4>October Apples Celebration</h4>
+        <div class="meta">Harvest of the Month · Free · Hampshire County</div>
+      </a>
+      <a class="rel-card" href="MFTS-Event-Single-v1-EditorialLongForm.html">
+        <div class="date-tag">14 <small>Nov 2026</small></div>
+        <h4>MA Farm-to-School Annual Summit 2026</h4>
+        <div class="meta">Conference · $25 / $45 · UMass Amherst</div>
+      </a>
+      <a class="rel-card" href="#">
+        <div class="date-tag">02 <small>Dec 2026</small></div>
+        <h4>Local Food Procurement Webinar</h4>
+        <div class="meta">Food Service · Free · Virtual</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="#">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="#">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="#">What is Farm to School?</a></li>
+          <li><a href="#">Mission &amp; Vision</a></li>
+          <li><a href="#">Impact</a></li>
+          <li><a href="#">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="#">Event Calendar</a></li>
+          <li><a href="#">Institute</a></li>
+          <li><a href="#">Conference</a></li>
+          <li><a href="#">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="#">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- TEC IMPLEMENTATION NOTES
+================================================================================
+File: MFTS-Event-Single-v2-CompactActionFirst.html
+Plugin: The Events Calendar (Pro tier)
+Template override: [child-theme]/tribe/events/v2/single-event.php (variant)
+Concept: Compact split hero, action above the fold. For ticketed / webinar / RSVP events.
+
+ELEMENT MAPPING
+--------------------------------------------------------------------------------
+- Back link "← All events"               -> tribe_get_events_link()
+- Crumb-right "Educators · Workshop"     -> First tribe_events_cat term + Pro Custom Field "event_format"
+                                              FLAG: "Workshop" label not native; use Pro Custom Field
+                                              "event_format" (Workshop / Webinar / Summit / Tasting).
+
+- SPLIT HERO
+  - Featured image (left half)            -> tribe_event_featured_image( $event, 'large', false )
+  - Category pill on image                -> First term get_the_terms( $event, 'tribe_events_cat' )
+                                              Dot color from CSS var --c-educator (slug-driven)
+  - "Virtual · Zoom" flag on image        -> Built from venue post: if ( strpos( tribe_get_venue( $event ),
+                                              'Virtual' ) !== false ) { show flag with platform name }
+                                              Platform name from Pro Custom Field "virtual_platform" on
+                                              the event OR venue. FLAG: requires Pro Custom Field.
+
+  - Oversized day "06" (Bebas Neue)       -> tribe_get_start_date( $event, false, 'd' )
+  - "November"                            -> tribe_get_start_date( $event, false, 'F' )
+  - "Thursday · 2026"                     -> tribe_get_start_date( $event, false, 'l · Y' )
+  - "4:00 PM – 6:30 PM EST"               -> tribe_get_start_date( $event, false, 'g:i A' ) –
+                                              tribe_get_end_date( $event, false, 'g:i A' )
+                                              + tribe_get_event_timezone_abbr( $event )
+
+  - h1 title with italic "Garden-Based"   -> tribe_get_event_label( $event )
+                                              Italic emphasis: editorial in title (HTML allowed in titles
+                                              via filter) OR Pro Custom Field "emphasis_word".
+                                              FLAG: not native.
+  - .lede description                     -> tribe_events_get_the_excerpt( $event, 30 )
+
+  - Quick-info venue                      -> tribe_get_venue( $event ) + venue note (custom field)
+  - Quick-info cost                       -> tribe_get_cost( $event, true )
+                                              "Registration required" is a Pro Custom Field boolean
+                                              "registration_required". FLAG: not native.
+
+  - "12 spots remaining" warning           -> Pro Custom Field "spots_remaining" (integer) OR derived
+                                              from Event Tickets ticket capacity:
+                                              ( $ticket->capacity - $ticket->qty_sold )
+                                              If spots <= 15, render in amber (#B8860B) with pulse.
+                                              FLAG: requires Event Tickets plugin or Pro Custom Field.
+
+  - "Register now" primary CTA            -> Button label is dynamic:
+                                                if ( strpos( $venue_name, 'Virtual' ) !== false )
+                                                  -> "Join the Webinar" (linked to virtual_link)
+                                                elseif ( tribe_events_has_tickets( $event ) )
+                                                  -> "Get tickets"
+                                                elseif ( tribe_get_cost( $event ) )
+                                                  -> "Buy ticket"
+                                                else
+                                                  -> "Register" / "RSVP"
+                                              Link target: tribe_get_event_website_link( $event ) or
+                                              Event Tickets checkout URL.
+
+  - "Add to calendar" secondary            -> tribe_get_gcal_link( $event ) or tribe_get_ical_link()
+
+- DESCRIPTION                              -> the_content() from event post. Editor types headings/lists
+                                              directly; CSS handles the leaf-glyph decoration.
+- .takeaway block                          -> a WP block-editor custom block OR a styled <blockquote>.
+                                              No TEC dependency.
+
+- Tags                                     -> get_the_terms( $event, 'post_tag' )
+- Share                                    -> theme social-share component
+
+- VIRTUAL VENUE BLOCK (replaces map)
+  - "Virtual via Zoom" headline            -> if tribe_get_venue() contains "Virtual", swap the map
+                                              module for this access card.
+  - Platform name "Zoom Meetings"          -> Pro Custom Field "virtual_platform" on event.
+  - Meeting link / ID / passcode           -> Pro Custom Field "virtual_link", "meeting_id",
+                                              "meeting_passcode" (gated behind registration).
+                                              Display "[sent on registration]" placeholder
+                                              for non-registrants. FLAG: requires Pro Custom Fields.
+  - Captions / recording / ASL note        -> editorial content
+
+- ORGANIZER compact
+  - Avatar (initials "MF")                 -> If no featured image on organizer, render initials from
+                                              tribe_get_organizer( $event ).
+                                              If organizer has a featured image:
+                                              get_the_post_thumbnail( $organizer_id, 'thumbnail' ).
+  - "MFTS Education Team"                  -> tribe_get_organizer( $event )
+  - Lead "Yuki Park, Director..."          -> Custom field on organizer post: contact_name + title.
+                                              FLAG: requires ACF on tribe_organizer.
+  - Email / phone                          -> tribe_get_organizer_email / tribe_get_organizer_phone
+  - "All events by this organizer"         -> tribe_get_organizer_link( $org_id, true )
+
+- RELATED EVENTS                           -> tribe_get_related_events( $event_id, 3 )
+
+NOTES ON FIELDS USED
+- Native TEC: title, start/end datetime, timezone, description, featured image, venue, organizer
+  (name/phone/email), categories, tags, cost, related events.
+- "Virtual" detection: derived from venue name; recommend a Pro Custom Field "is_virtual" (boolean) for
+  reliability. FLAG.
+- "spots remaining": requires Event Tickets plugin OR a Pro Custom Field "spots_remaining".
+- "virtual_platform / virtual_link / meeting_id / meeting_passcode": require Pro Custom Fields.
+- "emphasis_word" in title: Pro Custom Field or theme filter on the_title.
+- "event_format" (Workshop/Webinar/Summit/Tasting) shown in crumb: Pro Custom Field.
+================================================================================ -->
+
+</body>
+</html>

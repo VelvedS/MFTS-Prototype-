@@ -1,0 +1,475 @@
+<!DOCTYPE html><html lang="en"><head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About Us — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F; /* green sliver homage to MFTS brand */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:'Raleway';font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--green-light)}
+.nav-links a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-light{background:var(--accent);color:var(--green-ink)}.btn-light:hover{background:var(--highlight);color:#fff;transform:translateY(-2px)}
+.btn-ghost-light{border-color:rgba(255,255,255,.5);color:#fff;background:transparent}.btn-ghost-light:hover{background:#fff;color:var(--green-ink)}
+
+/* ===== HERO (compact, centered, mission-forward) ===== */
+.hero{background:var(--green-ink);color:#fff;padding:80px 0 72px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:var(--gold)}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(44px,5.6vw,86px);color:#fff;line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent);font-size:.94em}
+.hero .lede{font-family:'Fraunces',serif;font-weight:400;font-size:22px;line-height:1.5;color:rgba(245,239,227,.9);max-width:680px;margin:28px auto 34px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;min-height:48px}
+
+/* ===== IMPACT BAND (proof-first, immediately below hero) ===== */
+.impact-band{background:var(--cream);padding:0 0 96px;margin-top:0;position:relative;z-index:2}
+.impact-lead{max-width:1320px;margin:0 auto;padding:0 32px}
+.impact-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.impact-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:48px 40px;box-shadow:0 30px 60px -40px rgba(0,90,102,.3);position:relative;overflow:hidden;transition:.25s}
+.impact-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:.35s}
+.impact-card:hover{transform:translateY(-4px)}
+.impact-card:hover::before{transform:scaleX(1)}
+.impact-card b{font-family:'Bebas Neue';font-size:96px;line-height:.85;color:var(--green);letter-spacing:.01em;display:block}
+.impact-card .lbl{font-family:'Raleway';font-weight:700;font-size:14px;color:var(--green-ink);margin-top:14px;display:block;line-height:1.4}
+.impact-card .sub{font-size:13.5px;color:#666;margin-top:8px;line-height:1.55}
+.impact-foot{text-align:center;margin-top:40px;font-family:'Raleway';font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+
+/* ===== SECTION HEADER shared ===== */
+.section-head{margin-bottom:48px}
+.section-head h2{font-size:clamp(34px,4.4vw,58px);color:var(--green-ink);line-height:1.04;display:flex;align-items:flex-start;gap:14px}
+.section-head h2 .accent-italic{font-size:1.02em}
+.section-head h2::before{content:'';flex-shrink:0;width:28px;height:28px;margin-top:.18em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.section-head.center{text-align:center;max-width:760px;margin-left:auto;margin-right:auto}
+.section-head.center h2{justify-content:center}
+.section-head p{font-size:17px;color:#444;margin-top:16px;max-width:620px;line-height:1.7}
+.section-head.center p{margin-left:auto;margin-right:auto}
+
+/* ===== WHAT IT IS (explainer, cream) ===== */
+.concept{padding:104px 0;background:#fff;border-top:1px solid var(--line)}
+.concept-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:start}
+.concept-copy .lede{font-family:'Fraunces',serif;font-weight:400;font-size:23px;line-height:1.5;color:var(--green-ink);margin-bottom:22px}
+.concept-copy p{font-size:16.5px;line-height:1.8;color:#2a2a2a}
+.concept-trio{display:flex;flex-direction:column;gap:14px}
+.concept-trio .c{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:26px 30px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;transition:.25s}
+.concept-trio .c:hover{border-color:var(--accent);transform:translateX(4px)}
+.concept-trio .c .n{font-family:'Bebas Neue';font-size:52px;color:var(--accent);line-height:.85;letter-spacing:.02em}
+.concept-trio .c h4{font-family:'Raleway';font-weight:800;font-size:18px;color:var(--green-ink);margin-bottom:5px}
+.concept-trio .c p{font-size:14px;color:#555;line-height:1.55}
+
+/* ===== MISSION & VISION ===== */
+.mv{padding:104px 0}
+.mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.mv-card{border-radius:24px;padding:48px 44px;position:relative;overflow:hidden}
+.mv-card.mission{background:var(--green);color:#fff}
+.mv-card.vision{background:#fff;color:var(--green-ink);border:1px solid var(--line)}
+.mv-card .lbl{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px;display:block}
+.mv-card.mission .lbl{color:var(--gold)}
+.mv-card.vision .lbl{color:var(--accent)}
+.mv-card p{font-family:'Fraunces',serif;font-weight:400;font-size:25px;line-height:1.45}
+.mv-card.mission p em{font-style:italic;color:var(--gold);font-weight:500}
+.mv-card.vision p em{font-style:italic;color:var(--accent);font-weight:500}
+.mv-card .deco{position:absolute;right:-40px;bottom:-40px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(255,255,255,.18)}
+.mv-card.vision .deco{border-color:rgba(0,90,102,.12)}
+
+/* ===== STORY (condensed, supporting) ===== */
+.story{padding:0 0 104px}
+.story-card{background:var(--cream);border:1px solid var(--line);border-radius:24px;padding:56px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.story-card .copy .lead{font-family:'Fraunces',serif;font-weight:400;font-size:23px;line-height:1.5;color:var(--green-ink);margin-bottom:20px}
+.story-card .copy p{font-size:16px;line-height:1.8;color:#2a2a2a;margin-bottom:16px}
+.story-mini-tl{display:flex;flex-direction:column;gap:12px}
+.smt{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 22px}
+.smt .y{font-family:'Bebas Neue';font-size:30px;color:var(--green);letter-spacing:.02em;line-height:1}
+.smt .t{font-family:'Raleway';font-weight:700;font-size:14.5px;color:var(--green-ink);line-height:1.3}
+.smt .t span{display:block;font-family:'Open Sans';font-weight:400;font-size:13px;color:#666;margin-top:3px}
+
+/* ===== TEAM ===== */
+.team{background:#fff;border-top:1px solid var(--line);padding:104px 0}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:64px}
+.person{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.25s}
+.person:hover{transform:translateY(-4px);box-shadow:0 20px 40px -22px rgba(0,90,102,.18)}
+.person .ph{aspect-ratio:1/1;overflow:hidden;background:var(--sand)}
+.person .ph img{width:100%;height:100%;object-fit:cover}
+.person .body{padding:22px 24px}
+.person h4{font-family:'Raleway';font-weight:900;font-size:19px;color:var(--green-ink)}
+.person .role{font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin-top:6px}
+.advisory{background:var(--green-ink);border-radius:24px;padding:52px 48px;color:#fff;position:relative;overflow:hidden}
+.advisory::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 10%,rgba(0,181,175,.18),transparent 55%);pointer-events:none}
+.advisory .wrap-inner{position:relative;z-index:1}
+.advisory .lbl{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:block}
+.advisory h3{font-family:'Raleway';font-weight:900;font-size:30px;color:#fff;margin-bottom:32px}
+.advisory h3 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.adv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.adv-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:22px 24px}
+.adv-item h5{font-family:'Raleway';font-weight:800;font-size:16px;color:#fff}
+.adv-item span{font-size:13px;color:#b5c9b8;display:block;margin-top:5px;line-height:1.45}
+
+/* ===== PARTNERS ===== */
+.partners{padding:104px 0}
+.partners-card{background:#005a66;border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:52px 48px}
+.partners-top{display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:center;margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.18)}
+.partners-top h3{font-family:'Raleway';font-weight:900;font-size:28px;color:#fff;line-height:1.15}
+.partners-top h3 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:#A8C663}
+.partners-top p{font-size:15.5px;color:rgba(255,255,255,.85);line-height:1.7;margin-top:14px}
+.fiscal{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px 32px}
+.fiscal .lbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:10px}
+.fiscal .name{font-family:'Bebas Neue';font-size:40px;color:var(--green);letter-spacing:.02em;line-height:1}
+.fiscal p{font-size:13.5px;color:#555;margin-top:10px;line-height:1.6}
+.partner-logos{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.plogo{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 18px;display:grid;place-items:center;text-align:center;min-height:96px;font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.04em;color:var(--green-ink);line-height:1.3}
+
+/* ===== CLOSING CTA (homepage Stand With MFTS) ===== */
+.stand-cta{background:#fff;color:var(--green-ink);padding:110px 0 100px;position:relative;overflow:hidden;border-top:1px solid var(--line)}
+.stand-pattern{position:absolute;inset:0;pointer-events:none;opacity:.55;background-image:radial-gradient(circle,rgba(0,90,102,.18) 1.4px,transparent 1.8px);background-size:26px 26px;mask-image:radial-gradient(ellipse at 30% 50%,rgba(0,0,0,.9),transparent 75%)}
+.stand-cta .wrap{position:relative;z-index:1;max-width:1140px}
+.stand-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:60px;align-items:center}
+.stand-eyebrow{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--bridge);display:inline-flex;align-items:center;gap:12px;margin-bottom:28px}
+.stand-eyebrow::before{content:'';width:28px;height:2px;background:var(--bridge)}
+.stand-headline{font-family:'Raleway';font-weight:900;font-size:clamp(44px,5vw,76px);line-height:1;color:var(--green-ink);letter-spacing:-.02em}
+.stand-headline em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--bridge)}
+.stand-lede{font-size:17px;line-height:1.65;color:rgba(0,58,64,.75);max-width:520px;margin:28px 0 38px}
+.stand-buttons{display:flex;gap:14px;flex-wrap:wrap}
+.stand-btn-primary{display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border-radius:999px;background:var(--bridge);color:#fff;font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;transition:.25s;border:2px solid var(--accent)}
+.stand-btn-primary:hover{background:#6E9233;border-color:#6E9233;transform:translateY(-2px)}{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:999px;border:2px solid var(--green-ink);color:var(--green-ink);background:transparent;font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;transition:.25s}
+.stand-btn-secondary:hover{background:var(--green-ink);color:#fff;transform:translateY(-2px)}
+.stand-right{display:flex;flex-direction:column;gap:14px}
+.stand-stat{background:var(--cream);border:1px solid rgba(0,90,102,.15);border-radius:18px;padding:26px 30px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:22px}
+.stand-stat-num{font-family:'Bebas Neue';font-size:56px;color:var(--bridge);line-height:1;letter-spacing:.02em}
+.stand-stat-label{font-family:'Raleway';font-weight:600;font-size:13px;color:rgba(0,58,64,.85);line-height:1.35}
+
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .impact-cards{grid-template-columns:1fr}
+  .concept-grid{grid-template-columns:1fr;gap:40px}
+  .mv-grid{grid-template-columns:1fr}
+  .story-card{grid-template-columns:1fr;gap:40px;padding:40px}
+  .team-grid{grid-template-columns:repeat(2,1fr)}
+  .adv-grid{grid-template-columns:repeat(2,1fr)}
+  .partners-top{grid-template-columns:1fr;gap:28px}
+  .partner-logos{grid-template-columns:repeat(2,1fr)}
+  .stand-grid{grid-template-columns:1fr;gap:48px}
+  .nav-links{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:600px){
+  .impact-card b{font-size:74px}
+  .team-grid{grid-template-columns:1fr}
+  .adv-grid{grid-template-columns:1fr}
+  .partner-logos{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr}
+}
+</style>
+<link id="gfont-Open-Sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&amp;display=swap"></head>
+<body style="">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li><a href="#">Local Food</a></li>
+      <li><a href="#" class="active">About Us</a></li>
+      <li><a href="#">Learn</a></li>
+      <li><a href="#">Participate</a></li>
+      <li><a href="#">Explore</a></li>
+      <li><a href="#">Make Change</a></li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" data-screen-label="About hero">
+  <div class="wrap">
+    <span class="hero-flag" style="color: rgb(168, 198, 99);">About Massachusetts Farm to School</span>
+    <h1>Local food, <em style=""><span style="color: rgb(168, 198, 99);">real results,</span></em><br>across the Commonwealth.</h1>
+    <p class="lede" style="font-family: &quot;Open Sans&quot;; font-size: 20px;">We connect Massachusetts farms and fisheries to school cafeterias and classrooms, building healthier communities one meal at a time.</p>
+    <div class="hero-ctas" aria-hidden="true"></div>
+  </div>
+</section>
+
+<!-- WHAT FARM TO SCHOOL IS -->
+<section class="concept">
+  <div class="wrap">
+    <div class="concept-grid">
+      <div class="concept-copy">
+        <div class="section-head" style="margin-bottom:28px">
+          <h2>What is farm to school?</h2>
+        </div>
+        <p class="lede">Farm to school brings local food onto school trays, hands-on agriculture into classrooms, and gardens onto school grounds.</p>
+        <p>It is three connected practices working together. Each one helps Massachusetts students eat better, learn where their food comes from, and keeps food dollars in the local economy.</p>
+      </div>
+      <div class="concept-trio">
+        <div class="c"><div class="n">01</div><div><h4>Local procurement</h4><p>Schools buy fresh food directly from Massachusetts farms and fisheries.</p></div></div>
+        <div class="c"><div class="n">02</div><div><h4>Food &amp; nutrition education</h4><p>Students learn about food and agriculture through real, hands-on lessons.</p></div></div>
+        <div class="c"><div class="n">03</div><div><h4>School gardens</h4><p>Growing spaces turn school grounds into living classrooms.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT BAND -->
+<section class="impact-band" style="background-color: rgb(0, 90, 102); padding: 20px 0px 60px">
+  <div class="impact-lead" style="padding: 60px 32px 0px">
+    <div class="impact-cards">
+      <div class="impact-card">
+        <b>$3M+</b>
+        <span class="lbl">Local-food dollars moved</span>
+        <span class="sub">Direct spending channeled from school budgets to Massachusetts farms and fisheries.</span>
+      </div>
+      <div class="impact-card">
+        <b>500+</b>
+        <span class="lbl">MA farmers connected to schools</span>
+        <span class="sub">Growers and fishermen with a path to sell into school meal programs.</span>
+      </div>
+      <div class="impact-card">
+        <b>10K+</b>
+        <span class="lbl">Students reached</span>
+        <span class="sub">Children eating local food and learning where it comes from, in cafeterias and classrooms.</span>
+      </div>
+    </div>
+    <p class="impact-foot" style="color: rgb(255, 255, 255)">Two decades of measurable progress, and counting.</p>
+  </div>
+</section>
+
+<!-- MISSION & VISION -->
+<section class="mv" style="padding: 70px 0px 80px">
+  <div class="wrap">
+    <div class="section-head center">
+      <h2>Mission &amp; <span class="accent-italic">Vision</span></h2>
+    </div>
+    <div class="mv-grid">
+      <div class="mv-card mission">
+        <span class="lbl" style="color: rgb(168, 198, 99)">Our mission</span>
+        <p>Strengthening local farms and fisheries and promoting <em style="color: rgb(168, 198, 99)">healthy communities</em> through schools.</p>
+        <div class="deco"></div>
+      </div>
+      <div class="mv-card vision">
+        <span class="lbl">Our vision</span>
+        <p>A Massachusetts where every student eats local, learns where their food comes from, and grows up <em>connected to the land and waters</em> that feed them.</p>
+        <div class="deco"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUR STORY (condensed) -->
+<section class="story" style="padding: 0px 0px 40px">
+  <div class="wrap">
+    <div class="story-card">
+      <div class="copy">
+        <div class="section-head" style="margin-bottom:24px"><h2>Our <span class="accent-italic">story.</span></h2></div>
+        <p class="lead">It started in 2004 with a simple question: why was so little of the food on Massachusetts school trays grown in Massachusetts?</p>
+        <p>A small group of farmers, educators, and school nutrition directors set out to close that gap, one district and one grower at a time. Twenty years on, that work has grown into a statewide network running Harvest of the Month and administering the MA FRESH grant program.</p>
+      </div>
+      <div class="story-mini-tl">
+        <div class="smt"><div class="y">2004</div><div class="t">The network begins<span>Founded to link MA agriculture with school meals.</span></div></div>
+        <div class="smt"><div class="y">2008</div><div class="t">First Harvest of the Month<span>A featured MA crop reaches cafeterias each month.</span></div></div>
+        <div class="smt"><div class="y">2012</div><div class="t">MA FRESH takes shape<span>Grants help districts cover the cost of local food.</span></div></div>
+        <div class="smt"><div class="y">2024</div><div class="t">Twenty years of impact<span>$3M+ moved and 500+ farmers connected.</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS & FISCAL SPONSORSHIP -->
+<section class="partners" style="padding: 40px 0px 60px">
+  <div class="wrap">
+    <div class="partners-card">
+      <div class="partners-top">
+        <div>
+          <h3>Partners &amp; <em>fiscal sponsorship.</em></h3>
+          <p>We work alongside state agencies, funders, and community organizations across Massachusetts. Our work is made possible through the fiscal sponsorship of TSNE, which provides the administrative and financial backbone behind the mission.</p>
+        </div>
+        <div class="fiscal">
+          <span class="lbl">Fiscal Sponsor</span>
+          <div class="name">TSNE</div>
+          <p>TSNE (formerly Third Sector New England) serves as our fiscal sponsor, supporting nonprofits that build a more just society.</p>
+        </div>
+      </div>
+      <div class="partner-logos">
+        <div class="plogo">MA Dept. of Elementary &amp; Secondary Education</div>
+        <div class="plogo">MA Dept. of Agricultural Resources</div>
+        <div class="plogo">USDA Farm to School</div>
+        <div class="plogo">Massachusetts School Nutrition Association</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING CTA -->
+<section class="stand-cta">
+  <div class="stand-pattern"></div>
+  <div class="wrap">
+    <div class="stand-grid">
+      <div class="stand-left">
+        <span class="stand-eyebrow" style="color: rgb(0, 124, 137)">Stand with MFTS</span>
+        <h2 class="stand-headline">Put your weight behind <em style="color: rgb(0, 124, 137)">the numbers.</em></h2>
+        <p class="stand-lede">Every gift and every subscriber helps move more local food onto Massachusetts school trays. Join the people building a healthier Commonwealth, one meal at a time.</p>
+        <div class="stand-buttons">
+          <a class="stand-btn-primary" href="#" style="background-color: rgb(0, 124, 137); border-color: rgb(0, 124, 137)">Donate now
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+      <div class="stand-right">
+        <image-slot id="stand-cta-image" style="width:100%;height:310px;" shape="rounded" radius="18" placeholder="Drop an image"></image-slot>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="#">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="#">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="#">What is Farm to School?</a></li>
+          <li><a href="#">Mission &amp; Vision</a></li>
+          <li><a href="#">Impact</a></li>
+          <li><a href="MFTS-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="#">Event Calendar</a></li>
+          <li><a href="#">Institute</a></li>
+          <li><a href="#">Conference</a></li>
+          <li><a href="#">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="#">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================================
+IMPLEMENTATION NOTES — MFTS-About-v2-ImpactForward.html
+WordPress build (standard page template, NOT The Events Calendar)
+==============================================================================
+TEMPLATE
+- page-about.php (or block-pattern assembled in editor). Shared chrome is NOT part
+  of this page content; it is pulled from theme template parts:
+    * Topbar + <header> nav ... get_template_part('template-parts/header') -> header.php
+    * <footer> ............... get_template_part('template-parts/footer') -> footer.php
+  Active "About Us" nav state via .current-menu-item from the WP nav menu.
+
+SECTION MAPPING
+- HERO (.hero) ............... Heading + emphasis word -> ACF: hero_heading, hero_emphasis.
+                               Lede -> ACF textarea hero_lede. CTAs -> ACF link fields.
+- IMPACT BAND (.impact-band) . THE lead module for this variant. Pull from the SHARED synced
+                               reusable block "mfts/impact-stats" (ACF repeater impact_stats
+                               {value, label, sub}). Same data as homepage + other About
+                               variants -> author once. FLAG: ACF. The big Bebas numerals are
+                               CSS; editors only enter value/label/sub.
+- WHAT IT IS (.concept) ...... Intro copy -> the_content() or ACF wysiwyg concept_intro.
+                               Three items -> ACF repeater concept_items {number,title,text}.
+- MISSION & VISION (.mv) ..... ACF fields mission_statement / vision_statement (wysiwyg; the
+                               <em> emphasis is inline editor formatting).
+- OUR STORY (.story-card) .... Copy -> the_content() / ACF wysiwyg story_body.
+                               Mini timeline -> ACF repeater milestones {year,title,text}.
+                               SHARES milestones data with v1 (full timeline) -> store once.
+- TEAM & ADVISORY ............ MOVED to its own page -> MFTS-Team.html (lives under About Us).
+- PARTNERS (.partners) ....... Intro ACF wysiwyg; fiscal sponsor ACF group {name,blurb}=TSNE;
+                               partner logos ACF repeater {name, logo}. FLAG: ACF.
+- CLOSING CTA (.stand-cta) ... SHARED reusable block "mfts/stand-cta" (same as homepage). The
+                               three stat tiles reuse the synced "mfts/impact-stats" data.
+
+NOTES
+- No em dashes anywhere (brand copy rule).
+- All imagery has descriptive alt text; team headshots are placeholder photography to be
+  replaced with real ACF team_member featured images.
+- Tokens / fonts / .btn / .eyebrow / .accent-italic / leaf glyph / footer = inherited verbatim
+  from the MFTS Nova shared theme stylesheet.
+============================================================================ -->
+
+
+
+<script src="image-slot.js"></script>
+</body></html>

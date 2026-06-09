@@ -1,0 +1,913 @@
+<!DOCTYPE html><html lang="en"><head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Massachusetts Farm to School — Tidewater</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #005A66;
+  --green-deep: #003A40;
+  --green-ink: #003A40;
+  --green-light: #007C89;
+  --green-lighter: #00B5AF;
+  --cream: #EBF5F4;
+  --sand: #E8DCC4;
+  --gold: #45C0BE;
+  --highlight: #00B5AF;
+  --accent: #007C89;
+  --warm-neutral: #E8DCC4;
+  --bridge: #005A66;
+  --ink: #1a1a1a;
+  --muted: #4D4D4F;
+  --line: rgba(0,90,102,.14);
+  --radius: 18px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Open Sans', system-ui, sans-serif;
+  color: var(--ink);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+
+/* ===== TYPE ===== */
+h1,h2,h3,h4 { font-family: 'Raleway', sans-serif; font-weight: 900; letter-spacing: -.02em; line-height: 1.05; }
+.accent { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; color: var(--green-light); }
+.eyebrow { font-family: 'Raleway'; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; font-size: 12px; color: var(--green-light); }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Raleway'; font-weight: 800; font-size: 13px;
+  text-transform: uppercase; letter-spacing: .06em;
+  padding: 14px 26px; border-radius: 999px; border: 2px solid transparent;
+  transition: all .25s; cursor: pointer; white-space: nowrap;
+}
+.btn svg { width: 14px; height: 14px; }
+.btn-white { background: #fff; color: var(--green-ink); }
+.btn-white:hover { background: var(--cream); transform: translateY(-2px); }
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: var(--green-deep); transform: translateY(-2px); }
+.btn-outline { border-color: var(--green); color: var(--green); background: transparent; }
+.btn-outline:hover { background: var(--green); color: #fff; }
+.btn-light { background: var(--green-light); color: var(--green-ink); }
+.btn-light:hover { background: var(--green-lighter); transform: translateY(-2px); }
+
+/* ===== TOPBAR ===== */
+.topbar {
+  background: var(--green-ink); color: rgba(255,255,255,.8);
+  font-family: 'Raleway'; font-size: 12px; font-weight: 600;
+  letter-spacing: .03em; padding: 10px 0;
+  display: flex; justify-content: center; gap: 40px;
+}
+.topbar a { color: var(--gold); }
+.topbar a:hover { text-decoration: underline; }
+
+/* ===== HEADER ===== */
+header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 80px; gap: 32px;
+}
+.logo img { height: 42px; }
+.nav-links { display: flex; gap: 32px; list-style: none; font-family: 'Raleway'; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--green-ink); }
+.nav-links a { position: relative; padding: 4px 0; }
+.nav-links a::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: var(--green-light); transition: .3s; }
+.nav-links a:hover::after { width: 100%; }
+.header-ctas { display: flex; gap: 10px; }
+
+/* ===== HERO — full-bleed split ===== */
+.hero {
+  display: grid; grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 120px);
+}
+.hero-text {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 64px 80px 0; padding-left: max(32px, calc((100vw - 1320px)/2 + 32px));
+}
+.hero-text .tag {
+  display: inline-flex; align-items: center; gap: 10px; width: fit-content;
+  background: rgba(0,124,137,.06); color: var(--green); border-radius: 999px;
+  padding: 8px 16px; font-family: 'Raleway'; font-weight: 700; font-size: 12px;
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 28px;
+}
+.hero-text h1 {
+  font-family: 'Bebas Neue', sans-serif; font-weight: 400;
+  font-size: clamp(56px, 7vw, 110px); line-height: .92;
+  color: var(--green-ink); letter-spacing: -.01em;
+}
+.hero-text h1 .accent { font-size: 1.05em; }
+.hero-text .lede {
+  font-size: 18px; color: #444; max-width: 480px;
+  margin: 24px 0 32px; line-height: 1.6;
+}
+.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-stats {
+  display: flex; gap: 40px; margin-top: 48px; padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.hero-stats div b {
+  font-family: 'Bebas Neue', sans-serif; font-weight: 400;
+  font-size: 48px; line-height: 1; color: var(--green); display: block;
+}
+.hero-stats div span {
+  font-family: 'Raleway'; font-weight: 700; font-size: 11px;
+  text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-top: 4px; display: block;
+}
+.hero-image {
+  position: relative; overflow: hidden;
+  background: var(--green);
+}
+.hero-image img {
+  width: 100%; height: 100%; object-fit: cover;
+
+}
+.hero-image::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(0,102,44,.15), transparent);
+}
+.hero-image .floating-label {
+  position: absolute; bottom: 32px; left: 32px; right: 32px; z-index: 2;
+  color: #fff; font-family: 'Raleway'; font-weight: 800;
+  font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.hero-image .floating-label .big {
+  font-family: 'Bebas Neue'; font-weight: 400; font-size: 72px;
+  line-height: .85; letter-spacing: .02em;
+}
+
+/* ===== MISSION BANNER ===== */
+.mission-banner {
+  background: var(--green); color: #fff;
+  padding: 64px 0; text-align: center;
+}
+.mission-banner h2 {
+  font-family: 'Bebas Neue', sans-serif; font-weight: 400;
+  font-size: clamp(32px, 4vw, 56px); color: #fff; letter-spacing: .02em;
+  max-width: 900px; margin: 0 auto; line-height: 1.1;
+}
+.mission-banner h2 .accent { color: var(--gold); }
+
+/* ===== PATHWAYS (replaces audiences) ===== */
+.pathways { padding: 120px 0 80px; }
+.section-header { margin-bottom: 56px; }
+.section-header h2 { font-size: clamp(36px, 4.5vw, 60px); color: var(--green-ink); }
+.section-header h2 .accent { color: var(--green-light); }
+.section-header p { font-size: 16px; color: #555; margin-top: 16px; }
+
+.pathway-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.pathway {
+  display: grid; grid-template-columns: 200px 1fr;
+  background: var(--cream); border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--line); transition: all .3s; cursor: pointer;
+  min-height: 200px;
+}
+.pathway:hover { transform: translateY(-4px); box-shadow: 0 24px 48px -20px rgba(0,90,102,.18); border-color: var(--green-light); }
+.pathway-img { position: relative; overflow: hidden; }
+.pathway-img img { width: 100%; height: 100%; object-fit: cover; transition: .4s; border-radius: 18px; }
+.pathway:hover .pathway-img img { transform: scale(1.06); }
+.pathway-num {
+  position: absolute; top: 14px; left: 14px;
+  background: var(--green); color: #fff; width: 32px; height: 32px;
+  border-radius: 50%; display: grid; place-items: center;
+  font-family: 'Bebas Neue'; font-size: 16px; letter-spacing: .04em;
+}
+.pathway-body { padding: 28px 32px; display: flex; flex-direction: column; justify-content: center; }
+.pathway-body h3 { font-size: 22px; color: var(--green-ink); margin-bottom: 8px; }
+.pathway-body p { font-size: 14px; color: #555; margin-bottom: 16px; }
+.pathway-body .link {
+  font-family: 'Raleway'; font-weight: 800; font-size: 12px;
+  text-transform: uppercase; letter-spacing: .1em; color: var(--green);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.pathway-body .link svg { transition: .2s; }
+.pathway:hover .link svg { transform: translateX(4px); }
+
+/* ===== HARVEST FEATURE (compact, teal) ===== */
+.harvest {
+  padding: 80px 32px; display: flex; justify-content: center;
+  background: var(--green-ink);
+}
+.harvest-inner {
+  background: var(--cream);
+  border: 1px solid rgba(0,90,102,.12);
+  border-radius: 20px;
+  overflow: hidden;
+  display: grid; grid-template-columns: 1.05fr 1fr;
+  width: 100%; max-width: 1320px; min-height: 460px;
+  position: relative;
+  box-shadow: 0 30px 60px -40px rgba(0,90,102,.22);
+}
+.harvest-inner::before { content: none; }
+.harvest-text {
+  padding: 56px 64px; display: flex; flex-direction: column; justify-content: center;
+  position: relative; z-index: 1;
+}
+.harvest-text .eyebrow {
+  color: var(--accent); margin-bottom: 14px;
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.harvest-text .eyebrow::before {
+  content: ''; width: 22px; height: 2px; background: var(--accent);
+}
+.harvest-text h2 {
+  font-family: 'Bebas Neue', sans-serif; font-weight: 400;
+  font-size: clamp(44px, 5vw, 72px); color: var(--green-ink); line-height: .95;
+}
+.harvest-text h2 .accent {
+  color: var(--accent); font-size: 1em !important;
+  font-family: 'Fraunces', serif; font-style: italic; font-weight: 500;
+}
+.harvest-text p {
+  color: rgba(0,58,64,.72); font-size: 15.5px; line-height: 1.65;
+  max-width: 460px; margin: 18px 0 24px;
+}
+.harvest-meta {
+  display: flex; gap: 22px; padding: 14px 0 0; margin-top: 6px;
+  border-top: 1px solid rgba(0,90,102,.14); flex-wrap: wrap;
+}
+.harvest-meta .stat .num {
+  font-family: 'Bebas Neue'; font-size: 34px; line-height: 1; color: var(--green-ink); letter-spacing: .02em;
+  display: block;
+}
+.harvest-meta .stat .lbl {
+  font-family: 'Raleway'; font-weight: 700; font-size: 10px;
+  letter-spacing: .12em; text-transform: uppercase; color: rgba(0,58,64,.6);
+  margin-top: 4px; display: block;
+}
+.harvest-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 22px; padding: 12px 22px; border-radius: 999px;
+  background: var(--accent); color: #fff;
+  font-family: 'Raleway'; font-weight: 800; font-size: 12px;
+  letter-spacing: .08em; text-transform: uppercase;
+  border: 2px solid var(--accent); transition: .25s; width: fit-content;
+}
+.harvest-cta:hover { background: var(--green); border-color: var(--green); transform: translateY(-2px); }
+.harvest-cta svg { width: 13px; height: 13px; }
+.harvest-img { position: relative; overflow: hidden; background: var(--sand); }
+.harvest-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.harvest-img .season-badge {
+  position: absolute; top: 24px; right: 24px;
+  background: var(--accent); color: #fff; border-radius: 50%;
+  width: 92px; height: 92px; display: grid; place-items: center; text-align: center;
+  font-family: 'Bebas Neue'; font-size: 13px; letter-spacing: .12em; line-height: 1.15;
+  box-shadow: 0 12px 28px -10px rgba(0,124,137,.55);
+  animation: spin 20s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 760px) {
+  .harvest-inner { grid-template-columns: 1fr; }
+  .harvest-text { padding: 36px 32px; }
+  .harvest-img { min-height: 260px; }
+}
+
+/* ===== IMPACT COUNTER ===== */
+.impact {
+  padding: 100px 0; background: var(--cream);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.impact-header { text-align: center; margin-bottom: 56px; }
+.impact-header h2 { font-size: clamp(36px, 4.5vw, 60px); color: var(--green-ink); }
+.impact-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+}
+.impact-card {
+  background: #fff; border-radius: var(--radius); padding: 36px 28px;
+  text-align: center; border: 1px solid var(--line);
+  transition: .25s;
+}
+.impact-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px -16px rgba(0,90,102,.12); }
+.impact-card b {
+  font-family: 'Bebas Neue', sans-serif; font-weight: 400;
+  font-size: 64px; line-height: 1; color: var(--green); display: block;
+}
+.impact-card span {
+  display: block; margin-top: 8px; font-family: 'Raleway';
+  font-weight: 700; font-size: 12px; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--muted);
+}
+
+/* ===== RESOURCES GRID ===== */
+.resources { padding: 120px 0; }
+.res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.res-card {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 32px; display: flex; flex-direction: column; gap: 14px;
+  transition: .25s; cursor: pointer; position: relative; overflow: hidden;
+}
+.res-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--green-light); transform: scaleX(0); transform-origin: left;
+  transition: .3s;
+}
+.res-card:hover::before { transform: scaleX(1); }
+.res-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -20px rgba(0,90,102,.15); }
+.res-card .res-ico {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: rgba(0,124,137,.06); display: grid; place-items: center;
+  color: var(--green); transition: .25s;
+}
+.res-card:hover .res-ico { background: var(--green); color: #fff; }
+.res-card h4 { font-family: 'Raleway'; font-weight: 900; font-size: 20px; color: var(--green-ink); line-height: 1.15; }
+.res-card p { font-size: 14px; color: #555; flex: 1; }
+.res-card .count { font-family: 'Raleway'; font-weight: 800; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--green); }
+
+/* ===== NEWS ===== */
+.news { padding: 120px 0; background: var(--green-ink); border-top: none; color: #fff; }
+.news-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; }
+.news-featured {
+  border-radius: 24px; overflow: hidden; position: relative; min-height: 520px;
+  cursor: pointer;
+}
+.news-featured img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.news-featured .overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,58,64,.9), transparent 60%); }
+.news-featured .body { position: absolute; bottom: 32px; left: 32px; right: 32px; color: #fff; z-index: 1; }
+.news-featured .pill {
+  display: inline-block; background: var(--green-light); color: var(--green-ink);
+  padding: 6px 14px; border-radius: 999px; font-family: 'Raleway';
+  font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+}
+.news-featured h3 { font-size: 30px; color: #fff; margin: 14px 0 10px; line-height: 1.08; }
+.news-featured p { color: rgba(255,255,255,.85); font-size: 14px; max-width: 480px; }
+
+.news-stack { display: flex; flex-direction: column; gap: 16px; }
+.news-item {
+  background: rgba(255,255,255,.06); border-radius: var(--radius); padding: 24px 28px;
+  display: flex; flex-direction: column; gap: 10px; flex: 1;
+  border: 1px solid rgba(255,255,255,.12); transition: .25s; cursor: pointer;
+}
+.news-item:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -16px rgba(0,0,0,.3); background: rgba(255,255,255,.1); }
+.news-item .pill {
+  display: inline-block; width: fit-content; padding: 4px 12px; border-radius: 999px;
+  font-family: 'Raleway'; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+}
+.news-item .pill.ev { background: rgba(69,192,190,.2); color: var(--gold); }
+.news-item .pill.op { background: rgba(69,192,190,.2); color: var(--gold); }
+.news-item h4 { font-family: 'Raleway'; font-weight: 900; font-size: 18px; color: #fff; line-height: 1.15; }
+.news-item p { font-size: 13px; color: #b5c9b8; }
+.news-item .meta { font-family: 'Raleway'; font-size: 11px; color: #8da89a; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ===== NEWS — v2-style event-card grid (ported from v4 Orchard, teal) ===== */
+.news .section-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:48px; gap:24px; flex-wrap:wrap; }
+.news .ev-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.news .ev-card { background:#fff; border:1px solid rgba(0,90,102,.10); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; transition:.3s; cursor:pointer; position:relative; text-decoration:none; }
+.news .ev-card:hover { transform: translateY(-4px); box-shadow: 0 30px 50px -28px rgba(0,0,0,.45); border-color: rgba(0,124,137,.45); }
+.news .ev-img { position:relative; height:180px; overflow:hidden; background:var(--sand); }
+.news .ev-img img { width:100%; height:100%; object-fit:cover; transition:.5s; position:absolute; inset:0; }
+.news .ev-card:hover .ev-img img { transform: scale(1.05); }
+.news .date-badge { position:absolute; top:14px; left:14px; background:#fff; border-radius:12px; padding:8px 12px; text-align:center; box-shadow: 0 6px 20px -8px rgba(0,58,64,.3); min-width:58px; z-index:2; }
+.news .date-badge .d { font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:34px; line-height:.9; color:var(--green-ink); letter-spacing:.02em; display:block; }
+.news .date-badge .m { font-family:'Raleway'; font-weight:800; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--green); margin-top:3px; display:block; }
+.news .cat-strip { position:absolute; top:16px; right:14px; display:inline-flex; align-items:center; gap:6px; padding:6px 11px; border-radius:999px; background:rgba(0,58,64,.82); backdrop-filter:blur(6px); color:#fff; font-family:'Raleway'; font-weight:700; font-size:10px; letter-spacing:.1em; text-transform:uppercase; z-index:2; }
+.news .cat-strip .dot { width:7px; height:7px; border-radius:50%; }
+.news .cat-strip[data-cat="educator"] .dot { background:#00B5AF; }
+.news .cat-strip[data-cat="opportunity"] .dot { background:#45C0BE; }
+.news .cat-strip[data-cat="advocacy"] .dot { background:#007C89; }
+.news .cat-strip[data-cat="harvest"] .dot { background:#A8C663; }
+.news .ev-body { padding: 22px 22px 22px; display:flex; flex-direction:column; gap:8px; flex:1; }
+.news .ev-meta { font-family:'Raleway'; font-weight:700; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; gap:8px; }
+.news .ev-meta .sep { width:3px; height:3px; border-radius:50%; background:var(--muted); opacity:.5; }
+.news .ev-card h3 { font-family:'Raleway'; font-weight:900; font-size:17px; color:var(--green-ink); line-height:1.2; letter-spacing:-.01em; margin:0; }
+.news .ev-card p { font-size:13px; color:#555; line-height:1.55; margin:0; }
+.news .ev-foot { margin-top:auto; padding-top:12px; border-top:1px solid rgba(0,90,102,.12); display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.news .ev-foot .venue { font-family:'Open Sans'; font-weight:600; font-size:12px; color:var(--green-ink); display:inline-flex; align-items:center; gap:6px; min-width:0; }
+.news .ev-foot .venue svg { width:13px; height:13px; color:var(--green); flex-shrink:0; }
+.news .ev-foot .cost { font-family:'Raleway'; font-weight:800; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--green); flex-shrink:0; }
+@media (max-width: 1024px) { .news .ev-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .news .ev-grid { grid-template-columns: 1fr; } }
+
+/* ===== CTA SECTION ===== */
+.cta-section { padding: 120px 0; }
+.cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.cta-card {
+  border-radius: 24px; padding: 56px; position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: space-between; min-height: 360px;
+}
+.cta-card.donate { background: var(--green); color: #fff; }
+.cta-card.subscribe { background: var(--green-ink); color: #fff; }
+.cta-card h3 { font-family: 'Raleway'; font-weight: 900; font-size: 34px; color: #fff; line-height: 1.05; margin-bottom: 12px; }
+.cta-card p { font-size: 15px; max-width: 400px; }
+.cta-card .deco {
+  position: absolute; right: -30px; bottom: -30px; width: 200px; height: 200px;
+  border-radius: 50%; border: 1px solid rgba(255,255,255,.15);
+}
+.cta-card .deco::before { content: ''; position: absolute; inset: 30px; border-radius: 50%; border: 1px solid rgba(255,255,255,.1); }
+
+/* ===== NEWSLETTER INLINE ===== */
+.newsletter-form {
+  display: flex; gap: 10px; margin-top: 24px; max-width: 420px;
+}
+.newsletter-form input {
+  flex: 1; padding: 14px 18px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.08); color: #fff; font-family: inherit; font-size: 14px;
+}
+.newsletter-form input::placeholder { color: rgba(255,255,255,.5); }
+.newsletter-form input:focus { outline: none; border-color: var(--gold); }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--green-ink); color: #b5c9b8; padding: 80px 0 40px;
+}
+.foot-grid {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px;
+  padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.foot-brand img { height: 48px; margin-bottom: 16px; }
+.foot-brand p { font-size: 14px; max-width: 300px; color: #8da89a; line-height: 1.6; }
+.socials { display: flex; gap: 10px; margin-top: 20px; }
+.socials a {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.15); display: grid; place-items: center;
+  color: #fff; transition: .2s;
+}
+.socials a:hover { background: var(--green-light); border-color: var(--green-light); color: var(--green-ink); }
+footer h5 { font-family: 'Raleway'; color: #fff; font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 16px; }
+footer ul { list-style: none; }
+footer li { margin-bottom: 8px; font-size: 14px; }
+footer a:hover { color: var(--gold); }
+.foot-bottom {
+  display: flex; justify-content: space-between; padding-top: 28px;
+  font-size: 12px; color: #6b8a78;
+}
+.foot-bigword {
+  font-family: 'Bebas Neue', sans-serif; font-weight: 400;
+  font-size: clamp(60px, 14vw, 220px); letter-spacing: .02em; line-height: .85;
+  color: rgba(69,192,190,.08); text-align: center; margin-top: 48px; user-select: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-image { min-height: 400px; }
+  .hero-text { padding: 60px 32px; }
+  .pathway-grid { grid-template-columns: 1fr; }
+  .harvest-inner { grid-template-columns: 1fr; }
+  .harvest-img { min-height: 300px; }
+  .impact-grid { grid-template-columns: 1fr 1fr; }
+  .res-grid { grid-template-columns: 1fr 1fr; }
+  .news-grid { grid-template-columns: 1fr; }
+  .cta-grid { grid-template-columns: 1fr; }
+  .foot-grid { grid-template-columns: 1fr 1fr; }
+  .nav-links { display: none; }
+}
+@media (max-width: 600px) {
+  .hero-stats { flex-direction: column; gap: 20px; }
+  .impact-grid { grid-template-columns: 1fr; }
+  .res-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== v2 Tidewater structural moves ===== */
+body { background: #EBF5F4; }
+.pathways { background: #FFFFFF; }
+.res-card, .impact-card, .pathway, .news-item { padding: 36px; border-radius: 18px; }
+.pathway-body { padding: 32px 36px; }
+.impact { background: #EBF5F4; }
+.impact-card { background: #EBF5F4; border-color: rgba(0,124,137,.12); }
+/* News section accents — green highlight (#88B03F) overrides Tidewater teals */
+.news-featured .pill { background: #88B03F; color: #fff; }
+.news-item .pill.ev,
+.news-item .pill.op { background: rgba(136,176,63,.18); color: #B3D26A; }
+.impact-card b { color: #00B5AF; }
+/* Dot grid pattern on hero background side */
+.hero-text { position: relative; }
+.hero-text::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image: radial-gradient(circle, rgba(0,124,137,.16) 1.2px, transparent 1.5px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(135deg, rgba(0,0,0,.5), transparent 60%);
+  z-index: 0;
+}
+.hero-text > * { position: relative; z-index: 1; }
+/* Wave dividers removed — sections now butt directly */
+.section-header h2 .accent, .impact-header h2 .accent { color: #45C0BE; }
+.impact-header .eyebrow { color: #007C89; }
+/* Bridge accent — green sliver as homage to brand */
+.topbar { border-bottom: 3px solid #00662C; }
+.foot-bottom a:hover { color: #00662C; }
+/* ===== Stand With MFTS CTA — v2 Tidewater (inverted: light) ===== */
+.cta-section { display: none; }
+.stand-cta {
+  background: #FFFFFF; color: #003A40;
+  padding: 110px 0 100px; position: relative; overflow: hidden;
+}
+.stand-pattern {
+  position: absolute; inset: 0; pointer-events: none; opacity: .55;
+  background-image: radial-gradient(circle, rgba(0,90,102,.18) 1.4px, transparent 1.8px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(ellipse at 30% 50%, rgba(0,0,0,.9), transparent 75%);
+}
+.stand-cta::after { content: none; }
+.stand-cta .wrap { position: relative; z-index: 1; max-width: 1140px; }
+.stand-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 60px; align-items: stretch; }
+.stand-eyebrow {
+  font-family: 'Raleway', sans-serif; font-weight: 800; font-size: 12px;
+  letter-spacing: .18em; text-transform: uppercase; color: #88B03F;
+  display: inline-flex; align-items: center; gap: 12px; margin-bottom: 28px;
+}
+.stand-eyebrow::before { content: ''; width: 28px; height: 2px; background: #88B03F; }
+.stand-headline {
+  font-family: 'Raleway', sans-serif; font-weight: 900;
+  font-size: clamp(44px, 5vw, 76px); line-height: 1; color: #003A40; letter-spacing: -.02em;
+}
+.stand-headline em {
+  font-family: 'Fraunces', serif; font-style: italic; font-weight: 500;
+  color: #88B03F; letter-spacing: -.01em;
+}
+.stand-lede {
+  font-family: 'Open Sans', sans-serif; font-size: 17px; line-height: 1.65;
+  color: rgba(0,58,64,.75); max-width: 520px; margin: 28px 0 38px;
+}
+.stand-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+.stand-btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 30px; border-radius: 999px;
+  background: #88B03F; color: #FFFFFF;
+  font-family: 'Raleway', sans-serif; font-weight: 800; font-size: 13px;
+  letter-spacing: .08em; text-transform: uppercase; transition: .25s;
+  border: 2px solid #88B03F;
+}
+.stand-btn-primary:hover { background: #6E9233; border-color: #6E9233; transform: translateY(-2px); }
+.stand-btn-secondary {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 28px; border-radius: 999px;
+  border: 2px solid #003A40; color: #003A40; background: transparent;
+  font-family: 'Raleway', sans-serif; font-weight: 800; font-size: 13px;
+  letter-spacing: .08em; text-transform: uppercase; transition: .25s;
+}
+.stand-btn-secondary:hover { background: #003A40; color: #FFFFFF; transform: translateY(-2px); }
+.stand-right { display: flex; flex-direction: column; gap: 14px; }
+.stand-stat {
+  background: #EBF5F4;
+  border: 1px solid rgba(0,90,102,.15);
+  border-radius: 18px; padding: 26px 30px;
+  display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 22px;
+}
+.stand-stat-num {
+  font-family: 'Bebas Neue', sans-serif; font-weight: 400;
+  font-size: 56px; line-height: 1; color: #88B03F; letter-spacing: .02em;
+}
+.stand-stat-label {
+  font-family: 'Raleway', sans-serif; font-weight: 600; font-size: 13px;
+  color: rgba(0,58,64,.85); line-height: 1.35;
+}
+@media (max-width: 900px) { .stand-grid { grid-template-columns: 1fr; gap: 48px; } }
+
+</style>
+</head>
+<body style="">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#" style="color: rgb(168, 198, 99);">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#" style="color: rgb(168, 198, 99);">apply now</a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li><a href="#">Local Food</a></li>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Learn</a></li>
+      <li><a href="#">Participate</a></li>
+      <li><a href="#">Explore</a></li>
+      <li><a href="#">Make Change</a></li>
+    </ul>
+    <div class="header-ctas">
+      <a class="btn btn-green" href="#" style="background-color: #007C89;">Donate <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <span class="tag" style=""><span style="color: #007C89;"><span style="color: rgb(0, 124, 137);"><span style="color: rgb(0, 58, 64)">Serving Massachusetts K–12 since 2004</span></span></span></span>
+    <h1 style="width: 700px;">From local farms<br>to SCHOOL TRAYS.&nbsp;<span class="accent" style=""></span></h1>
+    <p class="lede" style="">We connect Massachusetts farms and fisheries to school cafeterias and classrooms — building healthier communities, one meal at a time.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-green" href="#">Learn More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      <a class="btn btn-outline" href="#" style="">Get Involved</a>
+    </div>
+
+  </div>
+  <div class="hero-image" style="background-color: rgb(255, 255, 255); opacity: 12">
+    <img src="assets/Hero Image for top of page.png" alt="Student holding a tray of fresh local food">
+    <div class="floating-label">
+      <div>
+        <span style=""></span>
+        <div class="big" style=""><br></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION BANNER -->
+<div class="mission-banner" style="background-color: #005A66;">
+  <div class="wrap">
+    <h2 style="width: 1100px;">Strengthening local farms and fisheries. Promoting Healthy Communities&nbsp;through schools.</h2>
+  </div>
+</div>
+
+<!-- PATHWAYS -->
+<section class="pathways" style="padding: 80px 0px 120px">
+  <div class="wrap">
+    <div class="section-header">
+      <div class="eyebrow" style=""><span style="color: #007C89;"><span style="color: #007C89;">Who We Serve</span></span></div>
+      <h2 style="width: 900px;">Four ways in, one<span class="accent" style="color: rgb(136, 176, 63)">&nbsp;mission.</span></h2>
+      <p style="font-size: 20px; line-height: 1.8; width: 800px;">Whether you're plating lunch, teaching students, rallying your school board, or shipping crates from the field.</p>
+    </div>
+    <div class="pathway-grid">
+      <a class="pathway" href="#">
+        <div class="pathway-img">
+          <span class="pathway-num">01</span>
+          <img src="https://images.pexels.com/photos/33438410/pexels-photo-33438410.jpeg" alt="Fresh produce for schools">
+        </div>
+        <div class="pathway-body">
+          <h3>Food Service &amp; Distributors</h3>
+          <p>Connecting you to sources of local food — and the tools to promote them to your community.</p>
+          <span class="link" style="color: rgb(136, 176, 63)">Source local <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+        </div>
+      </a>
+      <a class="pathway" href="#">
+        <div class="pathway-img">
+          <span class="pathway-num">02</span>
+          <img src="https://www.massfarmtoschool.org/wp-content/uploads/2024/11/LearningJourney-640x480.png" alt="Advocates">
+        </div>
+        <div class="pathway-body">
+          <h3>Advocates</h3>
+          <p>Take action at the school, community, and state level. Bring farm to school home to your district.</p>
+          <span class="link" style="color: rgb(136, 176, 63)">Take action <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+        </div>
+      </a>
+      <a class="pathway" href="#">
+        <div class="pathway-img">
+          <span class="pathway-num">03</span>
+          <img src="https://images.pexels.com/photos/8617899/pexels-photo-8617899.jpeg" alt="Students in school garden">
+        </div>
+        <div class="pathway-body">
+          <h3>Educators</h3>
+          <p>Bring hands-on learning about food, agriculture, and nutrition into your classroom and garden.</p>
+          <span class="link" style="color: rgb(136, 176, 63)">Teach it <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+        </div>
+      </a>
+      <a class="pathway" href="#">
+        <div class="pathway-img">
+          <span class="pathway-num">04</span>
+          <img src="assets/pexels-nc-farm-bureau-mark-18900457.jpg" alt="Massachusetts farmer">
+        </div>
+        <div class="pathway-body">
+          <h3>Farmers &amp; Fishermen</h3>
+          <p>Decide if selling to schools and other institutions is right for your farm or food business.</p>
+          <span class="link" style="color: rgb(136, 176, 63)">Sell to schools <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- HARVEST SPOTLIGHT -->
+<div class="harvest">
+  <div class="harvest-inner">
+    <div class="harvest-text">
+      <div class="eyebrow">Harvest of the Month</div>
+      <h2>This month: <span class="accent" style=""><span style="color: rgb(168, 198, 99);">Winter Squash.</span></span></h2>
+      <p>Seasonal Massachusetts produce, on lunch trays statewide. Twelve harvests, twelve stories, one for every month of the school year.</p>
+      <div class="harvest-meta">
+        <div class="stat"><span class="num">12</span><span class="lbl">harvests / yr</span></div>
+        <div class="stat"><span class="num">340+</span><span class="lbl">districts</span></div>
+        <div class="stat"><span class="num">25–26</span><span class="lbl">calendar</span></div>
+      </div>
+      <a class="harvest-cta" href="#" style="background-color: rgb(168, 198, 99); border-color: rgb(168, 198, 99);">View the calendar
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+    </div>
+    <div class="harvest-img">
+      <img src="assets/Innovation_StudentHarvestingHydro.jpeg" alt="Student harvesting">
+      <div class="season-badge"><span>In Season<br>Now</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPACT -->
+<section class="impact" style="background-color: rgb(255, 255, 255)">
+  <div class="wrap">
+    <div class="impact-header">
+      <div class="eyebrow" style="color:var(--green);">Our Impact</div>
+      <h2>A movement you can <span class="accent" style=""><span style="color: #007C89;">count on.</span></span></h2>
+    </div>
+    <div class="impact-grid">
+      <div class="impact-card"><b>$3M</b><span>Local-food dollars into MA cafeterias</span></div>
+      <div class="impact-card"><b>10k+</b><span>Students reached through classroom &amp; garden</span></div>
+      <div class="impact-card"><b>500+</b><span>MA farmers &amp; fishermen connected</span></div>
+      <div class="impact-card"><b>50+</b><span>Schools actively participating</span></div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- NEWS -->
+<section class="news" style="background-color: #003A40; padding: 80px 0px">
+  <div class="wrap">
+    <div class="section-header" style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:48px;">
+      <div>
+        <div class="eyebrow" style="color: var(--green);"><span style="color: rgb(255, 255, 255);">News &amp; Events</span></div>
+        <h2 style="color: rgb(255, 255, 255);">What's <span class="accent" style="font-size: 65px; color: #A8C663">new</span>&nbsp; across<br>the Commonwealth.</h2>
+      </div>
+      <a class="btn btn-outline" href="#" style="border-color: rgb(255, 255, 255); color: #fff;">All announcements <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </div>
+    <div class="ev-grid">
+
+      <!-- 1. Opportunity — Advisory Committee -->
+      <a class="ev-card" href="#">
+        <div class="ev-img">
+          <img src="assets/GardenHands-USDAnoAtt-01.jpg" alt="Hands in garden soil">
+          <span class="cat-strip" data-cat="opportunity"><span class="dot"></span>Opportunity</span>
+        </div>
+        <div class="ev-body">
+          <div class="ev-meta"><span>Rolling</span><span class="sep"></span><span>Statewide</span></div>
+          <h3>Join the MA Farm to School Advisory Committee</h3>
+          <p>Seeking new members excited by our mission to strengthen local farms and fisheries.</p>
+          <div class="ev-foot">
+            <span class="venue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-7-6-7-12a7 7 0 1 1 14 0c0 6-7 12-7 12z"></path><circle cx="12" cy="10" r="3"></circle></svg>Statewide</span>
+            <span class="cost">Apply</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 2. Event — Math in the School Garden -->
+      <a class="ev-card" href="#">
+        <div class="ev-img">
+          <img src="https://images.pexels.com/photos/8617899/pexels-photo-8617899.jpeg" alt="Students learning in a school garden">
+          <div class="date-badge"><span class="d">15</span><span class="m">Apr</span></div>
+          <span class="cat-strip" data-cat="educator"><span class="dot"></span>Educators</span>
+        </div>
+        <div class="ev-body">
+          <div class="ev-meta"><span>Wed · 3:30 PM</span><span class="sep"></span><span>Virtual</span></div>
+          <h3>Math in the School Garden</h3>
+          <p>Interactive webinar turning your school garden into an outdoor math classroom.</p>
+          <div class="ev-foot">
+            <span class="venue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>Virtual · Zoom</span>
+            <span class="cost">Free</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 3. Opportunity — Terrific Trays -->
+      <a class="ev-card" href="#">
+        <div class="ev-img">
+          <img src="https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg" alt="Colorful plate of fresh local food">
+          <span class="cat-strip" data-cat="opportunity"><span class="dot"></span>Opportunity</span>
+        </div>
+        <div class="ev-body">
+          <div class="ev-meta"><span>Monthly</span><span class="sep"></span><span>SY 25–26</span></div>
+          <h3>Terrific Trays Competition</h3>
+          <p>Vote on your favorite local lunch tray, with monthly winners from MA school nutrition programs.</p>
+          <div class="ev-foot">
+            <span class="venue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-7-6-7-12a7 7 0 1 1 14 0c0 6-7 12-7 12z"></path><circle cx="12" cy="10" r="3"></circle></svg>Statewide</span>
+            <span class="cost">Vote</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 4. Event — Advocating for F2S -->
+      <a class="ev-card" href="#">
+        <div class="ev-img">
+          <img src="https://images.pexels.com/photos/8472881/pexels-photo-8472881.jpeg" alt="Group of community advocates in discussion">
+          <div class="date-badge"><span class="d">05</span><span class="m">Mar</span></div>
+          <span class="cat-strip" data-cat="advocacy"><span class="dot"></span>Advocacy</span>
+        </div>
+        <div class="ev-body">
+          <div class="ev-meta"><span>Thu · 3:00 PM</span><span class="sep"></span><span>Virtual</span></div>
+          <h3>Advocating for Farm to School &amp; Early Care</h3>
+          <p>How to advocate for farm to school, from local school boards to state legislators.</p>
+          <div class="ev-foot">
+            <span class="venue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>Virtual</span>
+            <span class="cost">Free</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- STAND WITH MFTS -->
+<section class="stand-cta">
+  <div class="stand-pattern"></div>
+  <div class="wrap">
+    <div class="stand-grid">
+      <div class="stand-left">
+        <span class="stand-eyebrow">Stand with MFTS</span>
+        <h2 class="stand-headline">Shape the future of <em>school food.</em></h2>
+        <p class="stand-lede">Policymakers, educators, food service directors, and families, when we act together, Massachusetts cafeterias source local, scratch-cook fresh, and teach the next generation where their food comes from.</p>
+        <div class="stand-buttons">
+          <a class="stand-btn-primary" href="#">Donate now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+          <a class="stand-btn-secondary" href="#">Subscribe to updates</a>
+        </div>
+      </div>
+      <div class="stand-right">
+        <image-slot id="stand-cta-image" style="width:100%;height:100%;min-height:360px;" shape="rounded" radius="18" placeholder="Drop an image"></image-slot>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="#">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="#">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="#">What is Farm to School?</a></li>
+          <li><a href="#">Mission &amp; Vision</a></li>
+          <li><a href="#">Impact</a></li>
+          <li><a href="#">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="#">Event Calendar</a></li>
+          <li><a href="#">Institute</a></li>
+          <li><a href="#">Conference</a></li>
+          <li><a href="#">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="#">Food System Civics</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+
+
+<script src="image-slot.js"></script>
+</body></html>
