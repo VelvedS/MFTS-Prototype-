@@ -1,0 +1,629 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Harvest of the Month — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F; /* green sliver homage to MFTS brand */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:'Raleway';font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--green-light)}
+.nav-links a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;transform:translateY(-2px)}
+
+/* ===== PAGE HERO (shared dark hero pattern) ===== */
+.hero{background:var(--green-ink) url('https://images.pexels.com/photos/1656663/pexels-photo-1656663.jpeg?auto=compress&cs=tinysrgb&w=1920') center/cover no-repeat;color:#fff;padding:80px 0 72px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.78),rgba(0,58,64,.78)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:var(--gold)}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(44px,5.6vw,86px);color:#fff;line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent);font-size:.94em}
+.hero .lede{font-family:'Fraunces',serif;font-weight:400;font-size:20px;line-height:1.55;color:rgba(245,239,227,.9);max-width:760px;margin:28px auto 0}
+
+/* ===== SECTION HEADER shared ===== */
+.section-head{margin-bottom:48px}
+.section-head h2{font-size:clamp(34px,4.4vw,58px);color:var(--green-ink);line-height:1.04;display:flex;align-items:flex-start;gap:14px}
+.section-head h2 .accent-italic{font-size:1.02em}
+.section-head h2::before{content:'';flex-shrink:0;width:28px;height:28px;margin-top:.18em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.section-head.center{text-align:center;max-width:820px;margin-left:auto;margin-right:auto}
+.section-head.center h2{justify-content:center}
+.section-head p{font-size:17px;color:#444;margin-top:16px;max-width:680px;line-height:1.7}
+
+/* ===== PHOTO FRAME shared ===== */
+.photo{border-radius:var(--radius);overflow:hidden;background:var(--sand)}
+.photo img{width:100%;height:100%;object-fit:cover}
+
+/* ===== HOW IT WORKS (white band) ===== */
+.hiw{padding:96px 0;background:#fff;border-top:1px solid var(--line)}
+.hiw-intro{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;margin-bottom:64px}
+.hiw-intro .lede-copy{font-family:'Fraunces',serif;font-weight:400;font-size:22px;line-height:1.55;color:var(--green-ink)}
+.hiw-intro .photo{aspect-ratio:4/3}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:64px}
+.pillar{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:36px 32px;transition:.25s}
+.pillar:hover{border-color:var(--accent);transform:translateY(-4px)}
+.pillar .n{font-family:'Bebas Neue';font-size:52px;color:var(--accent);line-height:.85;letter-spacing:.02em;display:block;margin-bottom:16px}
+.pillar h4{font-family:'Raleway';font-weight:800;font-size:19px;color:var(--green-ink);margin-bottom:12px}
+.pillar p{font-size:14.5px;color:#3a3a3a;line-height:1.7}
+.resources{background:var(--cream);border:1px solid var(--line);border-radius:24px;padding:52px 56px;display:grid;grid-template-columns:1.2fr .8fr;gap:52px;align-items:center;margin-bottom:56px}
+.resources p.intro{font-size:17px;color:var(--green-ink);font-weight:600;font-family:'Raleway';line-height:1.6;margin-bottom:22px}
+.res-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px}
+.res-list li{display:flex;gap:12px;align-items:baseline;font-size:15px;color:#2a2a2a;line-height:1.55}
+.res-list li::before{content:'';flex-shrink:0;width:14px;height:2px;background:var(--bridge);transform:translateY(-4px)}
+.resources .photo{aspect-ratio:4/3}
+.hiw-close{font-family:'Fraunces',serif;font-weight:400;font-size:21px;line-height:1.6;color:var(--green-ink);max-width:840px;margin:0 auto;text-align:center}
+
+/* ===== HARVEST CALENDAR (cream band) ===== */
+.calendar{padding:96px 0;background:var(--cream)}
+.cal-top{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:stretch;margin-bottom:52px}
+.cal-top .section-head{margin-bottom:28px}
+.cal-list-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 32px;display:flex;align-items:baseline;gap:14px 32px;flex-wrap:wrap;margin-bottom:0}
+.cal-list-card .lbl{font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--green-ink);white-space:nowrap;flex-shrink:0}
+.cal-list{list-style:none;display:flex;flex-wrap:wrap;gap:10px 26px}
+.cal-list li{display:flex;gap:12px;align-items:baseline;font-size:15px;color:#2a2a2a;line-height:1.55}
+.cal-list li::before{content:'';flex-shrink:0;width:14px;height:2px;background:var(--bridge);transform:translateY(-4px)}
+.cal-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.cal-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 22px 24px;display:flex;flex-direction:column;gap:6px;position:relative;transition:.25s}
+.cal-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 18px 36px -24px rgba(0,90,102,.3)}
+.cal-card .mo{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.cal-card .crop{font-family:'Bebas Neue';font-size:34px;line-height:.95;color:var(--green-ink);letter-spacing:.02em}
+.cal-card .go{margin-top:auto;padding-top:14px;display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.cal-card .go svg{width:12px;height:12px;transition:transform .25s}
+.cal-card:hover .go svg{transform:translateX(3px)}
+.cal-card.now{background:var(--green-ink);border-color:var(--green-ink)}
+.cal-card.now .mo{color:#A8C663}
+.cal-card.now .crop{color:#fff}
+.cal-card.now .go{color:#A8C663}
+.cal-card .now-tag{position:absolute;top:14px;right:14px;font-family:'Raleway';font-weight:800;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-ink);background:#A8C663;border-radius:999px;padding:3px 10px}
+
+/* ===== WHO IT'S FOR (white band) ===== */
+.who{padding:96px 0;background:#fff;border-top:1px solid var(--line)}
+.who-intro{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;margin-bottom:56px}
+.who-intro .section-head{margin-bottom:0}
+.who-intro .photo{aspect-ratio:4/3}
+.aud-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.aud-card{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:36px 34px;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:.25s}
+.aud-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:.35s}
+.aud-card:hover{transform:translateY(-4px)}
+.aud-card:hover::before{transform:scaleX(1)}
+.aud-card h3{font-family:'Raleway';font-weight:900;font-size:19px;color:var(--green-ink);margin-bottom:12px;line-height:1.2}
+.aud-card p{font-size:14.5px;line-height:1.7;color:#2a2a2a;flex:1}
+.aud-card .cta{margin-top:20px;display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);transition:color .2s}
+.aud-card .cta:hover{color:var(--green-deep)}
+.aud-card .cta svg{width:13px;height:13px}
+
+/* ===== WHY IT WORKS (cream band) ===== */
+.why{padding:96px 0;background:var(--cream)}
+.why-open{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:stretch;margin-bottom:56px}
+.why-open .section-head{margin-bottom:24px}
+.why-open .sub{font-family:'Fraunces',serif;font-weight:400;font-size:24px;line-height:1.4;color:var(--green-ink);margin-bottom:20px}
+.why-open .body{font-size:16.5px;line-height:1.8;color:#2a2a2a}
+.why-open .photo{position:relative;min-height:0}
+.why-open .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.quote-panel{background:var(--green-ink);border-radius:24px;padding:64px 72px;color:#fff;position:relative;overflow:hidden;margin-bottom:56px;text-align:center}
+.quote-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 88% 8%,rgba(0,181,175,.2),transparent 55%),radial-gradient(ellipse at 8% 92%,rgba(69,192,190,.14),transparent 55%);pointer-events:none}
+.quote-panel blockquote{position:relative;z-index:1;font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:clamp(22px,2.6vw,30px);line-height:1.5;max-width:880px;margin:0 auto}
+.quote-panel cite{position:relative;z-index:1;display:block;margin-top:24px;font-family:'Raleway';font-style:normal;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#A8C663}
+.why-close{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.why-close p{font-size:16px;line-height:1.8;color:#2a2a2a}
+
+/* ===== IMPACT (white band, data in development) ===== */
+.impact{padding:96px 0;background:#fff;border-top:1px solid var(--line)}
+.impact-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.impact-card{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:44px 36px;box-shadow:0 30px 60px -40px rgba(0,90,102,.3);position:relative;overflow:hidden;transition:.25s}
+.impact-card:hover{transform:translateY(-4px)}
+.impact-card b{font-family:'Bebas Neue';font-weight:400;font-size:84px;line-height:.85;color:var(--green);letter-spacing:.01em;display:block;opacity:.35}
+.impact-card .lbl{font-style:italic;font-weight:400;font-family:'Open Sans';font-size:14px;color:var(--muted);margin-top:14px;display:block;line-height:1.5;opacity:.75}
+
+/* ===== SUCCESS STORIES (cream band) ===== */
+.stories{padding:96px 0;background:var(--cream)}
+.stories-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.stories-grid .section-head{margin-bottom:24px}
+.stories-grid .body p{font-size:16.5px;line-height:1.8;color:#2a2a2a;margin-bottom:16px}
+.stories-grid .photo{aspect-ratio:4/3}
+
+/* ===== GET STARTED (dark closing band) ===== */
+.getstarted{background:var(--green-ink);color:#fff;padding:104px 0;position:relative;overflow:hidden}
+.getstarted::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.getstarted .wrap{position:relative;z-index:1}
+.gs-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center}
+.gs-eyebrow{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#A8C663;display:inline-flex;align-items:center;gap:12px;margin-bottom:22px}
+.gs-eyebrow::before{content:'';width:28px;height:2px;background:#A8C663}
+.gs-grid h2{font-size:clamp(36px,4vw,58px);color:#fff;line-height:1.05}
+.gs-grid h2 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:#A8C663}
+.gs-grid .sub{font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-top:30px;display:block}
+.gs-grid .body{font-size:16px;line-height:1.75;color:rgba(245,239,227,.88);margin-top:14px;max-width:560px}
+.gs-grid .actions{margin-top:34px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.gs-grid .closing{font-size:14.5px;color:rgba(245,239,227,.75)}
+.gs-grid .closing a{color:#A8C663;border-bottom:2px solid rgba(168,198,99,.4);padding-bottom:1px;transition:.2s}
+.gs-grid .closing a:hover{border-color:#A8C663}
+.gs-grid .photo{aspect-ratio:4/3}
+
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .hiw-intro{grid-template-columns:1fr;gap:32px}
+  .pillars{grid-template-columns:1fr}
+  .resources{grid-template-columns:1fr;gap:32px;padding:40px}
+  .cal-top{grid-template-columns:1fr;gap:32px}
+  .cal-grid{grid-template-columns:repeat(3,1fr)}
+  .who-intro{grid-template-columns:1fr;gap:32px}
+  .aud-grid{grid-template-columns:repeat(2,1fr)}
+  .why-open{grid-template-columns:1fr;gap:32px}
+  .why-open .photo{aspect-ratio:16/9}
+  .why-open .photo img{position:static;width:100%;height:100%}
+  .quote-panel{padding:48px 40px}
+  .why-close{grid-template-columns:1fr;gap:20px}
+  .impact-cards{grid-template-columns:repeat(2,1fr)}
+  .stories-grid{grid-template-columns:1fr;gap:36px}
+  .gs-grid{grid-template-columns:1fr;gap:44px}
+  .nav-links{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:600px){
+  .res-list{grid-template-columns:1fr}
+  .cal-grid{grid-template-columns:repeat(2,1fr)}
+  .aud-grid{grid-template-columns:1fr}
+  .impact-cards{grid-template-columns:1fr}
+  .quote-panel{padding:40px 28px}
+  .foot-grid{grid-template-columns:1fr}
+}
+</style>
+<link id="gfont-Open-Sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&amp;display=swap">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li><a href="#">Local Food</a></li>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Learn</a></li>
+      <li><a href="#" class="active">Participate</a></li>
+      <li><a href="#">Explore</a></li>
+      <li><a href="#">Make Change</a></li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- PAGE HERO -->
+<section class="hero" data-screen-label="HOTM hero" style="padding:72px 0 64px">
+  <div class="wrap">
+    <span class="hero-flag" style="color: rgb(168, 198, 99);">Celebrate Local Food All Year Long</span>
+    <h1>Harvest of the <em style="color: rgb(168, 198, 99);">Month</em></h1>
+    <p class="lede" style="font-family: &quot;Open Sans&quot;">Harvest of the Month is a statewide program that connects school cafeterias, classrooms, and communities with fresh, locally grown food. Each month we feature a Massachusetts grown or sourced food and provide recipes, classroom lessons, and hands-on learning activities that help students explore where their food comes from and why it matters.</p>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="hiw" data-screen-label="How It Works">
+  <div class="wrap">
+    <div class="hiw-intro">
+      <div>
+        <div class="section-head" style="margin-bottom:24px">
+          <h2>How It Works</h2>
+        </div>
+        <p class="lede-copy" style="font-family: &quot;Open Sans&quot;; font-size: 20px">Harvest of the Month is a simple, flexible framework The program is designed to make it easy for schools and early education centers at every stage to participate, whether you're just starting out or looking to deepen a robust program.</p>
+      </div>
+      <div class="photo"><img src="https://images.pexels.com/photos/1268101/pexels-photo-1268101.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Child harvesting carrots in a school garden"></div>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <span class="n">01</span>
+        <h4>Spotlight a Seasonal Crop</h4>
+        <p>Each month of the school year is paired with a Massachusetts-grown crop — chosen based on what's fresh, available, and well-suited to the school cafeteria. Food service teams feature the crop in school meals at least twice a month, either as a part of a menu recipe, or by offering a taste test featuring the crop and where it was grown or caught, helping students make the connection between the food on their plate and where it comes from.</p>
+      </div>
+      <div class="pillar">
+        <span class="n">02</span>
+        <h4>Bring Learning to Life</h4>
+        <p>Educators receive a monthly newsletter with crop-specific classroom lessons, garden activities, hands-on cooking projects, and literacy and science tie-ins — all curriculum-aligned and ready to use. From strawberry taste tests to bean dissection to cranberry math, food becomes a real-world learning tool.</p>
+      </div>
+      <div class="pillar">
+        <span class="n">03</span>
+        <h4>Connect Classroom and Community</h4>
+        <p>Harvest of the Month works best when the whole school community shows up — students, families, teachers, food service staff, and local farmers. Taste tests, farm visits, school garden harvests, and newsletters for families all help build lasting connections to local food and the farms that grow it.</p>
+      </div>
+    </div>
+    <div class="resources">
+      <div>
+        <p class="intro">Participants receive access to a collection of resources designed to make local food education easy and engaging, including:</p>
+        <ul class="res-list">
+          <li>Classroom lessons aligned with Massachusetts standards</li>
+          <li>School meal promotion materials</li>
+          <li>Family newsletters and at-home activities</li>
+          <li>Recipes and taste test ideas</li>
+          <li>School garden connections</li>
+          <li>Recommended books at all grade levels</li>
+        </ul>
+      </div>
+      <div class="photo"><img src="https://images.pexels.com/photos/4503273/pexels-photo-4503273.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Potted herb seedlings for a classroom growing project"></div>
+    </div>
+    <p class="hiw-close">Whether you are serving thousands of school meals, teaching a classroom lesson, running an afterschool program, or engaging young children in a childcare setting, Harvest of the Month offers ready-to-use resources to help you bring local food into everyday learning.</p>
+  </div>
+</section>
+
+<!-- HARVEST CALENDAR -->
+<section class="calendar" data-screen-label="Harvest Calendar">
+  <div class="wrap">
+    <div class="cal-top">
+      <div>
+        <div class="section-head">
+          <h2 style="font-size:clamp(30px,3.5vw,46px)">Explore the Massachusetts
+Harvest Calendar</h2>
+          <p>The Massachusetts Harvest of the Month calendar follows the seasonality of foods grown and produced throughout the Commonwealth.</p>
+        </div>
+        <div class="cal-list-card">
+          <span class="lbl">Select a month to discover:</span>
+          <ul class="cal-list">
+            <li>Recipes and menu ideas</li>
+            <li>Classroom lessons and activities</li>
+            <li>Family engagement resources</li>
+            <li>School garden connections</li>
+            <li>Fun facts and agricultural information</li>
+          </ul>
+        </div>
+      </div>
+      <div class="photo" style="margin:36px 0 12px"><img src="https://images.pexels.com/photos/35492404/pexels-photo-35492404.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Fresh local produce from the Massachusetts harvest" style="width: 100%; height: 350px; object-fit: cover"></div>
+    </div>
+    <div class="cal-grid">
+      <a class="cal-card" href="#">
+        <span class="mo">September</span>
+        <span class="crop">Tomatoes</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">October</span>
+        <span class="crop">Pears</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">November</span>
+        <span class="crop">Kale</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">December</span>
+        <span class="crop">Carrots</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">January</span>
+        <span class="crop">Apples</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">February</span>
+        <span class="crop">Winter Squash</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">March</span>
+        <span class="crop">Dairy</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">April</span>
+        <span class="crop">Potatoes</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">May</span>
+        <span class="crop">Seafood</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card now" href="#">
+        <span class="now-tag">This month</span>
+        <span class="mo">June</span>
+        <span class="crop">Strawberries</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">July</span>
+        <span class="crop">Cucumbers</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="cal-card" href="#">
+        <span class="mo">August</span>
+        <span class="crop">Peaches</span>
+        <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section class="who" data-screen-label="Who It's For">
+  <div class="wrap">
+    <div class="who-intro">
+      <div class="section-head">
+        <h2>Who It's For</h2>
+        <p>Harvest of the Month is for everyone in the school community. Whether you're serving trays of food, teaching a lesson, or caring for the youngest learners,  there's a version of Harvest of the Month built for you.</p>
+      </div>
+      <div class="photo"><img src="https://images.pexels.com/photos/4259140/pexels-photo-4259140.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Family cooking together with kids"></div>
+    </div>
+    <div class="aud-grid">
+      <div class="aud-card">
+        <h3>School Food Service Professionals</h3>
+        <p>Food service directors and nutrition staff receive monthly resources to help source and feature Massachusetts-grown, caught, and raised crops on the cafeteria menu. We provide procurement guidance, supplier connections through our local food directory, and promotional materials to generate excitement in the cafeteria.</p>
+        <!-- source annotation: Link to Nutrition Page and/or Sign Up Form -->
+        <a class="cta" href="#">Nutrition resources &amp; sign-up <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <div class="aud-card">
+        <h3>Educators</h3>
+        <p>Teachers receive monthly newsletters with crop-specific lessons, activities, and book recommendations designed for K–12 classrooms across subject areas. Lessons are grade-differentiated and tie food, nutrition, and agriculture into math, science, literacy, social studies, and more.</p>
+        <!-- source annotation: Link to Educator Page and/or Sign Up Form -->
+        <a class="cta" href="#">Educator sign-up <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <div class="aud-card">
+        <h3>Early Education Providers</h3>
+        <p>Early Education providers can sign up for a monthly newsletter to engage young learners through age-appropriate activities, books, songs, sensory exploration, and food experiences that build healthy habits from an early age.</p>
+        <!-- source annotation: Link to Early Education Page and/or Sign Up Form -->
+        <a class="cta" href="#">Early education sign-up <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <div class="aud-card">
+        <h3>Farmers &amp; Producers</h3>
+        <p>Massachusetts farms, fisheries, dairies, and food producers can connect directly with schools and early childhood programs looking for local food. List your farm or food business in our local food directory to connect with school food purchasers across the Commonwealth.</p>
+        <!-- source annotation: Link to List Your Farm -->
+        <a class="cta" href="#">List your farm <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <div class="aud-card">
+        <h3>Families</h3>
+        <p>Harvest of the Month builds food curiosity that goes home with students. Families can extend the learning by trying the monthly crop at home, visiting local farms and farmers markets, reading the family newsletter, and exploring the MassGrown Map to find fresh food close to them.</p>
+        <!-- source annotation: link to: build a family page ? -->
+        <a class="cta" href="#">Family resources <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <div class="aud-card">
+        <h3>School Administrators</h3>
+        <p>Building a school-wide Harvest of the Month program takes leadership. Administrators can integrate the program into school wellness policies, connect it with the school garden, and use it as a framework to deepen farm to school across the cafeteria, classroom, and community — the "3 C's" approach.</p>
+        <!-- source annotation: link to: build a school admin page -->
+        <a class="cta" href="#">Administrator resources <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY IT WORKS -->
+<section class="why" data-screen-label="Why It Works">
+  <div class="wrap">
+    <div class="why-open">
+      <div>
+        <div class="section-head">
+          <h2>Why It Works</h2>
+        </div>
+        <p class="sub">More than a taste test. A school-wide shift.</p>
+        <p class="body">Harvest of the Month works because it makes local food visible, familiar, and exciting — not just once, but month after month. When students see the same farmers showing up in the cafeteria and the classroom, when they grow the same bean in the school garden that appears on their lunch tray, something changes.</p>
+      </div>
+      <div class="photo"><img src="https://images.pexels.com/photos/4546114/pexels-photo-4546114.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Child tasting fruit at a student taste test"></div>
+    </div>
+    <div class="quote-panel">
+      <blockquote>"The more successful farm to school programs are not 'add-ons' to school policies and curricula, but integrated throughout the school priorities and culture."</blockquote>
+      <cite>— Vermont FEED / VT Farm to School &amp; Early Childhood Network</cite>
+    </div>
+    <div class="why-close">
+      <p>Research shows that repeated, positive exposure to local foods — through tasting, growing, cooking, and learning — builds healthier, more adventurous eaters. It also builds school meal participation, reduces plate waste, and deepens students' connection to the food system and the farmers who sustain it.</p>
+      <p>Harvest of the Month connects all three pillars of farm to school: cafeteria (fresh local food on the menu), classroom (crop-specific lessons and activities), and community (links to local farms, families, and food culture).</p>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<!-- TBD per copy doc: "Share a few (3 or 4) data points around HOTM" -->
+<section class="impact" data-screen-label="Impact">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Impact</h2>
+    </div>
+    <div class="impact-cards">
+      <div class="impact-card">
+        <b>XX</b>
+        <span class="lbl">Data point in development</span>
+      </div>
+      <div class="impact-card">
+        <b>XX</b>
+        <span class="lbl">Data point in development</span>
+      </div>
+      <div class="impact-card">
+        <b>XX</b>
+        <span class="lbl">Data point in development</span>
+      </div>
+      <div class="impact-card">
+        <b>XX</b>
+        <span class="lbl">Data point in development</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUCCESS STORIES -->
+<section class="stories" data-screen-label="Success Stories">
+  <div class="wrap">
+    <div class="stories-grid">
+      <div class="body">
+        <div class="section-head">
+          <h2>Success <em class="accent-italic">Stories</em></h2>
+        </div>
+        <p>Schools and districts across Massachusetts are using Harvest of the Month in creative ways—from cafeteria taste tests and school garden harvests to interdisciplinary classroom projects and family engagement events.</p>
+        <p>Read how participating schools are bringing local food learning to life across the Commonwealth.</p>
+        <!-- production link: Harvest of the Month profile series -->
+        <a class="btn btn-green" href="#" style="margin-top:12px">Read the profiles
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </div>
+      <div class="photo"><img src="https://images.pexels.com/photos/5529599/pexels-photo-5529599.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Farmer holding fresh harvested vegetables and a basket"></div>
+    </div>
+  </div>
+</section>
+
+<!-- GET STARTED -->
+<section class="getstarted" data-screen-label="Get Started">
+  <div class="wrap">
+    <div class="gs-grid">
+      <div>
+        <span class="gs-eyebrow">Resources</span>
+        <h2>Everything you need to get <em>started.</em></h2>
+        <p class="body" style="margin-top:26px">Joining Harvest of the Month is free and flexible. Participate in one month, a full season, or all year long.</p>
+        <p class="body">Whether you're a food service director, teacher, early educator, administrator, parent, farmer, or community partner, there's a place for you in Harvest of the Month.</p>
+        <div class="actions">
+          <a class="btn btn-bright" href="#">Register
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+          <span class="closing">Questions? <a href="/cdn-cgi/l/email-protection#92fbfcf4fdd2fff3e1e1f4f3e0ffe6fde1f1fafdfdfebcfde0f5">Contact us</a> and we'll help you find the best way to participate.</span>
+        </div>
+      </div>
+      <div class="photo"><img src="https://images.pexels.com/photos/2889442/pexels-photo-2889442.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Tractor working a green Massachusetts field"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="#">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="#">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="#">What is Farm to School?</a></li>
+          <li><a href="#">Mission &amp; Vision</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="#">Event Calendar</a></li>
+          <li><a href="#">Institute</a></li>
+          <li><a href="#">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="#">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================================
+IMPLEMENTATION NOTES — MFTS-HOTM.html  (Harvest of the Month program page)
+WordPress + Elementor 4.0 build (standard page, NOT The Events Calendar)
+==============================================================================
+- Lives under the "Participate" nav group (.current-menu-item maps to .active here).
+- Shared chrome (topbar + header + footer) = Elementor Theme Builder header/footer
+  templates (or theme header.php / footer.php if chrome stays theme-side).
+- Every section below is a top-level Elementor flexbox Container; the layouts use
+  plain CSS grid/flex only, so each maps 1:1 to Container + widget structures.
+  Register the Tidewater tokens as Elementor Global Colors and Global Fonts.
+- PAGE HERO (.hero) ........... ACF: page_eyebrow / page_heading / page_emphasis /
+                               page_lede. Locked client copy.
+- HOW IT WORKS (.hiw) ......... Pillars = ACF repeater "hotm_pillars" {title, body}
+                               rendered via Elementor Loop Grid (3-col, 1-col mobile).
+                               Resource bullets = ACF repeater "hotm_resources" {item}.
+- HARVEST CALENDAR (.cal-grid)  NEW component, built for this page: no prior crop
+                               calendar existed in the project (flagged to client and
+                               approved). In WordPress: CPT "harvest" {crop name, month,
+                               photo, link} in an Elementor Loop Grid with a loop item
+                               template (.cal-card); responsive columns 6 / 3 / 2.
+                               "This month" state (.cal-card.now) = dynamic class when
+                               post month == current month. NOT a TEC component.
+- WHO IT'S FOR (.aud-grid) .... ACF repeater "hotm_audiences" {title, body, cta_label,
+                               cta_url} via Loop Grid (3 / 2 / 1 columns). The source
+                               annotations are preserved as HTML comments per card.
+- WHY IT WORKS (.why) ......... Locked copy. Pull quote panel = dark Container with the
+                               Tidewater radial teal glows; Fraunces italic blockquote.
+- IMPACT (.impact-cards) ...... AWAITING DATA. Four .impact-card shells with "XX" and
+                               italic "Data point in development" labels. See TBD
+                               comment adjacent to the section. Do not ship with shells.
+- SUCCESS STORIES (.stories) .. Locked copy; CTA "Read the profiles" links to the HOTM
+                               profile series (see production comment).
+- GET STARTED (.getstarted) ... Locked copy; Register CTA + mailto Contact us link.
+- PHOTOGRAPHY ................. All photos are verified Pexels placeholders standing in
+                               for MFTS's own photography; swap before launch. A true
+                               cafeteria / lunch-tray photo should come from the MFTS
+                               library (none in the approved placeholder pool).
+- Em dashes in body copy are verbatim client copy; no em dashes in new microcopy.
+============================================================================ -->
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="image-slot.js"></script>
+
+</body></html>

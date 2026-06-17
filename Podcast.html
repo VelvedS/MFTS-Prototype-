@@ -1,0 +1,619 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Farm to School Northeast: A Podcast — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F; /* green sliver homage to MFTS brand */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:'Raleway';font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--green-light)}
+.nav-links a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+
+/* ===== PAGE HERO (shared dark hero pattern) ===== */
+.hero{background:var(--green-ink) url('https://images.pexels.com/photos/4319926/pexels-photo-4319926.jpeg?auto=compress&cs=tinysrgb&w=1920') center/cover no-repeat;color:#fff;padding:72px 0 64px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.78),rgba(0,58,64,.78)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:var(--gold)}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(38px,4.6vw,72px);color:#fff;line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent);font-size:.94em}
+.hero .lede{font-family:'Fraunces',serif;font-weight:400;font-size:19px;line-height:1.6;color:rgba(245,239,227,.9);max-width:780px;margin:26px auto 0}
+.hero-art{width:200px;height:200px;border-radius:24px;overflow:hidden;margin:0 auto 30px;background:#fff;box-shadow:0 30px 60px -30px rgba(0,0,0,.5)}
+.hero-art img{width:100%;height:100%;object-fit:cover}
+
+/* ===== SECTION HEADER shared ===== */
+.section-head{margin-bottom:48px}
+.section-head h2{font-size:clamp(34px,4.4vw,58px);color:var(--green-ink);line-height:1.04;display:flex;align-items:flex-start;gap:14px}
+.section-head h2 .accent-italic{font-size:1.02em}
+.section-head h2::before{content:'';flex-shrink:0;width:28px;height:28px;margin-top:.18em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.section-head.center{text-align:center;max-width:820px;margin-left:auto;margin-right:auto}
+.section-head.center h2{justify-content:center}
+
+/* ===== ABOUT THE SHOW (white band) ===== */
+.about{padding:88px 0;background:#fff;border-top:1px solid var(--line)}
+.about-inner{max-width:1000px;margin:0 auto;text-align:center}
+.about-inner .section-head{margin-bottom:32px}
+.about-row{display:grid;grid-template-columns:1fr 280px;gap:48px;align-items:center;text-align:left}
+.about-row img{width:280px;height:280px;border-radius:var(--radius);object-fit:cover;display:block}
+.about-inner p{font-family:'Fraunces',serif;font-weight:400;font-size:20px;line-height:1.65;color:var(--green-ink)}
+
+/* ===== EPISODES (cream band) ===== */
+.episodes{padding:96px 0;background:var(--cream)}
+.ep-num{font-family:'Bebas Neue';font-weight:400;color:var(--accent);line-height:.85;letter-spacing:.02em}
+.ep-art{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:grid;place-items:center;aspect-ratio:16/9}
+.ep-art img{width:100%;height:100%;object-fit:contain}
+.bz-player{min-height:180px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.7);overflow:hidden;padding:8px}
+.transcript{display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);transition:color .2s;width:fit-content}
+.transcript:hover{color:var(--green-deep)}
+.transcript svg{width:13px;height:13px}
+.ep-desc{font-size:14.5px;line-height:1.7;color:#2a2a2a;display:flex;flex-direction:column;gap:12px}
+.ep-desc a{color:var(--accent);font-weight:600;border-bottom:2px solid rgba(0,124,137,.3);transition:.2s}
+.ep-desc a:hover{border-color:var(--accent)}
+
+/* Featured (latest) episode */
+.featured{background:var(--green-ink);color:#fff;border-radius:24px;padding:44px 48px;display:flex;flex-direction:column;gap:18px;margin-bottom:64px;position:relative;overflow:hidden}
+.featured::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 10%,rgba(0,181,175,.18),transparent 55%);pointer-events:none}
+.featured>*{position:relative;z-index:1}
+.featured .head{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start}
+.featured .latest-tag{display:inline-flex;width:fit-content;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-ink);background:#A8C663;border-radius:999px;padding:5px 14px}
+.featured .ep-num{font-size:54px;color:#A8C663;margin-top:2px}
+.featured h3{font-family:'Raleway';font-weight:900;font-size:clamp(24px,2.4vw,32px);color:#fff;line-height:1.15}
+.featured .ep-art{aspect-ratio:auto;height:260px;position:relative;background:var(--green-deep);border:1px solid rgba(255,255,255,.15)}
+.featured .ep-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.featured .ep-desc{color:rgba(245,239,227,.88);font-size:14.5px;line-height:1.6}
+.featured .bz-player{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15)}
+.featured .transcript{color:#A8C663}
+.featured .transcript:hover{color:#fff}
+
+/* Archive grid */
+.ep-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.ep-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:34px;display:flex;flex-direction:column;gap:18px;transition:.25s}
+.ep-card:hover{transform:translateY(-4px);box-shadow:0 24px 48px -32px rgba(0,90,102,.25)}
+.ep-card .head{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+.ep-card .ep-num{font-size:46px;margin-top:2px}
+.ep-card h3{font-family:'Raleway';font-weight:900;font-size:20px;color:var(--green-ink);line-height:1.25}
+
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .featured{padding:32px 28px}
+  .featured .ep-art{height:220px}
+  .ep-grid{grid-template-columns:1fr}
+  .about-row{grid-template-columns:1fr;gap:28px}
+  .about-row img{margin:0 auto}
+  .nav-links{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:600px){
+  .hero-art{width:150px;height:150px}
+  .ep-card{padding:26px}
+  .ep-card .head{grid-template-columns:1fr;gap:8px}
+  .foot-grid{grid-template-columns:1fr}
+}
+</style>
+<link id="gfont-Open-Sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&amp;display=swap">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li><a href="#">Local Food</a></li>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Learn</a></li>
+      <li><a href="#">Participate</a></li>
+      <li><a href="#" class="active">Explore</a></li>
+      <li><a href="#">Make Change</a></li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- PAGE HERO -->
+<section class="hero" data-screen-label="Podcast hero">
+  <div class="wrap">
+    <span class="hero-flag" style="color: rgb(168, 198, 99);">News &amp; Events</span>
+    <h1>Farm to School Northeast: A <em style="color: rgb(168, 198, 99);">Podcast</em></h1>
+    <p class="lede" style="font-family: &quot;Open Sans&quot;">We are thrilled to be producing the second season of, "Farm to School Northeast," a monthly podcast where we explore the creative ways that local food is getting into school cafeterias and how food system education is playing out in classrooms and school gardens across the northeast region.</p>
+  </div>
+</section>
+
+<!-- ABOUT THE SHOW -->
+<section class="about" data-screen-label="About the Show" style="padding: 88px 0px 60px">
+  <div class="wrap">
+    <div class="about-inner">
+      <div class="section-head center">
+        <h2>About the <em class="accent-italic">Show</em></h2>
+      </div>
+      <div class="about-row">
+        <p style="font-family: &quot;Open Sans&quot;; font-size: 16px">Check back each month for a 20-30 minute episode that highlights the innovative work of educators, food service staff, school garden coordinators, policy makers, farmers, and more. From a group of students in Massachusetts who are spearheading district-wide composting, to social emotional learning in the school garden, to a scratch cooking award in Maine and a crepe truck in Vermont, this podcast will inspire, teach, and amplify our farm to school stories. You can listen in on the Massachusetts Farm to School website or wherever you get your podcasts!</p>
+        <img src="https://www.massfarmtoschool.org/wp-content/uploads/2024/09/Podcast_LogoConcept-1-768x768.png" alt="Farm to School Northeast podcast logo">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EPISODES -->
+<section class="episodes" data-screen-label="Episodes">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Episodes</h2>
+    </div>
+
+    <!-- Featured: Episode 2.8 (latest) -->
+    <article class="featured" data-screen-label="Latest episode">
+      <span class="latest-tag">Latest episode</span>
+      <div class="head">
+        <span class="ep-num">2.8</span>
+        <h3>Indigenous Partnerships and Contributions to Farm to School</h3>
+      </div>
+      <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2026/05/Ep2.8_MA-Indig.png" alt="Episode 2.8 artwork"></div>
+      <div class="ep-desc">
+        <p>In this episode we talk with Brad Lopes, education and Public Program Manager at the Aquinnah Cultural Center and the Education Manager of the Wampanoag Tribe of Gayhead Aquinnah and Emily Armstrong, Education Director of Island Grown Initiative. Brad and Emily speak about the collaboration between Island Grown and the Aquinnah Cultural Center to promote tribal food sovereignty through the lens of curricular instruction and some best practices for engaging in local food sustainability and food sovereignty work in schools.</p>
+      </div>
+      <div class="bz-player">
+          <div id="buzzsprout-player-19136843"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/19136843-indigenous-partnerships-and-contributions-to-farm-to-school.js?container_id=buzzsprout-player-19136843&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-episode-2-8-transcript/">Read transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+    </article>
+
+    <!-- Archive: newest to oldest -->
+    <div class="ep-grid">
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">2.7</span>
+          <h3>Stories from the Field</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2024/09/Podcast_LogoConcept-1.png" alt="Episode 2.7 artwork, podcast logo"></div>
+        <div class="ep-desc">
+          <p>On March 18, Massachusetts Farm to School held their biennial MA Farm and Sea to School Conference at Smith College in Northampton, MA. Over 350 attendees joined in from all areas of the farm and sea to school movement. There were educators, farmers and fishers, policy makers, food service staff, school administrators, secondary and college students, and more. The conference theme was, "Building Connections, Resilience and Joy," and the opening plenary was a storytelling session, where 5 people shared a true and personal story from the heart that embodied the conference theme, be it a moment of challenge, joy, surprise, or change that reminds us why farm and sea to school work matters.</p>
+          <p>In this episode you will hear stories from Rina Zampieron, Education Program Manager, Early Education at Mass Audubon, Lizzy Agbedun, Advocacy Manager at Project Bread, Sarah Littmann, Director of Food &amp; Nutrition Services at Triton Regional School District, Tim Offei-Addo, Farmer at Abrantie Farms, and Mellissa Honeywood, Deputy Director at the Boston Mayor's Office of Food Justice.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-18906654"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/18906654-stories-from-the-field.js?container_id=buzzsprout-player-18906654&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-7/">Read the transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">2.6</span>
+          <h3>Feast Box: From Farmer to School</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2026/02/Ep2.6_MA-Feast-Box2.png" alt="Episode 2.6 artwork"></div>
+        <div class="ep-desc">
+          <p>In Episode 2.6 we hear from Meghan Arquin, a Western Massachusetts farmer who works with Farm Lab and runs their Feast Box program. Farm Lab is part of <a href="https://momentumag.org/">Momentum Ag</a>, a grant-funded nonprofit coordinating environmentally conscious agriculture across 20 Northeast farms. Feast Box provides free weekly boxes of local vegetables to all students and staff at participating schools. Each box contains seasonal produce from Farm Lab and partner farms, plus simple recipes and farm notes to help families cook, try new foods, and connect with local agriculture.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-18630100"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/18630100-feast-box-from-farmer-to-school.js?container_id=buzzsprout-player-18630100&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-6/">Read the transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">2.5</span>
+          <h3>Early Childhood Nutrition at Vermont's Mountain Village School</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/Ep2.5_VT-Mountain-ECE.png" alt="Episode 2.5 artwork"></div>
+        <div class="ep-desc">
+          <p>In this episode we talk about early childhood education and its connection to farm to school and childhood nutrition with Sarah Tousignant, the Executive Director of the Mountain Village School in Stowe, Vermont. The Mountain Village School is a nature-based independent school for children, birth through kindergarten, with afterschool programs for children in kindergarten through fourth grade. The school believes that early childhood is a crucial aspect of an individual's development and that nature, community harmony and discovery are the most important attributes of early childhood.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-18454797"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/18454797-early-childhood-nutrition-at-vermont-s-mountain-village-school.js?container_id=buzzsprout-player-18454797&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-5/">Read the transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">2.4</span>
+          <h3>Early Childhood Farm to School: The Power and Curiosity of Our Youngest Learners</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/12/Ep2.4_MA-MetroWest-YMCA.png" alt="Episode 2.4 artwork"></div>
+        <div class="ep-desc">
+          <p>In Episode 2.4 we hear from three early childhood practitioners from MetroWest YMCA, who will discuss the connection between farm to school, childhood nutrition, and early education. Maggie Lynch, Director of Nutrition Services, Karley Besozzi, Director of Nutrition Education, and Lindsey Bogot, Farm to School &amp; Food Access Coordinator chat about ways to introduce and engage the youngest learners and eaters in farm to school practices.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-18252945"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/18252945-early-childhood-farm-to-school-the-power-and-curiosity-of-our-youngest-learners.js?container_id=buzzsprout-player-18252945&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-4/">Read the transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">2.3</span>
+          <h3>Trout Tales: A Grade 4 Project from Sustainability Academy in Burlington, VT</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/11/Ep2.3_VT-Trout.png" alt="Episode 2.3 artwork"></div>
+        <div class="ep-desc">
+          <p>In this episode we have the chance to have all of our burning questions about trout answered by fourth graders from Sustainability Academy in Burlington, VT as we listen to their podcast called "Trout Tales" a project born from a school-wide study of brook trout But before that, we will get some background from educator Julia Marchessault, fourth grade teacher at Sustainability Academy in Burlington, Vermont. Created by the Burlington School District in partnership with Shelburne Farms, the Sustainability Academy at Lawrence Barnes Elementary is a public pre-K to five magnet school in Burlington, Vermont that integrates sustainability into its curriculum.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-18112571"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/18112571-trout-tales-a-grade-4-project-from-sustainability-academy-in-burlington-vt.js?container_id=buzzsprout-player-18112571&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-3-transcript/">Read the transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">2.2</span>
+          <h3>The Power of Garden Based Learning</h3>
+        </div>
+        <!-- Episode 2.2 title sourced from the episode's official Buzzsprout listing; the live source page shows no title. -->
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/10/jen-and-leila-e1759940579581.jpg" alt="Episode 2.2 artwork"></div>
+        <div class="ep-desc">
+          <p>In this episode we talk with Jen Reese, Science and Garden Coordinator with Amherst and Pelham Public Schools and Garden Educator, Leila Tunnell, who co-lead the Amherst Elementary School Garden Program in Amherst, Massachusetts. The two spoke about the power of garden based learning to inspire joy and help build a more just and sustainable world. Jen and Leila and their community partners believe that garden based learning should be accessible to every student and have built the program around this value in their K-6 year-round garden based learning program.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-17977584"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/17977584-the-power-of-garden-based-learning.js?container_id=buzzsprout-player-17977584&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-2-transcript/">Read the transcript
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">2.1</span>
+          <h3>The Food Project: Dirt Crew Takes the Mic</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/09/TFP.jpg" alt="Episode 2.1 artwork"></div>
+        <div class="ep-desc">
+          <p>To start off season 2 we gave the microphone to a group of youth leaders at The Food Project. The Food Project is a Boston-area nonprofit that builds a sustainable food system by bringing together diverse youth and adults to work on farms in urban and suburban settings, growing food for the community and developing youth leadership skills.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-17828890"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/17828890-the-food-project-dirt-crew-takes-the-mic.js?container_id=buzzsprout-player-17828890&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-1-transcript/">Read the transcript
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">1.9</span>
+          <h3>The Importance of Farm to School, Buying Local and a Shipping Container Farm in Groton, CT</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/06/Ep1.9_CT-Container.png" alt="Episode 1.9 artwork"></div>
+        <div class="ep-desc">
+          <p>We had the opportunity to sit down with Ernie Koschmieder, the Food Service Director for Groton Public Schools in Groton, Connecticut to talk about the positive impacts of farm to school on students and families, and we're going to learn about an exciting shipping container Farm Grant from Connecticut Department of Agriculture and how the Container Farm will be used to increase food access for Groton Public School students.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-17267586"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/17267586-the-importance-of-farm-to-school-buying-local-and-a-shipping-container-farm-in-groton-ct.js?container_id=buzzsprout-player-17267586&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-9-transcript/">Read the transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">1.8</span>
+          <h3>Talking About Books and Food Systems with Author Jacqueline Briggs Martin and Publisher Philip Lee</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/05/Ep1.8_Books-web.png" alt="Episode 1.8 artwork"></div>
+        <div class="ep-desc">
+          <p>Listen to our chat with publisher Philip Lee of Readers to Eaters and author Jacqueline Briggs Martin author of Eva's Green Garden Life to discuss food and food systems, books and stories.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-17028785"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/17028785-talking-about-books-and-food-systems-with-author-jacqueline-briggs-martin-and-publisher-philip-lee.js?container_id=buzzsprout-player-17028785&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-8-transcript/">Read the transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">1.7</span>
+          <h3>Youth Activism and The Power of the Plate</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/04/Ep1.7_CT-1.png" alt="Episode 1.7 artwork"></div>
+        <div class="ep-desc">
+          <p>Hear from Connecticut high school student and food system activist Zane Tickoo talk about his work and dedication to improve the local food system and support access to healthy food, local economy, and social justice through what he calls "the Power of the Plate".</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-16807275"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/16807275-zane-tickoo-youth-activism-and-the-power-of-the-plate.js?container_id=buzzsprout-player-16807275&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/f2s-northeast-podcast/podcast-ep1-7-transcript/">Read transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">1.6</span>
+          <h3>Buzz, Flow, and Grow: Exploring STEAM with Bees, Fish and Gardens</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/03/Ep1.6_NewHampshire-v2.png" alt="Episode 1.6 artwork"></div>
+        <div class="ep-desc">
+          <p>Listen to Brian Winslow, a K-4 STEAM teacher from the Southwick School in Northfield, New Hampshire, discuss their dynamic program that includes a greenhouse, aquaponics, an apiary, pollinator gardens and school-wide composting.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-16682983"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/16682983-buzz-flow-and-grow-exploring-steam-with-bees-fish-and-gardens.js?container_id=buzzsprout-player-16682983&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/f2s-northeast-podcast/podcast-ep1-6-transcript/">Read Transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">1.5</span>
+          <h3>Maine's Scratch Cooking Champions</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/02/Ep1.5_Maine.png" alt="Episode 1.5 artwork"></div>
+        <div class="ep-desc">
+          <p>In Episode 5, we sit down with Denise Tapley Proctor, the Food Service Director for RSU 89 in Stacyville, Maine, to talk about the positive impacts of their farm to school program on students and families and their award-winning scratch cooking, which recently received the 2024 USDA Innovation in Preparation of School Meals award.</p>
+          <p>Hear From: Denise Proctor Tapley, Food Service Director, RSU 89, Staceyville, ME</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-16510544"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/16510544-maine-s-scratch-cooking-champions.js?container_id=buzzsprout-player-16510544&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/f2s-northeast-podcast/podcast-ep1-5-transcript/">Read Transcript
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">1.4</span>
+          <h3>Montpelier High School: Building Community Through Cooking and Eating Local</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/01/ep1.4.png" alt="Episode 1.4 artwork"></div>
+        <div class="ep-desc">
+          <p>In this episode you will hear from French teacher Brigitte Savard and high school senior Veda Gahagan from Montpelier High School in Vermont, to talk about ways they embed food system education into the curriculum. From "Solon Soup for the Soul" named after the school mascot, the Greek philosopher Solon, to a student run crepe truck at the local farmer's market. Get ready to hear about some creative ways to build excitement and learning.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-16341508"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/16341508-montpelier-high-school-building-community-through-cooking-and-eating-local.js?container_id=buzzsprout-player-16341508&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-4-transcript/">Read transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">1.3</span>
+          <h3>Middle Schoolers Create a Student Driven Farm</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/01/1.3.png" alt="Episode 1.3 artwork"></div>
+        <div class="ep-desc">
+          <p>In this episode, we have an opportunity to sit down with Sara Churgin, District Manager of the Eastern Rhode Island Conservation District, and Margie Brennan, the K-8 Science Coach for Portsmouth School Department to learn about the Portsmouth Ag Innovation Farm, a student-driven community farm education program that fosters student problem solving, authentic learning and community collaboration.</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-16207770"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/16207770-middle-schoolers-create-a-student-driven-farm.js?container_id=buzzsprout-player-16207770&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-3-transcript/">Read transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">1.2</span>
+          <h3>Say Something Kind To A Seed: Social Emotional Learning In The School Garden</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/01/1.2.png" alt="Episode 1.2 artwork"></div>
+        <div class="ep-desc">
+          <p>In this episode, School Garden Coordinator Fatima Seck shares her vision for school gardens as places to allow all students to flourish. From building positive habits and investment, finding safety and emotional regulation, to practicing gratitude, exploring creativity and expression and building relationships, school gardens can be a vital environment for social emotional learning.</p>
+          <p>Hear from:  Fatima Seck, School Garden Coordinator, Mel King South End Academy, Boston, MA</p>
+        </div>
+        <!-- Live source page was missing this episode's player container div; corrected here with both the div and the script. -->
+        <div class="bz-player">
+          <div id="buzzsprout-player-16052652"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/16052652-say-something-kind-to-a-seed-social-emotional-learning-in-the-school-garden.js?container_id=buzzsprout-player-16052652&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-2-transcript/">Read transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+      <article class="ep-card">
+        <div class="head">
+          <span class="ep-num">1.1</span>
+          <h3>What Do We Mean When We Say Farm To School?</h3>
+        </div>
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/01/1.1.png" alt="Episode 1.1 artwork"></div>
+        <div class="ep-desc">
+          <p>Hear from:  Loni Austin, Austin Ridge Acres (MA)<br>
+          Denise Courtney, Massachusetts Dept. of Elementary &amp; Secondary Education<br>
+          Lisa Damon, Mass. Farm to School<br>
+          Dana Hudson, Shelburne Farms (VT)<br>
+          Rebecca Kelley, FoodCorps MA &amp; RI<br>
+          Ernie Koschmieder, Groton Public Schools (CT)<br>
+          Dinah Mack, Mass. Farm to School<br>
+          Betsy Rosenbluth, Shelburne Farms (VT)</p>
+        </div>
+        <div class="bz-player">
+          <div id="buzzsprout-player-15883523"></div>
+          <script src="https://www.buzzsprout.com/2403596/episodes/15883523-what-do-we-mean-when-we-say-farm-to-school.js?container_id=buzzsprout-player-15883523&amp;player=small" type="text/javascript" charset="utf-8"></script>
+        </div>
+        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-1-transcript/">Read transcript.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="#">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="#">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="#">What is Farm to School?</a></li>
+          <li><a href="#">Mission &amp; Vision</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="#">Event Calendar</a></li>
+          <li><a href="#">Institute</a></li>
+          <li><a href="#">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="#">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================================
+IMPLEMENTATION NOTES — MFTS-Podcast.html  (Farm to School Northeast podcast page)
+WordPress + Elementor 4.0 build (standard page, NOT The Events Calendar)
+==============================================================================
+- Lives under the "Explore" nav group / News & Events cluster (.current-menu-item
+  maps to .active here).
+- Shared chrome (topbar + header + footer) = Elementor Theme Builder header/footer
+  templates (or theme header.php / footer.php if chrome stays theme-side).
+- Every section is a top-level Elementor flexbox Container; layouts are plain CSS
+  grid/flex, mapping 1:1 to Container + widget structures. Register the Tidewater
+  tokens as Elementor Global Colors and Global Fonts.
+- PAGE HERO (.hero) ........... ACF: page_eyebrow / page_heading / page_emphasis /
+                               page_lede / hero_art (podcast logo). Locked copy.
+- ABOUT THE SHOW (.about) ..... Single ACF wysiwyg "about_show". Locked copy.
+- EPISODES .................... CPT "podcast_episode" {number, title, artwork,
+                               description, buzzsprout_id, buzzsprout_slug,
+                               transcript_label, transcript_url} in an Elementor
+                               Loop Grid ordered newest first (2 / 1 columns). The
+                               newest post renders through the featured loop item
+                               template (.featured); the rest use .ep-card.
+- BUZZSPROUT PLAYERS .......... The div+script pair is generated per post from
+                               buzzsprout_id and buzzsprout_slug (small player,
+                               container_id="buzzsprout-player-{id}"). The .bz-player
+                               wrapper provides the placeholder state (min-height,
+                               cream fill) before the network player renders. In
+                               Elementor, output the pair via an HTML widget bound to
+                               the dynamic fields. NOTE: the live source page was
+                               missing Episode 1.2's player container div; corrected
+                               here so all seventeen episodes have both div + script.
+- ARTWORK ..................... Aspect ratios vary (square art and wide banners);
+                               .ep-art uses a 16/9 frame with object-fit:contain on a
+                               white backdrop so no art is cropped or distorted.
+                               Episode 2.2's title is sourced from its Buzzsprout
+                               listing (no title on the live page). Episode 2.7 has no
+                               artwork on the source page and uses the podcast logo as
+                               fallback art.
+- Transcript labels intentionally vary by episode (verbatim client copy); store per
+  post in transcript_label. No em dashes in new microcopy.
+============================================================================ -->
+
+</body></html>
