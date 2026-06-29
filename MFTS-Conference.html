@@ -1,0 +1,546 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Massachusetts Farm &amp; Sea to School Conference — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F; /* green sliver homage to MFTS brand */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:'Raleway';font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--green-light)}
+.nav-links a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;transform:translateY(-2px)}
+
+/* ===== PAGE HERO (shared dark hero pattern) ===== */
+.hero{background:var(--green-ink) url('assets/SeafoodWorkshop.jpg') center/cover no-repeat;color:#fff;padding:84px 0 76px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.76),rgba(0,58,64,.8)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1040px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#A8C663;margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:#A8C663}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(42px,5.4vw,82px);color:#fff;line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:#A8C663;font-size:.94em}
+.hero .lede{font-family:'Fraunces',serif;font-weight:400;font-size:21px;line-height:1.55;color:rgba(245,239,227,.92);max-width:780px;margin:28px auto 0}
+
+/* ===== SECTION HEADER shared ===== */
+.section-head{margin-bottom:48px}
+.section-head h2{font-size:clamp(34px,4.4vw,58px);color:var(--green-ink);line-height:1.04;display:flex;align-items:flex-start;gap:14px}
+.section-head h2 .accent-italic{font-size:1.02em}
+.section-head h2::before{content:'';flex-shrink:0;width:28px;height:28px;margin-top:.18em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.section-head.center{text-align:center;max-width:820px;margin-left:auto;margin-right:auto}
+.section-head.center h2{justify-content:center}
+.section-head p{font-size:17px;color:#444;margin-top:16px;max-width:680px;line-height:1.7}
+.section-head.center p{margin-left:auto;margin-right:auto}
+
+/* ===== PHOTO FRAME shared ===== */
+.photo{border-radius:var(--radius);overflow:hidden;background:var(--sand)}
+.photo img{width:100%;height:100%;object-fit:cover}
+
+/* ===== DRAFT / PLACEHOLDER (visibly in-development) ===== */
+.draft-tag{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border:1px solid rgba(77,77,79,.35);border-radius:999px;padding:6px 16px}
+.draft-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.6}
+.draft-frame{border:2px dashed rgba(0,90,102,.32);border-radius:var(--radius);background:rgba(255,255,255,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:32px;color:var(--muted)}
+.draft-frame .draft-note{font-style:italic;font-size:15px;line-height:1.6;opacity:.8;max-width:340px}
+
+/* ===== ABOUT (white band, lead statement) ===== */
+.about{padding:92px 0;background:#fff;border-top:1px solid var(--line)}
+.about .section-head{margin-bottom:28px}
+.about-lede{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(22px,2.5vw,30px);line-height:1.5;color:var(--green-ink);max-width:980px}
+.about-lede em{font-style:italic;font-weight:500;color:var(--accent)}
+.about-stats{display:flex;gap:48px;margin-top:44px;padding-top:34px;border-top:1px solid var(--line);flex-wrap:wrap}
+.about-stats .s{flex:0 0 auto}
+.about-stats .s b{font-family:'Bebas Neue';font-weight:400;font-size:60px;line-height:.85;color:var(--accent);letter-spacing:.02em;display:block}
+.about-stats .s span{font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:8px;display:block;max-width:100px}
+
+/* ===== WHO ATTENDS (cream band) ===== */
+.who{padding:96px 0;background:var(--cream)}
+.who-top{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;margin-bottom:40px}
+.who-top .section-head{margin-bottom:20px}
+.who-top .body{font-size:16.5px;line-height:1.8;color:#2a2a2a}
+.who-top .photo{aspect-ratio:4/3;align-self:stretch}
+.roles-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px 34px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;margin-bottom:28px}
+.roles-panel .ico{flex-shrink:0;width:50px;height:50px;border-radius:14px;background:rgba(0,124,137,.08);display:grid;place-items:center;color:var(--accent)}
+.roles-panel .ico svg{width:26px;height:26px}
+.roles-panel p{font-size:16px;line-height:1.7;color:var(--green-ink);font-weight:500}
+.callout{background:#A8C663;border-radius:var(--radius);padding:26px 34px;display:flex;align-items:center;gap:18px;color:var(--green-ink)}
+.callout svg{width:30px;height:30px;flex-shrink:0;color:var(--green-deep)}
+.callout p{font-family:'Raleway';font-weight:900;font-size:clamp(18px,2vw,24px);line-height:1.2;letter-spacing:-.01em}
+
+/* ===== WHAT TO EXPECT (white band) ===== */
+.expect{padding:96px 0;background:#fff;border-top:1px solid var(--line)}
+.expect .section-head{max-width:760px}
+.format-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:56px}
+.format-item{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;gap:14px;transition:.25s}
+.format-item:hover{transform:translateY(-4px);border-color:var(--accent)}
+.format-item .ico{width:42px;height:42px;border-radius:11px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;color:var(--accent)}
+.format-item .ico svg{width:22px;height:22px}
+.format-item h4{font-family:'Raleway';font-weight:800;font-size:16px;color:var(--green-ink);line-height:1.2}
+.expect-ph{display:grid;grid-template-columns:1.5fr 1fr;gap:24px}
+.expect-ph>*{min-width:0}
+.photo-strip{display:flex;flex-direction:column}
+.photo-strip .draft-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:1}
+.photo-strip .draft-frame{min-height:170px;padding:18px}
+.photo-strip .draft-frame svg{width:32px;height:32px;opacity:.5}
+.photo-strip .draft-frame .draft-note{font-size:12.5px}
+.quote-ph{display:flex;flex-direction:column;justify-content:center;gap:18px;padding:38px 36px}
+.quote-ph .qmark{font-family:'Fraunces',serif;font-size:60px;line-height:.6;color:rgba(0,90,102,.3)}
+.expect-ph .draft-tag{align-self:flex-start}
+
+/* ===== CONFERENCE HISTORY — TIMELINE (cream band) ===== */
+.history{padding:96px 0;background:var(--cream)}
+.history .section-head{max-width:720px}
+.timeline{position:relative;max-width:920px;margin-top:8px}
+.timeline::before{content:'';position:absolute;left:150px;top:10px;bottom:18px;width:2px;background:linear-gradient(var(--accent),rgba(0,124,137,.25))}
+.tl-row{display:grid;grid-template-columns:120px 1fr;gap:74px;position:relative;padding-bottom:40px}
+.tl-row:last-child{padding-bottom:0}
+.tl-row::before{content:'';position:absolute;left:142px;top:8px;width:18px;height:18px;border-radius:50%;background:var(--cream);border:3px solid var(--accent);z-index:1}
+.tl-row.recent::before{background:#A8C663;border-color:#A8C663;box-shadow:0 0 0 5px rgba(168,198,99,.25)}
+.tl-year{font-family:'Bebas Neue';font-weight:400;font-size:46px;line-height:.85;color:var(--accent);letter-spacing:.02em;text-align:right;padding-top:2px}
+.tl-row.recent .tl-year{color:var(--green-ink)}
+.tl-body{padding-top:0}
+.tl-tag{display:inline-block;font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-ink);background:#A8C663;border-radius:999px;padding:3px 11px;margin-bottom:10px}
+.tl-theme{font-family:'Raleway';font-weight:800;font-size:clamp(18px,1.9vw,22px);color:var(--green-ink);line-height:1.25;letter-spacing:-.01em}
+.tl-link{margin-top:10px;display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);transition:color .2s}
+.tl-link:hover{color:var(--green-deep)}
+.tl-link svg{width:13px;height:13px;transition:transform .2s}
+.tl-link:hover svg{transform:translateX(3px)}
+
+/* ===== CONFERENCE-YEAR ZONE (held — sponsorship + exhibitor) ===== */
+.cyear{padding:96px 0;background:var(--green-ink);color:#fff;position:relative;overflow:hidden}
+.cyear::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 86% 8%,rgba(0,181,175,.2),transparent 55%),radial-gradient(ellipse at 8% 92%,rgba(69,192,190,.14),transparent 55%);pointer-events:none}
+.cyear .wrap{position:relative;z-index:1}
+.cyear-head{display:flex;flex-wrap:wrap;align-items:center;gap:18px;justify-content:center;text-align:center;max-width:760px;margin:0 auto 56px}
+.cyear-flag{display:inline-flex;align-items:center;gap:9px;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-ink);background:#A8C663;border-radius:999px;padding:7px 16px}
+.cyear-flag svg{width:14px;height:14px}
+.cyear-note{font-family:'Open Sans';font-size:14.5px;color:rgba(245,239,227,.78);line-height:1.6;flex-basis:100%}
+.held-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:stretch}
+.held-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:42px 44px;display:flex;flex-direction:column}
+.held-card .label{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
+.held-card .label .eyebrow{color:#A8C663}
+.status-pill{display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,239,227,.7);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5px 12px}
+.status-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:#A8C663}
+.held-card blockquote{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:clamp(19px,2vw,24px);line-height:1.5;color:#fff}
+.held-card cite{display:block;margin-top:20px;font-family:'Raleway';font-style:normal;font-weight:700;font-size:13px;letter-spacing:.04em;color:#A8C663}
+.held-card cite span{display:block;color:rgba(245,239,227,.7);font-weight:600;letter-spacing:.02em;margin-top:3px;text-transform:none}
+.held-card .held-note{margin-top:auto;padding-top:24px;font-size:13.5px;font-style:italic;color:rgba(245,239,227,.6);line-height:1.6}
+.held-card p.body{font-size:15.5px;line-height:1.75;color:rgba(245,239,227,.88);margin-bottom:16px}
+.ghost-btn{margin-top:24px;align-self:flex-start;display:inline-flex;align-items:center;gap:9px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,239,227,.55);border:2px dashed rgba(255,255,255,.28);border-radius:999px;padding:12px 22px;cursor:default}
+
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .who-top{grid-template-columns:1fr;gap:32px}
+  .who-top .photo{aspect-ratio:16/9}
+  .format-grid{grid-template-columns:repeat(2,1fr)}
+  .expect-ph{grid-template-columns:1fr;gap:20px}
+  .held-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:600px){
+  .about-stats{gap:28px}
+  .format-grid{grid-template-columns:1fr}
+  .photo-strip .draft-strip{grid-template-columns:1fr 1fr}
+  .timeline::before{left:46px}
+  .tl-row{grid-template-columns:56px 1fr;gap:28px}
+  .tl-row::before{left:38px}
+  .tl-year{font-size:30px;text-align:left;padding-left:0}
+  .held-card{padding:32px 26px}
+  .foot-grid{grid-template-columns:1fr}
+}
+</style>
+<link id="gfont-Open-Sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&amp;display=swap">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li><a href="#">Local Food</a></li>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Learn</a></li>
+      <li><a href="#" class="active">Participate</a></li>
+      <li><a href="#">Explore</a></li>
+      <li><a href="#">Make Change</a></li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- PAGE HERO -->
+<section class="hero" data-screen-label="Conference hero">
+  <div class="wrap">
+    <span class="hero-flag">Held Every Other Year</span>
+    <h1>Massachusetts Farm &amp; Sea to School Conference</h1>
+    <p class="lede" style="font-family: &quot;Open Sans&quot;">Bringing together educators, school nutrition professionals, farmers, fishers, and advocates to…</p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" data-screen-label="About the Conference">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>About the Conference</h2>
+    </div>
+    <p class="about-lede">The Massachusetts Farm &amp; Sea to School Conference is the Commonwealth's premier gathering for everyone working to connect students to local food — from the garden to the cafeteria and beyond. Held every other year, the conference brings together over 300  attendees representing the full breadth of the farm and sea to school movement.</p>
+    <div class="about-stats">
+      <div class="s"><b>300+</b><span>Attendees every conference</span></div>
+      <div class="s"><b>Biennial</b><span>Held every other year</span></div>
+      <div class="s"><b>2028</b><span>Next conference</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO ATTENDS -->
+<section class="who" data-screen-label="Who Attends">
+  <div class="wrap">
+    <div class="who-top">
+      <div>
+        <div class="section-head">
+          <div class="eyebrow" style="margin-bottom:16px">           WHO ATTENDS</div>
+          <h2>A Community of Farm &amp; Sea to School Champions</h2>
+        </div>
+        <p class="body">The conference draws a diverse, highly engaged audience of practitioners, advocates, and decision-makers from across Massachusetts and the broader Northeast.</p>
+      </div>
+      <div class="photo"><img src="assets/YoungBoyGardening-NoAtt.jpg" alt="Young child watering chives in a raised garden bed"></div>
+    </div>
+    <div class="roles-panel">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"></path><circle cx="10" cy="8" r="5"></circle><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"></path></svg></span>
+      <p>Educators, school nutrition professionals, farmers, fishers, food distributors, community organizers, policy advocates, nonprofit staff, early childhood educators, and student leaders.</p>
+    </div>
+    <div class="callout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path><path d="m9 16 2 2 4-4"></path></svg>
+      <p>We look forward to seeing YOU at our next conference in 2028!</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT TO EXPECT -->
+<section class="expect" data-screen-label="What to Expect">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" style="margin-bottom:16px">What to Expect</div>
+      <h2>A Full Day of Learning, Connecting, and Doing</h2>
+      <p>The conference features a rich mix of formats so participants can learn from experts, hear from peers, and roll up their sleeves — all in a single day.</p>
+    </div>
+    <div class="format-grid">
+      <div class="format-item">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg></span>
+        <h4>Keynote Address</h4>
+      </div>
+      <div class="format-item">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg></span>
+        <h4>Workshop Sessions</h4>
+      </div>
+      <div class="format-item">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h1v4"></path><path d="M16 2v4"></path><path d="M3 10h18"></path><path d="M8 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M9.5 14a2.5 2.5 0 1 1 5 0c0 1.38-.5 2-1.5 3"></path></svg></span>
+        <h4>Hands-On Activity Stations</h4>
+      </div>
+      <div class="format-item">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path><path d="M8 12h.01"></path><path d="M12 12h.01"></path><path d="M16 12h.01"></path></svg></span>
+        <h4>Facilitated Discussions</h4>
+      </div>
+      <div class="format-item">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg></span>
+        <h4>Networking &amp; Lunch</h4>
+      </div>
+      <div class="format-item">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path><path d="M9 9v.01"></path><path d="M9 12v.01"></path><path d="M9 15v.01"></path></svg></span>
+        <h4>Exhibitor Fair</h4>
+      </div>
+      <div class="format-item">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"></path><path d="m9 14 6-6"></path><path d="M21 3 15 9"></path><path d="M21 3v5h-5"></path><circle cx="6.5" cy="6.5" r="2.5"></circle></svg></span>
+        <h4>Pre-Conference Field Trips</h4>
+      </div>
+    </div>
+    <div class="expect-ph">
+      <div class="photo-strip">
+        <span class="draft-tag" style="margin-bottom:14px">Past-conference gallery — to come</span>
+        <div class="draft-strip">
+          <div class="draft-frame">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+            <span class="draft-note">Photo placeholder</span>
+          </div>
+          <div class="draft-frame">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+            <span class="draft-note">Photo placeholder</span>
+          </div>
+          <div class="draft-frame">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+            <span class="draft-note">Photo placeholder</span>
+          </div>
+        </div>
+      </div>
+      <div class="draft-frame quote-ph">
+        <span class="draft-tag">Attendee quote — to come</span>
+        <span class="qmark">“</span>
+        <span class="draft-note">A pull quote from a past attendee will live here once supplied by the client.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONFERENCE HISTORY -->
+<section class="history" data-screen-label="Conference History">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" style="margin-bottom:16px">Conference History</div>
+      <h2>Eight Conferences, One Growing Movement</h2>
+      <p>Each conference reflects a different moment in the farm and sea to school movement, building on the work that came before.</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-row recent">
+        <div class="tl-year">2026</div>
+        <div class="tl-body">
+          <span class="tl-tag">Most recent</span>
+          <div class="tl-theme">Building Connections, Resilience, and Joy</div>
+          <a class="tl-link" href="#">View program <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-year">2024</div>
+        <div class="tl-body">
+          <div class="tl-theme">Rooted in Resilience: Centering Climate and Community</div>
+          <a class="tl-link" href="#">View program <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-year">2022</div>
+        <div class="tl-body">
+          <div class="tl-theme">Seeding the Future (virtual conference)</div>
+          <a class="tl-link" href="#">View program <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-year">2018</div>
+        <div class="tl-body">
+          <div class="tl-theme">Setting the Table: Communities Creating Change</div>
+          <a class="tl-link" href="#">View program <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-year">2016</div>
+        <div class="tl-body">
+          <div class="tl-theme">Growing Together</div>
+          <a class="tl-link" href="#">View program <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-year">2015</div>
+        <div class="tl-body">
+          <div class="tl-theme">Massachusetts Farm to Cafeteria Conference</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-year">2012</div>
+        <div class="tl-body">
+          <div class="tl-theme">Massachusetts Farm to School Convention</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-year">2011</div>
+        <div class="tl-body">
+          <div class="tl-theme">Massachusetts Farm to School Convention</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONFERENCE-YEAR ZONE — SPONSORSHIP + EXHIBITOR FAIR (held) -->
+<section class="cyear" data-screen-label="Conference-year programming">
+  <div class="wrap">
+    <div class="cyear-head">
+      <span class="cyear-flag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        In conference years
+      </span>
+      <p class="cyear-note">Sponsorship and the Exhibitor Fair activate ahead of each conference. The blocks below preview what returns for 2028.</p>
+    </div>
+    <div class="held-grid">
+
+      <!-- SPONSORSHIP -->
+      <div class="held-card" data-screen-label="Sponsorship">
+        <div class="label">
+          <span class="eyebrow">Sponsorship</span>
+          <span class="status-pill">Builds out for 2028</span>
+        </div>
+        <blockquote>“The conference has been a great opportunity for us to connect with new food service directors and spend time with our existing school partners. We chose to sponsor this event to gain more exposure with the farm to school network.”</blockquote>
+        <cite>Annie Broad<span>Boston Food Hub, Conference Sponsor</span></cite>
+        <p class="held-note">Fuller sponsorship content is built out in conference years.</p>
+      </div>
+
+      <!-- EXHIBITOR FAIR -->
+      <div class="held-card" data-screen-label="Exhibitor Fair">
+        <div class="label">
+          <span class="eyebrow">Exhibitor Fair</span>
+          <span class="status-pill">Builds out for 2028</span>
+        </div>
+        <p class="body">The conference's Exhibitor Fair is open to nonprofit organizations looking to connect with a highly engaged audience of farm and sea to school practitioners.</p>
+        <p class="body">Exhibitor tables are an affordable way to share resources, build relationships, and get your work in front of educators, food service professionals, advocates, and community partners from across the Commonwealth.</p>
+        <span class="ghost-btn">Exhibitor info returns for 2028</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="#">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="#">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="#">What is Farm to School?</a></li>
+          <li><a href="#">Mission &amp; Vision</a></li>
+          <li><a href="MFTS-Impact.html">Impact</a></li>
+          <li><a href="MFTS-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="#">Event Calendar</a></li>
+          <li><a href="#">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="MFTS-HOTM.html">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="#">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================================
+WORDPRESS IMPLEMENTATION NOTES — MFTS-Conference.html
+(Massachusetts Farm & Sea to School Conference page)
+WordPress build — standard page template, NOT The Events Calendar
+==============================================================================
+NAV / CHROME
+- Active nav group = "Participate" (.active). ASSUMPTION — confirm the Conference page's
+  parent menu item with client.
+- Shared chrome (topbar + header + footer) inherited verbatim from the Nova v2 (Tidewater)
+  shared theme templates. Tokens / fonts / .btn / .eyebrow / .accent-italic / leaf glyph
+  unchanged.
+
+(1) href="#" LINKS TO RESOLVE
+- Topbar: "make your pledge", "apply now" -> F2S Month pledge + MA FRESH application URLs.
+- Header "Donate" -> donation URL. Nav items -> top-level menu URLs.
+- Conference History timeline "View program" (x5: 2026, 2024, 2022, 2018, 2016) ->
+  each year's program PDF/page. 2015 / 2012 / 2011 have NO program link per copy (intentional).
+- Footer links (Local Food, About Us, Participate clusters) -> respective pages
+  (Impact + Team + Conference + HOTM already wired to built pages).
+
+(2) VISIBLY-UNFINISHED PLACEHOLDERS (assets/copy still owed by client)
+- WHAT TO EXPECT > Past-conference gallery: 3 dashed photo placeholders ("Photo placeholder")
+  awaiting a strip/gallery of past-conference photography. Do NOT substitute stock.
+- WHAT TO EXPECT > Attendee pull quote: dashed quote placeholder awaiting a real attendee
+  quote (+ attribution) from the client.
+- CONFERENCE-YEAR ZONE (Sponsorship + Exhibitor Fair) is intentionally rendered in a
+  distinct "held / builds out for 2028" treatment. Full sponsorship tiers/logos and the
+  exhibitor application + pricing are built out in conference years (2028). The supplied
+  Annie Broad / Boston Food Hub quote is real client copy and is rendered in full.
+
+(3) VERBATIM-COPY ITEMS FLAGGED FOR CLIENT REVIEW
+- ABOUT body: "over 300  attendees" contains a DOUBLE SPACE between "300" and "attendees"
+  (reproduced verbatim, not corrected).
+- HERO subheadline TRAILS OFF: "...farmers, fishers, and advocates to…" — sentence is
+  incomplete in the source copy (reproduced verbatim with trailing ellipsis).
+- Em dashes in ABOUT and WHAT TO EXPECT body are verbatim client copy. No em dashes in any
+  agency microcopy (e.g. "Builds out for 2028", status pills, zone note).
+
+COMPONENT MAPPING (Elementor / ACF)
+- HERO -> ACF: hero_flag / hero_heading / hero_subheadline.
+- ABOUT -> ACF wysiwyg "about_body" + repeater "about_stats" {value,label}.
+- WHO ATTENDS -> ACF: who_intro + who_roles (roles sentence) + who_callout + image field.
+- WHAT TO EXPECT -> ACF: expect_body + repeater "formats" {label,icon}; gallery + quote =
+  placeholder containers bound to (future) gallery field + testimonial CPT.
+- CONFERENCE HISTORY -> CPT "conference" {year, theme, program_url, is_recent} in a Loop
+  Grid rendered as the .timeline (newest first). Vertical rail + node = CSS.
+- CONFERENCE-YEAR ZONE -> dark Container; Sponsorship quote = ACF testimonial; Exhibitor
+  copy = ACF wysiwyg. "Held" status pills + ghost button are conditional on a
+  conference_year toggle (show full sponsorship/exhibitor modules when active).
+============================================================================ -->
+
+</body></html>
