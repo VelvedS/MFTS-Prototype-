@@ -274,32 +274,10 @@ header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.92);backdr
 .poi-mono{border-radius:14px;height:150px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green) 0%,var(--green-light) 70%,var(--highlight) 100%);position:relative;overflow:hidden}
 .poi-mono::after{content:'';position:absolute;right:-30px;bottom:-30px;width:130px;height:130px;border-radius:50%;border:1px solid rgba(255,255,255,.25)}
 .poi-mono span{font-family:'Bebas Neue';font-size:56px;letter-spacing:.08em;color:#fff}
-/* ===== REGIONAL PANELS ===== */
-.regions{background:#fff;border-top:1px solid var(--line);padding:96px 0}
-.region-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.region-panel{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
-.region-panel .rp-head{background:var(--green);color:#fff;padding:20px 24px;display:flex;justify-content:space-between;align-items:baseline}
-.region-panel:nth-child(2) .rp-head{background:var(--green-light)}
-.region-panel:nth-child(3) .rp-head{background:var(--green-deep)}
-.rp-head .rn{font-family:'Bebas Neue';font-size:26px;letter-spacing:.07em}
-.rp-head .rc{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.75)}
-.rp-list{list-style:none;flex:1}
-.rp-list li{border-bottom:1px solid var(--line)}
-.rp-list li:last-child{border-bottom:none}
-.rp-row{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;text-align:left;padding:13px 22px;cursor:pointer;font-family:'Open Sans';transition:background .15s}
-.rp-row:hover{background:rgba(0,124,137,.07)}
-.rp-row svg{width:15px;height:15px;flex:none}
-.rp-row .rnm{font-family:'Raleway';font-weight:700;font-size:13.5px;color:var(--green-ink);flex:1;line-height:1.3}
-.rp-row .rct{font-size:11px;color:#777;white-space:nowrap}
-.award{font-family:'Raleway';font-weight:800;font-size:8.5px;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap;flex:none}
-.award.maFresh{background:rgba(136,176,63,.16);color:#4C6420;border:1px solid rgba(136,176,63,.5)}
-.award.nfs{background:rgba(0,181,175,.12);color:var(--green-light);border:1px solid rgba(0,181,175,.45)}
-.rp-empty{padding:26px 22px;font-size:13px;color:#666;font-style:italic}
 /* ===== RESPONSIVE ===== */
 @media (max-width:1024px){
   .nav-links{display:none}
   .ledger-rows{grid-template-columns:1fr}
-  .region-grid{grid-template-columns:1fr}
   .fgroup .flbl{min-width:100%}
 }
 @media (max-width:760px){
@@ -339,24 +317,24 @@ footer a:hover{color:var(--gold)}
 <!-- HEADER -->
 <header>
   <div class="wrap header-inner">
-    <a class="logo" href="MFTS-Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
     <ul class="nav-links">
       <li class="has-dropdown">
         <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
         <ul class="dropdown">
-        <li><a href="MFTS-About-Us.html">What is Farm to School</a></li>
-        <li><a href="MFTS-Team.html">Our Team</a></li>
-        <li><a href="MFTS-About-Us.html#mission-vision">Mission &amp; Vision</a></li>
-        <li><a href="MFTS-Impact.html">Our Impact</a></li>
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
         </ul>
       </li>
       <li class="has-dropdown">
         <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
         <ul class="dropdown">
-        <li><a href="MFTS-Events-Main-v1-CalendarForward.html">Upcoming Events</a></li>
-        <li><a href="#" class="soon" title="Coming soon — page not built yet">News</a></li>
-        <li><a href="MFTS-Podcast.html">Podcast</a></li>
-        <li><a href="#" class="soon" title="Coming soon — page not built yet">Webinar Archive</a></li>
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
         <li><a href="MFTS-Conference.html">Conference</a></li>
         </ul>
       </li>
@@ -380,12 +358,12 @@ footer a:hover{color:var(--gold)}
       <li class="has-dropdown">
         <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
         <ul class="dropdown">
-        <li><a href="MFTS-HOTM.html">Harvest of the Month</a></li>
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
         <li><a href="MFTS-Institute.html">F2S Institute</a></li>
         <li><a href="#" class="soon" title="Coming soon — page not built yet">MA FRESH Grant</a></li>
-        <li><a href="#" class="soon" title="Coming soon — page not built yet">NFS Challenge</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
         <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
-        <li><a href="#" class="soon" title="Coming soon — page not built yet">Terrific Trays</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
         </ul>
       </li>
     </ul>
@@ -518,17 +496,6 @@ footer a:hover{color:var(--gold)}
   </div>
 </section>
 
-<!-- REGIONAL SEGMENTATION PANELS -->
-<section class="regions" data-screen-label="Regional vendor lists">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Browse by <span class="accent-italic">region</span></h2>
-      <p>Every source in the current result set, sorted A to Z. Award badges mark MA FRESH and Northeast Food for Schools cohort members.</p>
-    </div>
-    <div class="region-grid" id="regionGrid"></div>
-  </div>
-</section>
-
 <!-- POI DETAIL MODULE (uniform markup across all six Atlas maps) -->
 <div class="atlas-poi-scrim" id="poiScrim"></div>
 <aside class="atlas-poi" id="poiPanel" role="dialog" aria-modal="true" aria-labelledby="poiName" hidden>
@@ -561,25 +528,25 @@ footer a:hover{color:var(--gold)}
         <ul>
           <li><a href="sourcing-local-food.html">Source Local Food</a></li>
           <li><a href="#">Sell To Schools</a></li>
-          <li><a href="#">Terrific Tray Submission</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
         </ul>
       </div>
       <div>
         <h5>About Us</h5>
         <ul>
-          <li><a href="MFTS-About-Us.html">What is Farm to School?</a></li>
-          <li><a href="MFTS-About-Us.html#mission-vision">Mission &amp; Vision</a></li>
-          <li><a href="MFTS-Impact.html">Impact</a></li>
-          <li><a href="MFTS-Team.html">Team &amp; Advisory</a></li>
+          <li><a href="About-Us.html">What is Farm to School?</a></li>
+          <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
         </ul>
       </div>
       <div>
         <h5>Participate</h5>
         <ul>
-          <li><a href="MFTS-Events-Main-v1-CalendarForward.html">Event Calendar</a></li>
+          <li><a href="MFTS-Events-v1-Calendar.html">Event Calendar</a></li>
           <li><a href="MFTS-Institute.html">Institute</a></li>
           <li><a href="MFTS-Conference.html">Conference</a></li>
-          <li><a href="MFTS-HOTM.html">Harvest of the Month</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
           <li><a href="#">MA FRESH</a></li>
           <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
         </ul>
@@ -773,18 +740,6 @@ function renderLedger(set){
     row.addEventListener('click',()=>openPoi(id,row));
   });
 }
-function renderRegions(set){
-  const grid=$('#regionGrid');grid.innerHTML='';
-  ['eastern','central','western'].forEach(reg=>{
-    const items=set.filter(r=>r.region===reg).sort((a,b)=>a.name.localeCompare(b.name));
-    const total=DATA.filter(r=>r.region===reg).length;
-    const panel=document.createElement('div');panel.className='region-panel';
-    panel.innerHTML='<div class="rp-head"><span class="rn">'+REGION_LABEL[reg].replace(' Massachusetts','')+' Mass.</span><span class="rc">'+items.length+' of '+total+'</span></div>'+
-    (items.length?'<ul class="rp-list">'+items.map(r=>'<li><button class="rp-row" type="button" data-id="'+r.id+'">'+PIN[r.entityType]+'<span class="rnm">'+esc(r.name)+'</span>'+(r.programs.includes('maFresh')?'<span class="award maFresh">MA FRESH</span>':'')+(r.programs.includes('nfs')?'<span class="award nfs">NFS</span>':'')+'<span class="rct">'+esc(r.city)+'</span></button></li>').join('')+'</ul>':'<p class="rp-empty">No matches here under the current filters.</p>');
-    grid.appendChild(panel);
-  });
-  grid.querySelectorAll('.rp-row').forEach(b=>b.addEventListener('click',()=>openPoi(b.dataset.id,b)));
-}
 function renderTable(set){
   const tb=$('#tableBody');
   const key=state.sortKey,dir=state.sortDir;
@@ -805,7 +760,7 @@ function updateCount(set){
   const n=state.products.size+state.readiness.size+state.hotm.size+(state.center?1:0);
   $('#filterCount').textContent=n;
 }
-function renderAll(){const set=currentSet();renderMap(set);renderLedger(set);renderRegions(set);renderTable(set);updateCount(set);}
+function renderAll(){const set=currentSet();renderMap(set);renderLedger(set);renderTable(set);updateCount(set);}
 function refreshSelected(){
   document.querySelectorAll('.lrow').forEach(r=>r.classList.toggle('is-selected',r.dataset.id===selectedId));
   Object.entries(markers).forEach(([id,m])=>{const el=m.getElement();if(el)el.classList.toggle('is-selected',id===selectedId);});

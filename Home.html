@@ -592,8 +592,22 @@ body { background: #EBF5F4; }
 }
 @media (max-width: 900px) { .stand-grid { grid-template-columns: 1fr; gap: 48px; } }
 
+
+/* __MFTS_DROPDOWN_CSS__  ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
 </style>
-</head>
+<link id="gfont-extra-pairings" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Zilla+Slab:wght@300;400;500;600;700&amp;family=Lato:wght@300;400;700;900&amp;family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap"></head>
 <body style="">
 
 <!-- TOPBAR -->
@@ -605,14 +619,55 @@ body { background: #EBF5F4; }
 <!-- HEADER -->
 <header>
   <div class="wrap header-inner">
-    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
     <ul class="nav-links">
-      <li><a href="#">Local Food</a></li>
-      <li><a href="#">About Us</a></li>
-      <li><a href="#">Learn</a></li>
-      <li><a href="#">Participate</a></li>
-      <li><a href="#">Explore</a></li>
-      <li><a href="#">Make Change</a></li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
     </ul>
     <div class="header-ctas">
       <a class="btn btn-green" href="#" style="background-color: #007C89;">Donate <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
@@ -849,7 +904,7 @@ body { background: #EBF5F4; }
         </div>
       </div>
       <div class="stand-right">
-        <image-slot id="stand-cta-image" src="assets/Springfield_KidGarden.jpeg" style="width:100%;height:100%;min-height:360px;" shape="rounded" radius="18" placeholder="Drop an image"></image-slot>
+        <image-slot id="stand-cta-image" style="width:100%;height:100%;min-height:360px;" shape="rounded" radius="18" placeholder="Drop an image"></image-slot>
       </div>
     </div>
   </div>
@@ -874,7 +929,7 @@ body { background: #EBF5F4; }
         <ul>
           <li><a href="#">Source Local Food</a></li>
           <li><a href="#">Sell To Schools</a></li>
-          <li><a href="#">Terrific Tray Submission</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
         </ul>
       </div>
       <div>
@@ -882,19 +937,19 @@ body { background: #EBF5F4; }
         <ul>
           <li><a href="#">What is Farm to School?</a></li>
           <li><a href="#">Mission &amp; Vision</a></li>
-          <li><a href="#">Impact</a></li>
-          <li><a href="#">Team &amp; Advisory</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
         </ul>
       </div>
       <div>
         <h5>Participate</h5>
         <ul>
           <li><a href="#">Event Calendar</a></li>
-          <li><a href="#">Institute</a></li>
-          <li><a href="#">Conference</a></li>
-          <li><a href="#">Harvest of the Month</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
           <li><a href="#">MA FRESH</a></li>
-          <li><a href="#">Food System Civics</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
         </ul>
       </div>
 
@@ -910,4 +965,18 @@ body { background: #EBF5F4; }
 
 
 <script src="image-slot.js"></script>
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
 </body></html>

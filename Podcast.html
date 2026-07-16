@@ -74,31 +74,48 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdro
 
 /* ===== EPISODES (cream band) ===== */
 .episodes{padding:96px 0;background:var(--cream)}
+.season-tabs{display:flex;width:fit-content;gap:6px;margin:0 auto 44px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px}
+.season-tab{appearance:none;background:transparent;border:0;cursor:pointer;font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:11px 26px;border-radius:999px;transition:.2s;white-space:nowrap}
+.season-tab:hover{color:var(--green-ink)}
+.season-tab.is-active{background:var(--accent);color:#fff}
+.season-panel[hidden]{display:none}
 .ep-num{font-family:'Bebas Neue';font-weight:400;color:var(--accent);line-height:.85;letter-spacing:.02em}
 .ep-art{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:grid;place-items:center;aspect-ratio:16/9}
 .ep-art img{width:100%;height:100%;object-fit:contain}
 .bz-player{min-height:180px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.7);overflow:hidden;padding:8px}
-.transcript{display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);transition:color .2s;width:fit-content}
-.transcript:hover{color:var(--green-deep)}
-.transcript svg{width:13px;height:13px}
 .ep-desc{font-size:14.5px;line-height:1.7;color:#2a2a2a;display:flex;flex-direction:column;gap:12px}
 .ep-desc a{color:var(--accent);font-weight:600;border-bottom:2px solid rgba(0,124,137,.3);transition:.2s}
 .ep-desc a:hover{border-color:var(--accent)}
 
+/* Description clamp + Show more toggle */
+.ep-clip{position:relative;overflow:hidden;transition:max-height .35s ease;display:flex;flex-direction:column;gap:12px}
+.ep-clip.is-clamped::after{content:'';position:absolute;left:0;right:0;bottom:0;height:48px;background:linear-gradient(rgba(255,255,255,0),#fff);pointer-events:none}
+.ep-more{appearance:none;background:transparent;border:0;cursor:pointer;padding:0;margin-top:2px;width:fit-content;display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);transition:color .2s}
+.ep-more:hover{color:var(--green-deep)}
+.ep-more svg{width:12px;height:12px;transition:transform .25s}
+.ep-more.is-open svg{transform:rotate(180deg)}
+.ep-transcript{appearance:none;background:transparent;border:0;cursor:pointer;padding:0;margin-top:auto;width:fit-content;display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);transition:color .2s;text-decoration:none}
+.ep-transcript:hover{color:var(--green-deep)}
+.ep-transcript svg{width:12px;height:12px}
+.featured .ep-clip.is-clamped::after{background:linear-gradient(rgba(0,58,64,0),var(--green-ink))}
+.featured .ep-more{color:#A8C663}
+.featured .ep-more:hover{color:#fff}
+
 /* Featured (latest) episode */
-.featured{background:var(--green-ink);color:#fff;border-radius:24px;padding:44px 48px;display:flex;flex-direction:column;gap:18px;margin-bottom:64px;position:relative;overflow:hidden}
+.featured{background:var(--green-ink);color:#fff;border-radius:24px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:34px 44px;align-items:start;margin-bottom:64px;position:relative;overflow:hidden}
+.feat-media{display:flex;flex-direction:column;gap:16px}
+.feat-body{display:flex;flex-direction:column;gap:18px}
+.feat-player{grid-column:1 / -1;display:flex;flex-direction:column;gap:14px}
 .featured::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 10%,rgba(0,181,175,.18),transparent 55%);pointer-events:none}
 .featured>*{position:relative;z-index:1}
 .featured .head{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start}
 .featured .latest-tag{display:inline-flex;width:fit-content;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-ink);background:#A8C663;border-radius:999px;padding:5px 14px}
 .featured .ep-num{font-size:54px;color:#A8C663;margin-top:2px}
 .featured h3{font-family:'Raleway';font-weight:900;font-size:clamp(24px,2.4vw,32px);color:#fff;line-height:1.15}
-.featured .ep-art{aspect-ratio:auto;height:260px;position:relative;background:var(--green-deep);border:1px solid rgba(255,255,255,.15)}
+.featured .ep-art{aspect-ratio:auto;height:330px;position:relative;background:var(--green-deep);border:1px solid rgba(255,255,255,.15)}
 .featured .ep-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
 .featured .ep-desc{color:rgba(245,239,227,.88);font-size:14.5px;line-height:1.6}
 .featured .bz-player{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15)}
-.featured .transcript{color:#A8C663}
-.featured .transcript:hover{color:#fff}
 
 /* Archive grid */
 .ep-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
@@ -125,7 +142,7 @@ footer a:hover{color:var(--gold)}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width:1024px){
-  .featured{padding:32px 28px}
+  .featured{padding:32px 28px;grid-template-columns:1fr;gap:28px}
   .featured .ep-art{height:220px}
   .ep-grid{grid-template-columns:1fr}
   .about-row{grid-template-columns:1fr;gap:28px}
@@ -139,9 +156,23 @@ footer a:hover{color:var(--gold)}
   .ep-card .head{grid-template-columns:1fr;gap:8px}
   .foot-grid{grid-template-columns:1fr}
 }
+
+/* __MFTS_DROPDOWN_CSS__  ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
 </style>
 <link id="gfont-Open-Sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&amp;display=swap">
-</head>
+<link id="gfont-extra-pairings" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Zilla+Slab:wght@300;400;500;600;700&amp;family=Lato:wght@300;400;700;900&amp;family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap"></head>
 <body>
 
 <!-- TOPBAR -->
@@ -153,14 +184,55 @@ footer a:hover{color:var(--gold)}
 <!-- HEADER -->
 <header>
   <div class="wrap header-inner">
-    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
     <ul class="nav-links">
-      <li><a href="#">Local Food</a></li>
-      <li><a href="#">About Us</a></li>
-      <li><a href="#">Learn</a></li>
-      <li><a href="#">Participate</a></li>
-      <li><a href="#" class="active">Explore</a></li>
-      <li><a href="#">Make Change</a></li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false" aria-current="page">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
     </ul>
     <a class="btn btn-green" href="#">Donate
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
@@ -172,7 +244,8 @@ footer a:hover{color:var(--gold)}
 <section class="hero" data-screen-label="Podcast hero">
   <div class="wrap">
     <span class="hero-flag" style="color: rgb(168, 198, 99);">News &amp; Events</span>
-    <h1>Farm to School Northeast: A <em style="color: rgb(168, 198, 99);">Podcast</em></h1>
+    <h1>Farm to School Northeast: 
+A Podcast</h1>
     <p class="lede" style="font-family: &quot;Open Sans&quot;">We are thrilled to be producing the second season of, "Farm to School Northeast," a monthly podcast where we explore the creative ways that local food is getting into school cafeterias and how food system education is playing out in classrooms and school gardens across the northeast region.</p>
   </div>
 </section>
@@ -182,7 +255,7 @@ footer a:hover{color:var(--gold)}
   <div class="wrap">
     <div class="about-inner">
       <div class="section-head center">
-        <h2>About the <em class="accent-italic">Show</em></h2>
+        <h2>About the show</h2>
       </div>
       <div class="about-row">
         <p style="font-family: &quot;Open Sans&quot;; font-size: 16px">Check back each month for a 20-30 minute episode that highlights the innovative work of educators, food service staff, school garden coordinators, policy makers, farmers, and more. From a group of students in Massachusetts who are spearheading district-wide composting, to social emotional learning in the school garden, to a scratch cooking award in Maine and a crepe truck in Vermont, this podcast will inspire, teach, and amplify our farm to school stories. You can listen in on the Massachusetts Farm to School website or wherever you get your podcasts!</p>
@@ -199,27 +272,38 @@ footer a:hover{color:var(--gold)}
       <h2>Episodes</h2>
     </div>
 
-    <!-- Featured: Episode 2.8 (latest) -->
+    <!-- Featured: Episode 2.8 (latest) — always visible above the season toggle -->
     <article class="featured" data-screen-label="Latest episode">
-      <span class="latest-tag">Latest episode</span>
-      <div class="head">
-        <span class="ep-num">2.8</span>
-        <h3>Indigenous Partnerships and Contributions to Farm to School</h3>
+      <div class="feat-media">
+        <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2026/05/Ep2.8_MA-Indig.png" alt="Episode 2.8 artwork"></div>
       </div>
-      <div class="ep-art"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2026/05/Ep2.8_MA-Indig.png" alt="Episode 2.8 artwork"></div>
-      <div class="ep-desc">
-        <p>In this episode we talk with Brad Lopes, education and Public Program Manager at the Aquinnah Cultural Center and the Education Manager of the Wampanoag Tribe of Gayhead Aquinnah and Emily Armstrong, Education Director of Island Grown Initiative. Brad and Emily speak about the collaboration between Island Grown and the Aquinnah Cultural Center to promote tribal food sovereignty through the lens of curricular instruction and some best practices for engaging in local food sustainability and food sovereignty work in schools.</p>
+      <div class="feat-body">
+        <span class="latest-tag">Latest episode</span>
+        <div class="head">
+          <span class="ep-num">2.8</span>
+          <h3>Indigenous Partnerships and Contributions to Farm to School</h3>
+        </div>
+        <div class="ep-desc">
+          <p>In this episode we talk with Brad Lopes, education and Public Program Manager at the Aquinnah Cultural Center and the Education Manager of the Wampanoag Tribe of Gayhead Aquinnah and Emily Armstrong, Education Director of Island Grown Initiative. Brad and Emily speak about the collaboration between Island Grown and the Aquinnah Cultural Center to promote tribal food sovereignty through the lens of curricular instruction and some best practices for engaging in local food sustainability and food sovereignty work in schools.</p>
+        </div>
       </div>
-      <div class="bz-player">
+      <div class="feat-player">
+        <div class="bz-player">
           <div id="buzzsprout-player-19136843"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/19136843-indigenous-partnerships-and-contributions-to-farm-to-school.js?container_id=buzzsprout-player-19136843&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-episode-2-8-transcript/">Read transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
+      </div>
     </article>
 
-    <!-- Archive: newest to oldest -->
+    <!-- Season filter toggle (centered, under the featured latest episode; mirrors Elementor Pro Tabs widget) -->
+    <div class="season-tabs" role="tablist" aria-label="Filter episodes by season">
+      <button class="season-tab is-active" id="tab-s2" role="tab" aria-selected="true" aria-controls="season-2" data-season="2">Season 2</button>
+      <button class="season-tab" id="tab-s1" role="tab" aria-selected="false" aria-controls="season-1" data-season="1">Season 1</button>
+    </div>
+
+    <!-- SEASON 2 panel: archive grid -->
+    <div class="season-panel is-active" id="season-2" role="tabpanel" aria-labelledby="tab-s2" data-season="2">
+    <!-- Archive: Season 2, newest to oldest -->
     <div class="ep-grid">
 
       <article class="ep-card">
@@ -236,9 +320,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-18906654"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/18906654-stories-from-the-field.js?container_id=buzzsprout-player-18906654&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-7/">Read the transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -254,9 +335,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-18630100"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/18630100-feast-box-from-farmer-to-school.js?container_id=buzzsprout-player-18630100&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-6/">Read the transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -272,9 +350,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-18454797"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/18454797-early-childhood-nutrition-at-vermont-s-mountain-village-school.js?container_id=buzzsprout-player-18454797&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-5/">Read the transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -290,9 +365,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-18252945"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/18252945-early-childhood-farm-to-school-the-power-and-curiosity-of-our-youngest-learners.js?container_id=buzzsprout-player-18252945&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-4/">Read the transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -308,9 +380,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-18112571"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/18112571-trout-tales-a-grade-4-project-from-sustainability-academy-in-burlington-vt.js?container_id=buzzsprout-player-18112571&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-3-transcript/">Read the transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -327,9 +396,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-17977584"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/17977584-the-power-of-garden-based-learning.js?container_id=buzzsprout-player-17977584&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-2-transcript/">Read the transcript
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -345,10 +411,15 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-17828890"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/17828890-the-food-project-dirt-crew-takes-the-mic.js?container_id=buzzsprout-player-17828890&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep2-1-transcript/">Read the transcript
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
+
+    </div><!-- /ep-grid Season 2 -->
+    </div><!-- /season-2 panel -->
+
+    <!-- SEASON 1 panel: archive -->
+    <div class="season-panel" id="season-1" role="tabpanel" aria-labelledby="tab-s1" data-season="1" hidden>
+    <!-- Archive: Season 1, newest to oldest -->
+    <div class="ep-grid">
 
       <article class="ep-card">
         <div class="head">
@@ -363,9 +434,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-17267586"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/17267586-the-importance-of-farm-to-school-buying-local-and-a-shipping-container-farm-in-groton-ct.js?container_id=buzzsprout-player-17267586&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-9-transcript/">Read the transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -381,9 +449,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-17028785"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/17028785-talking-about-books-and-food-systems-with-author-jacqueline-briggs-martin-and-publisher-philip-lee.js?container_id=buzzsprout-player-17028785&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-8-transcript/">Read the transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -399,9 +464,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-16807275"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/16807275-zane-tickoo-youth-activism-and-the-power-of-the-plate.js?container_id=buzzsprout-player-16807275&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/f2s-northeast-podcast/podcast-ep1-7-transcript/">Read transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -417,9 +479,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-16682983"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/16682983-buzz-flow-and-grow-exploring-steam-with-bees-fish-and-gardens.js?container_id=buzzsprout-player-16682983&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/f2s-northeast-podcast/podcast-ep1-6-transcript/">Read Transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -436,9 +495,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-16510544"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/16510544-maine-s-scratch-cooking-champions.js?container_id=buzzsprout-player-16510544&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/f2s-northeast-podcast/podcast-ep1-5-transcript/">Read Transcript
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -454,9 +510,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-16341508"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/16341508-montpelier-high-school-building-community-through-cooking-and-eating-local.js?container_id=buzzsprout-player-16341508&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-4-transcript/">Read transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -472,9 +525,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-16207770"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/16207770-middle-schoolers-create-a-student-driven-farm.js?container_id=buzzsprout-player-16207770&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-3-transcript/">Read transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -492,9 +542,6 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-16052652"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/16052652-say-something-kind-to-a-seed-social-emotional-learning-in-the-school-garden.js?container_id=buzzsprout-player-16052652&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-2-transcript/">Read transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
       <article class="ep-card">
@@ -517,12 +564,10 @@ footer a:hover{color:var(--gold)}
           <div id="buzzsprout-player-15883523"></div>
           <script src="https://www.buzzsprout.com/2403596/episodes/15883523-what-do-we-mean-when-we-say-farm-to-school.js?container_id=buzzsprout-player-15883523&amp;player=small" type="text/javascript" charset="utf-8"></script>
         </div>
-        <a class="transcript" href="https://www.massfarmtoschool.org/podcast-ep1-1-transcript/">Read transcript.
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
       </article>
 
-    </div>
+    </div><!-- /ep-grid Season 1 -->
+    </div><!-- /season-1 panel -->
   </div>
 </section>
 
@@ -545,7 +590,7 @@ footer a:hover{color:var(--gold)}
         <ul>
           <li><a href="#">Source Local Food</a></li>
           <li><a href="#">Sell To Schools</a></li>
-          <li><a href="#">Terrific Tray Submission</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
         </ul>
       </div>
       <div>
@@ -561,11 +606,11 @@ footer a:hover{color:var(--gold)}
         <h5>Participate</h5>
         <ul>
           <li><a href="#">Event Calendar</a></li>
-          <li><a href="#">Institute</a></li>
-          <li><a href="#">Conference</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
           <li><a href="HOTM.html">Harvest of the Month</a></li>
           <li><a href="#">MA FRESH</a></li>
-          <li><a href="#">Food System Civics</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
         </ul>
       </div>
     </div>
@@ -577,9 +622,10 @@ footer a:hover{color:var(--gold)}
 </footer>
 
 <!-- ============================================================================
-IMPLEMENTATION NOTES — MFTS-Podcast.html  (Farm to School Northeast podcast page)
+IMPLEMENTATION NOTES — Podcast.html  (Farm to School Northeast podcast page)
 WordPress + Elementor 4.0 build (standard page, NOT The Events Calendar)
 ==============================================================================
+MENU LINKS (prototype): menu link targets are prototype filenames for client review; production menus are managed in WordPress and will use permalinks.
 - Lives under the "Explore" nav group / News & Events cluster (.current-menu-item
   maps to .active here).
 - Shared chrome (topbar + header + footer) = Elementor Theme Builder header/footer
@@ -591,11 +637,19 @@ WordPress + Elementor 4.0 build (standard page, NOT The Events Calendar)
                                page_lede / hero_art (podcast logo). Locked copy.
 - ABOUT THE SHOW (.about) ..... Single ACF wysiwyg "about_show". Locked copy.
 - EPISODES .................... CPT "podcast_episode" {number, title, artwork,
-                               description, buzzsprout_id, buzzsprout_slug,
-                               transcript_label, transcript_url} in an Elementor
-                               Loop Grid ordered newest first (2 / 1 columns). The
+                               description, buzzsprout_id, buzzsprout_slug} in an
+                               Elementor Loop Grid ordered newest first (2 / 1 columns). The
                                newest post renders through the featured loop item
                                template (.featured); the rest use .ep-card.
+- SEASON FILTER (tabs) ........ Episodes split by season via Season 1 / Season 2 tabs
+                               (default Season 2). Add a "season" taxonomy (or numeric
+                               meta) to the CPT. In Elementor Pro 4.2: use the Tabs
+                               widget with tab "Season 2" + tab "Season 1"; each tab
+                               pane holds its own Loop Grid query-filtered to that
+                               season term (S2 pane = featured latest + archive grid;
+                               S1 pane = archive grid). Or: a single Loop Grid + the
+                               Taxonomy Filter widget on "season". The .season-tabs /
+                               .season-panel markup + JS below mirror that behavior.
 - BUZZSPROUT PLAYERS .......... The div+script pair is generated per post from
                                buzzsprout_id and buzzsprout_slug (small player,
                                container_id="buzzsprout-player-{id}"). The .bz-player
@@ -612,8 +666,92 @@ WordPress + Elementor 4.0 build (standard page, NOT The Events Calendar)
                                listing (no title on the live page). Episode 2.7 has no
                                artwork on the source page and uses the podcast logo as
                                fallback art.
-- Transcript labels intentionally vary by episode (verbatim client copy); store per
-  post in transcript_label. No em dashes in new microcopy.
+- DESCRIPTION CLAMP ........... Each .ep-desc is clamped to ~4 lines (104px) with a
+  "Show more" / "Show less" toggle (JS at page end). Descriptions shorter than the
+  clamp render no button. In Elementor, replicate with an expandable/Read More widget
+  or this small JS snippet over .ep-desc.
+- TRANSCRIPTS ................. Each .ep-card carries a "View full transcript" link
+  (.ep-transcript, injected by JS at page end). Wire href to the CPT's transcript_url
+  field. No em dashes in new microcopy.
 ============================================================================ -->
 
+<script>
+(function(){
+  var tabs=document.querySelectorAll('.season-tab');
+  var panels=document.querySelectorAll('.season-panel');
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      var s=t.getAttribute('data-season');
+      tabs.forEach(function(x){
+        var on=(x===t);
+        x.classList.toggle('is-active',on);
+        x.setAttribute('aria-selected',on?'true':'false');
+      });
+      panels.forEach(function(p){
+        var on=(p.getAttribute('data-season')===s);
+        p.classList.toggle('is-active',on);
+        if(on){p.removeAttribute('hidden');}else{p.setAttribute('hidden','');}
+      });
+    });
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var CLAMP=104, TOL=6;
+  document.querySelectorAll('.ep-desc').forEach(function(desc){
+    if(desc.querySelector('.ep-clip'))return;
+    var clip=document.createElement('div');
+    clip.className='ep-clip';
+    while(desc.firstChild){clip.appendChild(desc.firstChild);}
+    desc.appendChild(clip);
+    if(clip.scrollHeight<=CLAMP+TOL)return;            // short enough: no toggle
+    clip.classList.add('is-clamped');
+    clip.style.maxHeight=CLAMP+'px';
+    var btn=document.createElement('button');
+    btn.type='button';
+    btn.className='ep-more';
+    btn.innerHTML='<span>Show more</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>';
+    desc.appendChild(btn);
+    btn.addEventListener('click',function(){
+      if(clip.classList.contains('is-clamped')){
+        clip.style.maxHeight=clip.scrollHeight+'px';
+        clip.classList.remove('is-clamped');
+        btn.classList.add('is-open');
+        btn.querySelector('span').textContent='Show less';
+        clip.addEventListener('transitionend',function(){clip.style.maxHeight='none';},{once:true});
+      }else{
+        clip.style.maxHeight=clip.scrollHeight+'px';
+        requestAnimationFrame(function(){clip.classList.add('is-clamped');clip.style.maxHeight=CLAMP+'px';});
+        btn.classList.remove('is-open');
+        btn.querySelector('span').textContent='Show more';
+      }
+    });
+  });
+  document.querySelectorAll('.ep-card').forEach(function(card){
+    if(card.querySelector('.ep-transcript'))return;
+    var a=document.createElement('a');
+    a.className='ep-transcript';
+    a.href='#';
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg><span>View Full Transcript</span>';
+    card.appendChild(a);
+  });
+})();
+</script>
+
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
 </body></html>

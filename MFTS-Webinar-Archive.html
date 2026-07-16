@@ -1,0 +1,533 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Webinar Archive — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F; /* green sliver homage to MFTS brand */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:'Raleway';font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--green-light)}
+.nav-links a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;transform:translateY(-2px)}
+
+/* ===== PAGE HERO (shared dark hero pattern) ===== */
+.hero{background:var(--green-ink) url('assets/SeafoodWorkshop.jpg') center/cover no-repeat;color:#fff;padding:80px 0 72px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.78),rgba(0,58,64,.82)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:900px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#A8C663;margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:#A8C663}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(44px,5.6vw,84px);color:#fff;line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:#A8C663;font-size:.94em}
+.hero .lede{font-family:'Fraunces',serif;font-weight:400;font-size:20px;line-height:1.55;color:rgba(245,239,227,.92);max-width:660px;margin:26px auto 0}
+
+/* ===== WEBINAR ARCHIVE (cream band) ===== */
+.archive{padding:80px 0 96px;background:var(--cream)}
+.web-list{display:flex;flex-direction:column;gap:28px;max-width:980px;margin:0 auto}
+/* Repeating entry template (loop-ready): label, title, description, presenters, body, video (below text), resources */
+.webinar{background:#fff;border:1px solid var(--line);border-radius:20px;padding:40px 44px;display:flex;flex-direction:column;gap:16px;scroll-margin-top:100px}
+.web-label{display:inline-flex;align-items:center;gap:8px;width:fit-content;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:6px 15px}
+.web-title{font-family:'Raleway';font-weight:900;font-size:clamp(22px,2.3vw,29px);color:var(--green-ink);line-height:1.16;letter-spacing:-.01em}
+.web-desc{font-size:14.5px;color:var(--muted);font-weight:600}
+.web-meta{font-size:14.5px;line-height:1.55;color:var(--green-ink)}
+.web-meta b{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.web-body{font-size:15.5px;line-height:1.75;color:#2a2a2a}
+.web-video{position:relative;width:100%;max-width:840px;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:var(--green-ink);border:1px solid var(--line);margin-top:4px}
+.web-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.web-res{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:6px}
+.web-res .res-lbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.res-chip{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:700;font-size:13px;color:var(--green-ink);background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:8px 16px;transition:transform .2s,border-color .2s,color .2s}
+.res-chip svg{width:14px;height:14px;color:var(--accent);flex:none}
+.res-chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.res-chip:hover svg{color:var(--accent)}
+/* Entry 3 — four-session series (permitted structural variant) */
+.web-handouts{background:var(--cream);border:1px solid var(--line);border-radius:16px;padding:26px 30px;margin-top:2px}
+.web-handouts .res-lbl{display:block;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.handout-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.handout-list li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:14.5px;color:var(--green-ink)}
+.handout-list .h-name{font-weight:700}
+.handout-langs{display:inline-flex;gap:8px;flex-wrap:wrap}
+.lang-chip{display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:700;font-size:12px;color:var(--accent);background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 12px;transition:.2s}
+.lang-chip svg{width:12px;height:12px}
+.lang-chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+.sessions{display:flex;flex-direction:column;gap:18px;margin-top:10px;border-top:2px solid var(--line);padding-top:26px}
+.ses-lead{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.session{background:var(--cream);border:1px solid var(--line);border-radius:16px;padding:28px 30px;display:flex;flex-direction:column;gap:14px}
+.session-title{font-family:'Raleway';font-weight:900;font-size:19px;color:var(--green-ink);line-height:1.2}
+.session-title .snum{color:var(--accent);font-family:'Bebas Neue';font-weight:400;font-size:24px;letter-spacing:.02em;margin-right:8px}
+.session .web-body{font-size:15px}
+.session .web-video{max-width:760px}
+
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.foot-subscribe{display:inline-flex;align-items:center;gap:7px;margin-top:16px;font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.02em;color:#A8C663}
+.foot-subscribe svg{width:14px;height:14px;transition:transform .2s}
+.foot-subscribe:hover svg{transform:translateX(3px)}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .nav-links{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:600px){
+  .webinar{padding:30px 26px}
+  .session{padding:24px 22px}
+  .foot-grid{grid-template-columns:1fr}
+}
+
+/* __MFTS_DROPDOWN_CSS__  ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+.nav-links .dropdown a[aria-current="page"]{background:rgba(0,124,137,.09);color:var(--green-light)}
+</style>
+</head>
+<body>
+
+<!-- ELEMENTOR: Header template (Theme Builder) > topbar HTML widget -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- ELEMENTOR: Header template (Theme Builder) > Container > Site Logo + Nav Menu widget + Button widget -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false" aria-current="page">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html" aria-current="page">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- ELEMENTOR: Section > 1 container > Heading widget + Text Editor widget (page hero) -->
+<section class="hero" data-screen-label="Webinar Archive hero">
+  <div class="wrap">
+    <span class="hero-flag">Mass. Farm to School Webinars</span>
+    <h1>Webinar Archive</h1>
+    <p class="lede">Recordings of past Mass. Farm to School hosted webinars. Browse, watch, and use them in your work.</p>
+  </div>
+</section>
+
+<!-- ELEMENTOR: Section > 1 container > repeating Webinar entry template (see notes: manual WYSIWYG today, or future CPT + Loop Grid). Each .web-video maps to an Elementor Pro Video widget (YouTube source). -->
+<section class="archive" data-screen-label="Webinar entries">
+  <div class="wrap">
+    <div class="web-list">
+
+      <!-- ENTRY 1 -->
+      <article class="webinar" data-screen-label="Entry: Pollinator Gardens">
+        <span class="web-label">March 2026</span>
+        <h2 class="web-title">Pollinator Gardens: From Design to Curriculum</h2>
+        <p class="web-desc">This webinar took place on March 25, 2026, scroll down to watch a recording.</p>
+        <p class="web-meta"><b>Presenters</b>Eliza Lawrence, School Garden Coordinator, Regional Environmental Council; Erin Severens, Grade 5 teacher, Goddard Elementary School</p>
+        <p class="web-body">Discover how pollinators can transform your school garden into a dynamic outdoor classroom. In this webinar, you'll explore the essential role pollinators play in garden ecosystems and learn practical strategies for weaving them into your curriculum. Take away ready-to-use lesson plan ideas that connect pollinators to student learning, a curated plant list featuring edible pollinator favorites and some proven tips and techniques.</p>
+        <div class="web-video"><iframe src="https://www.youtube.com/embed/h5OzFrRwvzs?si=qgzEGXiQG1MoeV5P" title="Pollinator Gardens: From Design to Curriculum" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="web-res">
+          <span class="res-lbl">Slides</span>
+          <a class="res-chip" href="https://docs.google.com/presentation/d/1gM-_DSqFIP88Ed7EldwGxEPPffBXtnvHxbV2dq-o0f0/edit?usp=sharing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>Google Slides</a>
+          <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/04/2026.03.25-Pollinator-Gardens.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+        </div>
+      </article>
+
+      <!-- ENTRY 2 -->
+      <article class="webinar" data-screen-label="Entry: Indigenous Contributions">
+        <span class="web-label">March 2026</span>
+        <h2 class="web-title">Indigenous Contributions &amp; Perspectives in Farm to School</h2>
+        <p class="web-desc">This webinar took place on March 4, 2026</p>
+        <p class="web-meta"><b>Presenters</b>Brad Lopes, Aquinnah Wampanoag, and Emily Armstrong, of Island Grown Initiative</p>
+        <p class="web-body">Are you a school teacher or community educator? In this session, learn how to build a farm to school practice in the classroom and garden that honors Indigenous contributions and perspectives. Learn from Brad Lopes, Aquinnah Wampanoag, and Emily Armstrong, of Island Grown Initiative, about their partnership to incorporate more Indigenous resources into a district wide farm to school curriculum. They will discuss primarily K-5 curriculum, but both have experience working through 12th grade. All of the lessons and resources that they discuss fit into the Massachusetts frameworks in social studies or science.</p>
+        <div class="web-video"><iframe src="https://www.youtube.com/embed/dp5rmd9dyE0?si=jLvdFUwjSP5mc64D" title="Indigenous Contributions & Perspectives in Farm to School" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="web-res">
+          <span class="res-lbl">Slide Deck</span>
+          <a class="res-chip" href="https://docs.google.com/presentation/d/1gyZuq-iq3wMwGLzHgNx49Wl9CHGWiS02bJRZukQwV4c/edit?slide=id.g3964ec6c868_0_0#slide=id.g3964ec6c868_0_0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>Google Slides</a>
+          <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/03/Indigenous-Contributions-Perspectives-in-Farm-to-School.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+        </div>
+      </article>
+
+      <!-- ENTRY 3 — FOUR-SESSION SERIES (permitted structural variant: nested session sub-blocks) -->
+      <article class="webinar" data-screen-label="Entry: Kids in the Garden series">
+        <span class="web-label">January 2026 · Series</span>
+        <h2 class="web-title">Kids in the Garden: Young Learners Workshop Series 2026</h2>
+        <p class="web-desc">This series took place January 2026. Scroll down to watch recordings and download resources.</p>
+        <p class="web-meta"><b>Presenter</b>Rina Zampieron, State-wide Early Education Manager, Mass Audubon</p>
+        <p class="web-body">Join the movement to connect children with nature and healthy food! This workshop series caters to both seasoned gardeners and beginners who have never planted a seed. We'll explore engaging activities that show children how to make healthy food choices by learning about gardening, eating locally, cooking, and more. Engage your entire school community around food and learn how to involve families by celebrating their unique food culture and heritage.</p>
+        <div class="web-handouts">
+          <span class="res-lbl">Handouts</span>
+          <ul class="handout-list">
+            <li><span class="h-name">Garden to Classroom Activities</span>
+              <span class="handout-langs">
+                <a class="lang-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/Garden-to-Classroom-Activity-List.pdf">English</a>
+                <a class="lang-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/Garden-to-Classroom-Activity-List-PORTUGUESE.pdf">Portuguese</a>
+                <a class="lang-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/Garden-to-Classroom-Activity-List-Spanish.pdf">Spanish</a>
+              </span>
+            </li>
+            <li><span class="h-name">KinderGarden Activities</span>
+              <span class="handout-langs">
+                <a class="lang-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/KinderGarden-Activities.pdf">English</a>
+                <a class="lang-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/KinderGarden-Activities-PORTUGUESE.pdf">Portuguese</a>
+                <a class="lang-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/KinderGarden-Activities-Spanish.pdf">Spanish</a>
+              </span>
+            </li>
+            <li><span class="h-name">Farm to ECE Resources</span>
+              <span class="handout-langs"><a class="lang-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/Farm-to-ECE-Resources.pdf">PDF</a></span>
+            </li>
+            <li><span class="h-name">Resources for Cooking in an Early Education Classroom</span>
+              <span class="handout-langs"><a class="lang-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/Farm-to-ECE-Resources.pdf">PDF</a></span>
+            </li>
+            <li><span class="h-name">Farm to ECE Children's Book List</span>
+              <span class="handout-langs"><a class="lang-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/01/Farm-to-ECE-Childrens-Book-List.pdf">PDF</a></span>
+            </li>
+          </ul>
+        </div>
+        <div class="sessions">
+          <span class="ses-lead">Sessions</span>
+          <div class="session" data-screen-label="Session 1">
+            <h3 class="session-title"><span class="snum">01</span>Session 1 | Garden to Classroom</h3>
+            <p class="web-body">Integrate food, cooking, gardening, and cultural exploration into your curriculum. Discover the 3 C's (classroom, cafeteria, community) and learn how to involve students' families in celebrating their cultures and heritage through food.</p>
+            <div class="web-video"><iframe src="https://www.youtube.com/embed/lLT5kKd98D0?si=2dfQTjr_BCzQ8KA7" title="Session 1 | Garden to Classroom" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="web-res">
+              <span class="res-lbl">Slide deck</span>
+              <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/02/Garden-to-classroom.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+            </div>
+          </div>
+          <div class="session" data-screen-label="Session 2">
+            <h3 class="session-title"><span class="snum">02</span>Session 2 | KinderGarden</h3>
+            <p class="web-body">Design a thriving garden and build a curriculum around it that sparks children's curiosity and encourages them to roll up their sleeves and get their hands dirty. From planting to harvesting, we'll show you how to connect all areas of learning to your garden oasis.</p>
+            <div class="web-video"><iframe src="https://www.youtube.com/embed/PJm0HGRc2e8?si=dHxlVEjdiqQnkIqW" title="Session 2 | KinderGarden" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="web-res">
+              <span class="res-lbl">Slide deck</span>
+              <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/02/KinderGarden.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+            </div>
+          </div>
+          <div class="session" data-screen-label="Session 3">
+            <h3 class="session-title"><span class="snum">03</span>Session 3 | Field to Fork</h3>
+            <p class="web-body">Transform your garden harvest into delicious and educational meals! Even without a full kitchen, you can inspire healthy eating habits and a life-long love for cooking and eating fresh produce. Learn how to introduce kitchen tools and explore kid-friendly recipes for a fun and tasty learning experience.</p>
+            <div class="web-video"><iframe src="https://www.youtube.com/embed/4uXow5xNhFI?si=jXAifqveG0DQkkdr" title="Session 3 | Field to Fork" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="web-res">
+              <span class="res-lbl">Slide deck</span>
+              <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/02/Cook-with-Kids.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+            </div>
+          </div>
+          <div class="session" data-screen-label="Session 4">
+            <h3 class="session-title"><span class="snum">04</span>Session 4 | Grow Together, Eat Together: Cultivating Community Through Food</h3>
+            <p class="web-body">Food is a powerful tool for connecting families, celebrating cultures, and building a vibrant, thriving school community. In this workshop, learn strategies for creating a farm-to-school curriculum that engages students, families, and local farmers and growers, and creates a more inclusive and culturally rich learning environment. We'll explore ways to celebrate cultural diversity through the lens of food, cooking, and gardening, and get kids excited to learn about where their food comes from.</p>
+            <div class="web-video"><iframe src="https://www.youtube.com/embed/9v6glD8aP8g?si=v9ztoyc7_Zx5ezZU" title="Session 4 | Grow Together, Eat Together" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <div class="web-res">
+              <span class="res-lbl">Slide deck</span>
+              <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2026/02/Grow-together-Eat-together.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ENTRY 4 -->
+      <article class="webinar" data-screen-label="Entry: Responding to School Solicitations">
+        <span class="web-label">November 2025</span>
+        <h2 class="web-title">Responding to School Solicitations as a Farmer or Food Business</h2>
+        <p class="web-desc">This event took place on November 6, 2025.</p>
+        <p class="web-meta"><b>Presenter</b>Loni Austin, Founder, Austin Ridge Farm</p>
+        <p class="web-body">Are you a farmer or food business owner interested in selling to schools? In this session, participants will learn some basics of school sales, including how to respond to a request for quotes and other common school purchasing practices that enable high volume sales. Hear from a local farmer who has successfully gone through this process about the impact it has had on her farm business.</p>
+        <div class="web-video"><iframe src="https://www.youtube.com/embed/ppEZKq2t8kw?si=xfNyP-ivi0XZ50w5" title="Responding to School Solicitations as a Farmer or Food Business" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="web-res">
+          <span class="res-lbl">Download slides</span>
+          <a class="res-chip" href="https://docs.google.com/presentation/d/1w8JejAxv5L51NYQKv1t6MjUWXloFt-IpoKusJiscEJg/edit?usp=sharing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>Google Slides</a>
+          <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2025/11/2025.11.06-Responding-to-School-Solicitations-for-Farmers.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+        </div>
+      </article>
+
+      <!-- ENTRY 5 -->
+      <article class="webinar" data-screen-label="Entry: School-Wide Composting">
+        <span class="web-label">November 2025</span>
+        <h2 class="web-title">School-Wide Composting</h2>
+        <p class="web-desc">This event took place on November 5, 2025.</p>
+        <p class="web-meta"><b>Presenters</b>Sasha Palmer, Director of Food Services and Rebeca Salguero, Sustainability Coordinator, Public Schools of Brookline</p>
+        <p class="web-body">Are you ready to transform your school's food waste into environmental action? This interactive webinar will equip food service staff, administrators and educators with strategies to launch a successful composting program, covering everything from setup logistics to student engagement techniques. You'll walk away with ideas, practical tools, and a real success story that can work for any school size or budget. Leave inspired and confident to embark on this significant change that teaches students environmental stewardship while reducing your school's waste footprint.</p>
+        <div class="web-video"><iframe src="https://www.youtube.com/embed/HnQkTH7w1io?si=i9AyhnCOUaqx_Hq1" title="School-Wide Composting" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="web-res">
+          <span class="res-lbl">Download presentation slides</span>
+          <a class="res-chip" href="https://docs.google.com/presentation/d/1Y1QpwxP7XHnhN4M42UFir86oil6YF-mPeeOTa9AZRXA/edit?usp=sharing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>Google Slides</a>
+          <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2025/11/2025.11.5-School-Wide-Composting-.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+        </div>
+      </article>
+
+      <!-- ENTRY 6 -->
+      <article class="webinar" data-screen-label="Entry: Growing Success K-6">
+        <span class="web-label">October 2025</span>
+        <h2 class="web-title">Growing Success: Building an Inclusive K-6 Farm to School Program</h2>
+        <p class="web-desc">This event took place on October 22nd, 2025.</p>
+        <p class="web-meta"><b>Presenters</b>Jen Reese, Science and Garden Coordinator, and Leila Tunnell, Garden Educator, Amherst Pelham Public Schools</p>
+        <p class="web-body">Join us to learn how Amherst Pelham Public School provides all students in grades K-6 with year-round garden-based learning in both school garden spaces as well as in classrooms. Jen and Leila will share proven strategies for year-round garden education, building community partnerships, and overcoming implementation challenges. Whether you're starting fresh or expanding an existing program, you'll leave with actionable tools and approaches you can adapt to your school's needs to build a program that inspires joy and helps build a more just and sustainable world.</p>
+        <div class="web-video"><iframe src="https://www.youtube.com/embed/Pp34QW_GsSc?si=IhwwS-oOvvNhdlBT" title="Growing Success: Building an Inclusive K-6 Farm to School Program" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="web-res">
+          <span class="res-lbl">Download Presentation Slides</span>
+          <a class="res-chip" href="https://docs.google.com/presentation/d/1DpgrDblW8uZD6kSvyTsUtqqR5sxZ5GgnP8QA7trkCsc/edit?usp=sharing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>Google Slides</a>
+          <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2025/11/2025.10.22-Growing-Success_-Building-an-Inclusive-K-6-Farm-to-School-Program.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+        </div>
+      </article>
+
+      <!-- ENTRY 7 -->
+      <article class="webinar" data-screen-label="Entry: Farm to School 101">
+        <span class="web-label">September 2025</span>
+        <h2 class="web-title">Farm to School 101</h2>
+        <p class="web-desc">This webinar took place on September 10, 2025. Scroll down to view a recording of the webinar.</p>
+        <p class="web-meta"><b>Presenters</b>Dinah Mack &amp; Abby Getman Skillicorn, Mass Farm to School</p>
+        <p class="web-body">Are you interested in starting Farm to School efforts in your school or early education center? Join us to learn about all the offerings Mass Farm to School for both educators and foodservice professionals! Presenters Dinah Mack and Abby Getman Skillicorn will talk about the foundational elements of Farm to School and outline the different resources our team has on hand to support your Farm to School program.</p>
+        <div class="web-video"><iframe src="https://www.youtube.com/embed/-ZUUzgJaQaM?si=hnZEBztvzoXfd2ES" title="Farm to School 101" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="web-res">
+          <span class="res-lbl">View Slides</span>
+          <a class="res-chip" href="https://docs.google.com/presentation/d/1XVhGJt0lCqyxt1YEE7lJyFBET3D-DWbA9gNAsy7uzr4/edit?usp=sharing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>Google Slides</a>
+          <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2025/11/2025.09.10-Farm-to-School-101.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+        </div>
+      </article>
+
+      <!-- ENTRY 8 -->
+      <article class="webinar" data-screen-label="Entry: Local Procurement 101">
+        <span class="web-label">August 2025</span>
+        <h2 class="web-title">Local Procurement 101</h2>
+        <p class="web-desc">This webinar took place on August 21, 2025. Scroll down to view a recording of the webinar.</p>
+        <p class="web-meta"><b>Presenters</b>Abby Getman Skillicorn &amp; Simca Horwitz, Mass Farm to School</p>
+        <p class="web-body">Looking to source local foods but not sure where to start? Mass Farm to School will walk you through identifying what local items can easily be sourced for your meal programs, vendors you can work with, and resources to make the procurement process simple, compliant, and hassle-free.</p>
+        <div class="web-video"><iframe src="https://www.youtube.com/embed/U99UAfpf4J0?si=rXQiqjIdf5mAszdP" title="Local Procurement 101" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="web-res">
+          <span class="res-lbl">View Slides</span>
+          <a class="res-chip" href="https://docs.google.com/presentation/d/1qMrUwUVb3hGgJDohxNnuWXK9qJucn1g4wgzsO8xr2g8/edit?usp=sharing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>Google Slides</a>
+          <a class="res-chip" href="https://www.massfarmtoschool.org/wp-content/uploads/2025/11/2025.08.21-Local-Procurement-101.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PDF</a>
+        </div>
+      </article>
+
+      <!-- ENTRY 9 (no resources on the live page — resources row omitted) -->
+      <article class="webinar" data-screen-label="Entry: School Garden Management Summer">
+        <span class="web-label">May 2025</span>
+        <h2 class="web-title">School Garden Management in the Summer Months [5/7/25]</h2>
+        <p class="web-desc">This webinar took place on May 7, 2025. Scroll down to watch a recording.</p>
+        <p class="web-meta"><b>Presenter</b>Meg Tenczar, School Garden Program Manager &amp; Educator, Backyard Growers</p>
+        <p class="web-body">You have a school garden and it is overflowing and school is out for the summer! How can you plan for summer care and maintenance? Join us for this workshop to look at ways to engage the school-wide community in summer garden care and explore best practices to ensure that your school garden remains active in the summer months.</p>
+        <div class="web-video"><iframe src="https://www.youtube.com/embed/tudxWlDUIf8?si=JYgzgYXJfbuJvgw1&amp;start=4" title="School Garden Management in the Summer Months" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerated-sensors; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ELEMENTOR: Footer template (Theme Builder) > Container > 4 columns -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <a class="foot-subscribe" href="MFTS-Subscribe.html">Subscribe to our newsletter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="#">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="#">What is Farm to School?</a></li>
+          <li><a href="#">Mission &amp; Vision</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="#">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================================
+WORDPRESS IMPLEMENTATION NOTES — MFTS-Webinar-Archive.html  (Webinar Archive page)
+Nova v2 (Tidewater) — Elementor Pro build
+==============================================================================
+MENU LINKS (prototype): menu link targets are prototype filenames for client review; production menus are managed in WordPress and will use permalinks.
+NAV / CHROME
+- Active nav group = "Stories & Events" (.active). Dropdown "Webinar Archive" self-link
+  carries aria-current="page" and is now un-"soon"-ed. Shared chrome inherited byte-for-
+  byte from the Nova v2 (Tidewater) shared templates. News / Webinar Archive / NFS
+  Challenge / Terrific Trays nav links are live (see the site-wide nav note in the batch).
+- Footer now carries a "Subscribe to our newsletter" link -> MFTS-Subscribe.html.
+
+DATA SOURCE
+- The nine entries are LIVE site data pulled 2026-07-16 from the Past Webinar Archive
+  announcement page. Titles, dates, presenter lines and descriptions reproduced VERBATIM.
+
+(1) href="#" LINKS TO RESOLVE
+- Topbar "make your pledge" / "apply now"; header "Donate"; footer "Source Local Food",
+  "Sell To Schools", "What is Farm to School?", "Mission & Vision", "MA FRESH",
+  "Event Calendar", "Privacy", "Accessibility".
+- All webinar video embeds, slide decks, PDFs and handout links are LIVE client URLs (wired).
+
+(2) INTERIM PLACEHOLDERS / FLAGGED ITEMS
+- Entry 3 ("Kids in the Garden"): the handout "Resources for Cooking in an Early Education
+  Classroom" links to the SAME PDF (Farm-to-ECE-Resources.pdf) as the "Farm to ECE
+  Resources" item — this is what is live on the client site; preserved as-is. FLAG for the
+  client to confirm the intended file.
+- Entry 6: the archive LISTING page title contains a typo ("Building and Inclusive"); the
+  DETAIL-page title ("Building an Inclusive K-6 Farm to School Program") was used here.
+- Entry 9: no slide resources exist on the live page — the resources row is intentionally
+  omitted (no placeholder rendered, per the source).
+- No unsupplied assets on this page.
+
+(3) ELEMENTOR WIDGET MAPPING SUMMARY
+- HERO -> Section > Container > Heading (H1 "Webinar Archive") + Text Editor (lede).
+- WEBINAR ENTRIES -> one repeating entry template (.webinar): Heading (label chip) +
+  Heading (title) + Text Editor (description) + Text Editor (presenters) + Text Editor
+  (body) + VIDEO widget (YouTube) + resource chips (Button/Icon-List). Per the layout
+  constraint, the Video widget sits BELOW the body so "scroll down to watch" holds.
+- EACH .web-video -> Elementor Pro Video widget, Source = YouTube, URL = the embed link,
+  aspect ratio 16:9, lazy load ON (native), no YouTube JS API.
+- ENTRY 3 (series) -> the one permitted structural variant: the entry nests a Handouts
+  resource list + four Session sub-blocks, each Session = Heading + Text Editor + Video
+  widget + slide-deck Button.
+- BUILD PATH (client decision): the live archive is a manually maintained WYSIWYG page, so
+  the Elementor rebuild can be EITHER (a) a manually maintained page mirroring this layout,
+  OR (b) a future "webinar" CPT + Loop Grid if the client migrates webinars to a structured
+  post type. The entry template above is loop-ready for path (b).
+- FUTURE ENHANCEMENT: the earlier "Reimagined" concept (categorical filtering, featured-
+  recent, search) is NOT built here. If wanted later, the production path is a webinar CPT
+  with a topic taxonomy + an Elementor Loop Grid with a Taxonomy Filter widget.
+============================================================================ -->
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+</body></html>

@@ -46,7 +46,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdro
 .btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;transform:translateY(-2px)}
 
 /* ===== PAGE HERO (shared dark hero pattern) ===== */
-.hero{background:var(--green-ink) url('https://images.pexels.com/photos/1656663/pexels-photo-1656663.jpeg?auto=compress&cs=tinysrgb&w=1920') center/cover no-repeat;color:#fff;padding:80px 0 72px;position:relative;overflow:hidden;text-align:center}
+.hero{background:var(--green-ink) url('assets/FruitMarket_Pears-NoAtt.jpg') center/cover no-repeat;color:#fff;padding:80px 0 72px;position:relative;overflow:hidden;text-align:center}
 .hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.78),rgba(0,58,64,.78)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
 .hero .wrap{position:relative;z-index:1;max-width:1000px}
 .hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;justify-content:center}
@@ -76,14 +76,14 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdro
 .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:64px}
 .pillar{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:36px 32px;transition:.25s}
 .pillar:hover{border-color:var(--accent);transform:translateY(-4px)}
-.pillar .n{font-family:'Bebas Neue';font-size:52px;color:var(--accent);line-height:.85;letter-spacing:.02em;display:block;margin-bottom:16px}
-.pillar h4{font-family:'Raleway';font-weight:800;font-size:19px;color:var(--green-ink);margin-bottom:12px}
-.pillar p{font-size:14.5px;color:#3a3a3a;line-height:1.7}
-.resources{background:var(--cream);border:1px solid var(--line);border-radius:24px;padding:52px 56px;display:grid;grid-template-columns:1.2fr .8fr;gap:52px;align-items:center;margin-bottom:56px}
-.resources p.intro{font-size:17px;color:var(--green-ink);font-weight:600;font-family:'Raleway';line-height:1.6;margin-bottom:22px}
-.res-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px}
-.res-list li{display:flex;gap:12px;align-items:baseline;font-size:15px;color:#2a2a2a;line-height:1.55}
-.res-list li::before{content:'';flex-shrink:0;width:14px;height:2px;background:var(--bridge);transform:translateY(-4px)}
+.pillar h4{font-family:'Raleway';font-weight:800;font-size:26px;color:var(--green-ink);margin-bottom:16px;line-height:1.2}
+.pillar p{font-size:17px;color:#3a3a3a;line-height:1.65}
+.resources{background:var(--cream);border:1px solid var(--line);border-radius:24px;padding:40px 44px;display:grid;grid-template-columns:1.2fr .8fr;gap:44px;align-items:center;margin-bottom:56px}
+.resources .intro{font-family:'Raleway';font-weight:900;font-size:20px;color:var(--green-ink);line-height:1.35;letter-spacing:-.01em;padding-bottom:16px;margin-bottom:18px;border-bottom:2px solid var(--line)}
+.res-list{list-style:none;display:flex;flex-wrap:wrap;gap:10px 12px}
+.res-list li{display:flex;gap:10px;align-items:center;font-size:14.5px;font-weight:600;color:var(--green-ink);line-height:1.3;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 16px 7px 7px}
+.res-list li .ico{flex-shrink:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--cream);color:var(--accent)}
+.res-list li .ico svg{width:17px;height:17px}
 .resources .photo{aspect-ratio:4/3}
 .hiw-close{font-family:'Fraunces',serif;font-weight:400;font-size:21px;line-height:1.6;color:var(--green-ink);max-width:840px;margin:0 auto;text-align:center}
 
@@ -91,24 +91,25 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdro
 .calendar{padding:96px 0;background:var(--cream)}
 .cal-top{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:stretch;margin-bottom:52px}
 .cal-top .section-head{margin-bottom:28px}
-.cal-list-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 32px;display:flex;align-items:baseline;gap:14px 32px;flex-wrap:wrap;margin-bottom:0}
-.cal-list-card .lbl{font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--green-ink);white-space:nowrap;flex-shrink:0}
-.cal-list{list-style:none;display:flex;flex-wrap:wrap;gap:10px 26px}
-.cal-list li{display:flex;gap:12px;align-items:baseline;font-size:15px;color:#2a2a2a;line-height:1.55}
-.cal-list li::before{content:'';flex-shrink:0;width:14px;height:2px;background:var(--bridge);transform:translateY(-4px)}
+.cal-list-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 30px;display:flex;flex-direction:column;gap:18px;margin-bottom:0}
+.cal-list-card .lbl{font-family:'Raleway';font-weight:900;font-size:18px;letter-spacing:.04em;text-transform:uppercase;color:var(--green-ink);padding-bottom:14px;border-bottom:2px solid var(--line)}
+.cal-list{list-style:none;display:flex;flex-wrap:wrap;gap:10px 12px}
+.cal-list li{display:flex;gap:10px;align-items:center;font-size:14.5px;font-weight:600;color:var(--green-ink);line-height:1.3;background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:7px 16px 7px 7px}
+.cal-list li .ico{flex-shrink:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--accent)}
+.cal-list li .ico svg{width:17px;height:17px}
 .cal-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
-.cal-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 22px 24px;display:flex;flex-direction:column;gap:6px;position:relative;transition:.25s}
-.cal-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 18px 36px -24px rgba(0,90,102,.3)}
-.cal-card .mo{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
-.cal-card .crop{font-family:'Bebas Neue';font-size:34px;line-height:.95;color:var(--green-ink);letter-spacing:.02em}
-.cal-card .go{margin-top:auto;padding-top:14px;display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.cal-card{background:linear-gradient(160deg,#00727E 0%,#003A40 100%);border:1px solid rgba(255,255,255,.16);border-radius:var(--radius);padding:22px 20px 20px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;min-height:215px;transition:.25s}
+.cal-card .ph{position:absolute;inset:0;z-index:0;background-repeat:no-repeat;background-position:center 54%;background-size:68% auto;pointer-events:none}
+.cal-card.photo .ph{background-size:cover;background-position:center}
+.cal-card .scrim{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,42,46,.55) 0%,rgba(0,50,55,.18) 34%,rgba(0,50,55,.22) 56%,rgba(0,40,44,.86) 100%);pointer-events:none}
+.cal-card:hover{border-color:#A8C663;transform:translateY(-4px);box-shadow:0 18px 36px -22px rgba(0,0,0,.5)}
+.cal-card .mo{position:relative;z-index:2;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#A8C663;text-shadow:0 1px 4px rgba(0,0,0,.55)}
+.cal-card .crop{position:relative;z-index:2;font-family:'Bebas Neue';font-size:34px;line-height:.95;color:#fff;letter-spacing:.02em;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.cal-card .go{position:relative;z-index:2;margin-top:auto;padding-top:14px;display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#A8C663;text-shadow:0 1px 4px rgba(0,0,0,.55)}
 .cal-card .go svg{width:12px;height:12px;transition:transform .25s}
 .cal-card:hover .go svg{transform:translateX(3px)}
-.cal-card.now{background:var(--green-ink);border-color:var(--green-ink)}
-.cal-card.now .mo{color:#A8C663}
-.cal-card.now .crop{color:#fff}
-.cal-card.now .go{color:#A8C663}
-.cal-card .now-tag{position:absolute;top:14px;right:14px;font-family:'Raleway';font-weight:800;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-ink);background:#A8C663;border-radius:999px;padding:3px 10px}
+.cal-card.now{border:2px solid #A8C663}
+.cal-card .now-tag{position:absolute;z-index:3;top:14px;right:14px;font-family:'Raleway';font-weight:800;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-ink);background:#A8C663;border-radius:999px;padding:3px 10px}
 
 /* ===== WHO IT'S FOR (white band) ===== */
 .who{padding:96px 0;background:#fff;border-top:1px solid var(--line)}
@@ -122,9 +123,9 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdro
 .aud-card:hover::before{transform:scaleX(1)}
 .aud-card h3{font-family:'Raleway';font-weight:900;font-size:19px;color:var(--green-ink);margin-bottom:12px;line-height:1.2}
 .aud-card p{font-size:14.5px;line-height:1.7;color:#2a2a2a;flex:1}
-.aud-card .cta{margin-top:20px;display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);transition:color .2s}
+.aud-card .cta{margin-top:22px;display:inline-flex;align-items:center;gap:9px;font-family:'Raleway';font-weight:900;font-size:14px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);transition:color .2s}
 .aud-card .cta:hover{color:var(--green-deep)}
-.aud-card .cta svg{width:13px;height:13px}
+.aud-card .cta svg{width:16px;height:16px;stroke-width:3}
 
 /* ===== WHY IT WORKS (cream band) ===== */
 .why{padding:96px 0;background:var(--cream)}
@@ -132,8 +133,8 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdro
 .why-open .section-head{margin-bottom:24px}
 .why-open .sub{font-family:'Fraunces',serif;font-weight:400;font-size:24px;line-height:1.4;color:var(--green-ink);margin-bottom:20px}
 .why-open .body{font-size:16.5px;line-height:1.8;color:#2a2a2a}
-.why-open .photo{position:relative;min-height:0}
-.why-open .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.why-open .photo{position:relative;align-self:start}
+.why-open .photo img{display:block;width:100%;height:300px;object-fit:cover}
 .quote-panel{background:var(--green-ink);border-radius:24px;padding:64px 72px;color:#fff;position:relative;overflow:hidden;margin-bottom:56px;text-align:center}
 .quote-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 88% 8%,rgba(0,181,175,.2),transparent 55%),radial-gradient(ellipse at 8% 92%,rgba(69,192,190,.14),transparent 55%);pointer-events:none}
 .quote-panel blockquote{position:relative;z-index:1;font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:clamp(22px,2.6vw,30px);line-height:1.5;max-width:880px;margin:0 auto}
@@ -209,16 +210,33 @@ footer a:hover{color:var(--gold)}
   .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
 }
 @media (max-width:600px){
-  .res-list{grid-template-columns:1fr}
+  .res-list li{flex:1 1 100%}
   .cal-grid{grid-template-columns:repeat(2,1fr)}
   .aud-grid{grid-template-columns:1fr}
   .impact-cards{grid-template-columns:1fr}
   .quote-panel{padding:40px 28px}
   .foot-grid{grid-template-columns:1fr}
 }
+
+/* __MFTS_DROPDOWN_CSS__  ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
 </style>
 <link id="gfont-Open-Sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&amp;display=swap">
-</head>
+<link id="gfont-Merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;500;600;700&amp;display=swap">
+<link id="gfont-Bitter" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@300;400;500;600;700&amp;display=swap">
+<link id="gfont-Crimson-Text" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@300;400;500;600;700&amp;display=swap">
+<link id="gfont-extra-pairings" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Zilla+Slab:wght@300;400;500;600;700&amp;family=Lato:wght@300;400;700;900&amp;family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap"></head>
 <body>
 
 <!-- TOPBAR -->
@@ -230,14 +248,55 @@ footer a:hover{color:var(--gold)}
 <!-- HEADER -->
 <header>
   <div class="wrap header-inner">
-    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
     <ul class="nav-links">
-      <li><a href="#">Local Food</a></li>
-      <li><a href="#">About Us</a></li>
-      <li><a href="#">Learn</a></li>
-      <li><a href="#" class="active">Participate</a></li>
-      <li><a href="#">Explore</a></li>
-      <li><a href="#">Make Change</a></li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false" aria-current="page">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
     </ul>
     <a class="btn btn-green" href="#">Donate
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
@@ -249,13 +308,13 @@ footer a:hover{color:var(--gold)}
 <section class="hero" data-screen-label="HOTM hero" style="padding:72px 0 64px">
   <div class="wrap">
     <span class="hero-flag" style="color: rgb(168, 198, 99);">Celebrate Local Food All Year Long</span>
-    <h1>Harvest of the <em style="color: rgb(168, 198, 99);">Month</em></h1>
+    <h1>Harvest of the <em style="color: rgb(168, 198, 99); font-family: Raleway; font-weight: 900; font-style: normal">Month</em></h1>
     <p class="lede" style="font-family: &quot;Open Sans&quot;">Harvest of the Month is a statewide program that connects school cafeterias, classrooms, and communities with fresh, locally grown food. Each month we feature a Massachusetts grown or sourced food and provide recipes, classroom lessons, and hands-on learning activities that help students explore where their food comes from and why it matters.</p>
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="hiw" data-screen-label="How It Works">
+<section class="hiw" data-screen-label="How It Works" style="padding: 96px 0px 10px">
   <div class="wrap">
     <div class="hiw-intro">
       <div>
@@ -264,21 +323,18 @@ footer a:hover{color:var(--gold)}
         </div>
         <p class="lede-copy" style="font-family: &quot;Open Sans&quot;; font-size: 20px">Harvest of the Month is a simple, flexible framework The program is designed to make it easy for schools and early education centers at every stage to participate, whether you're just starting out or looking to deepen a robust program.</p>
       </div>
-      <div class="photo"><img src="https://images.pexels.com/photos/1268101/pexels-photo-1268101.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Child harvesting carrots in a school garden"></div>
+      <div class="photo"><img src="assets/KidsinGarden-BackyardGrowers.jpeg" alt="Students gathered around a school garden bed examining carrot tops"></div>
     </div>
     <div class="pillars">
       <div class="pillar">
-        <span class="n">01</span>
         <h4>Spotlight a Seasonal Crop</h4>
         <p>Each month of the school year is paired with a Massachusetts-grown crop — chosen based on what's fresh, available, and well-suited to the school cafeteria. Food service teams feature the crop in school meals at least twice a month, either as a part of a menu recipe, or by offering a taste test featuring the crop and where it was grown or caught, helping students make the connection between the food on their plate and where it comes from.</p>
       </div>
       <div class="pillar">
-        <span class="n">02</span>
         <h4>Bring Learning to Life</h4>
         <p>Educators receive a monthly newsletter with crop-specific classroom lessons, garden activities, hands-on cooking projects, and literacy and science tie-ins — all curriculum-aligned and ready to use. From strawberry taste tests to bean dissection to cranberry math, food becomes a real-world learning tool.</p>
       </div>
       <div class="pillar">
-        <span class="n">03</span>
         <h4>Connect Classroom and Community</h4>
         <p>Harvest of the Month works best when the whole school community shows up — students, families, teachers, food service staff, and local farmers. Taste tests, farm visits, school garden harvests, and newsletters for families all help build lasting connections to local food and the farms that grow it.</p>
       </div>
@@ -287,17 +343,16 @@ footer a:hover{color:var(--gold)}
       <div>
         <p class="intro">Participants receive access to a collection of resources designed to make local food education easy and engaging, including:</p>
         <ul class="res-list">
-          <li>Classroom lessons aligned with Massachusetts standards</li>
-          <li>School meal promotion materials</li>
-          <li>Family newsletters and at-home activities</li>
-          <li>Recipes and taste test ideas</li>
-          <li>School garden connections</li>
-          <li>Recommended books at all grade levels</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></span>Classroom lessons aligned with Massachusetts standards</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg></span>School meal promotion materials</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg></span>Family newsletters and at-home activities</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path><line x1="6" x2="18" y1="17" y2="17"></line></svg></span>Recipes and taste test ideas</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"></path><path d="M10 20c5.5-2.5.8-6.4 3-10"></path><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"></path><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"></path></svg></span>School garden connections</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path></svg></span>Recommended books at all grade levels</li>
         </ul>
       </div>
-      <div class="photo"><img src="https://images.pexels.com/photos/4503273/pexels-photo-4503273.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Potted herb seedlings for a classroom growing project"></div>
+      <div class="photo"><img src="assets/beansinbags-noAtt.jpeg" alt="Open burlap sacks of dried beans and lentils in many colors at a market"></div>
     </div>
-    <p class="hiw-close">Whether you are serving thousands of school meals, teaching a classroom lesson, running an afterschool program, or engaging young children in a childcare setting, Harvest of the Month offers ready-to-use resources to help you bring local food into everyday learning.</p>
   </div>
 </section>
 
@@ -314,74 +369,113 @@ Harvest Calendar</h2>
         <div class="cal-list-card">
           <span class="lbl">Select a month to discover:</span>
           <ul class="cal-list">
-            <li>Recipes and menu ideas</li>
-            <li>Classroom lessons and activities</li>
-            <li>Family engagement resources</li>
-            <li>School garden connections</li>
-            <li>Fun facts and agricultural information</li>
+            <li>
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path><line x1="6" x2="18" y1="17" y2="17"></line></svg></span>
+              Recipes and menu ideas
+            </li>
+            <li>
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></span>
+              Classroom lessons and activities
+            </li>
+            <li>
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+              Family engagement resources
+            </li>
+            <li>
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"></path><path d="M10 20c5.5-2.5.8-6.4 3-10"></path><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"></path><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"></path></svg></span>
+              School garden connections
+            </li>
+            <li>
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg></span>
+              Fun facts and agricultural information
+            </li>
           </ul>
         </div>
       </div>
-      <div class="photo" style="margin:36px 0 12px"><img src="https://images.pexels.com/photos/35492404/pexels-photo-35492404.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Fresh local produce from the Massachusetts harvest" style="width: 100%; height: 350px; object-fit: cover"></div>
+      <div class="photo" style="margin:36px 0 12px;position:relative"><img src="assets/BristolAg_CafeteriaWorkers.jpg" alt="Three smiling school cafeteria workers in maroon shirts and aprons serving a plate of food" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></div>
     </div>
     <div class="cal-grid">
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/4022083/pexels-photo-4022083.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">September</span>
         <span class="crop">Tomatoes</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/11170935/pexels-photo-11170935.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">October</span>
         <span class="crop">Pears</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/28825963/pexels-photo-28825963.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">November</span>
         <span class="crop">Kale</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/1656663/pexels-photo-1656663.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">December</span>
         <span class="crop">Carrots</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/2949140/pexels-photo-2949140.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">January</span>
         <span class="crop">Apples</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/4187617/pexels-photo-4187617.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">February</span>
         <span class="crop">Winter Squash</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/6585008/pexels-photo-6585008.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">March</span>
         <span class="crop">Dairy</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/31514958/pexels-photo-31514958.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">April</span>
         <span class="crop">Potatoes</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/8351649/pexels-photo-8351649.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">May</span>
         <span class="crop">Seafood</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card now" href="#">
+      <a class="cal-card now photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/2820144/pexels-photo-2820144.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="now-tag">This month</span>
         <span class="mo">June</span>
         <span class="crop">Strawberries</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/19392088/pexels-photo-19392088.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">July</span>
         <span class="crop">Cucumbers</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
       </a>
-      <a class="cal-card" href="#">
+      <a class="cal-card photo" href="#">
+        <span class="ph" style="background-image:url('https://images.pexels.com/photos/13196329/pexels-photo-13196329.jpeg?auto=compress&cs=tinysrgb&w=1200')"></span>
+        <span class="scrim"></span>
         <span class="mo">August</span>
         <span class="crop">Peaches</span>
         <span class="go">View month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
@@ -398,7 +492,7 @@ Harvest Calendar</h2>
         <h2>Who It's For</h2>
         <p>Harvest of the Month is for everyone in the school community. Whether you're serving trays of food, teaching a lesson, or caring for the youngest learners,  there's a version of Harvest of the Month built for you.</p>
       </div>
-      <div class="photo"><img src="https://images.pexels.com/photos/4259140/pexels-photo-4259140.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Family cooking together with kids"></div>
+      <div class="photo"><img src="assets/WalthamBG_GirlsCooking.jpg" alt="Four students in red shirts tasting bruschetta they made together in a cooking class"></div>
     </div>
     <div class="aud-grid">
       <div class="aud-card">
@@ -442,7 +536,7 @@ Harvest Calendar</h2>
 </section>
 
 <!-- WHY IT WORKS -->
-<section class="why" data-screen-label="Why It Works">
+<section class="why" data-screen-label="Why It Works" style="padding: 120px 0px 96px">
   <div class="wrap">
     <div class="why-open">
       <div>
@@ -452,7 +546,7 @@ Harvest Calendar</h2>
         <p class="sub">More than a taste test. A school-wide shift.</p>
         <p class="body">Harvest of the Month works because it makes local food visible, familiar, and exciting — not just once, but month after month. When students see the same farmers showing up in the cafeteria and the classroom, when they grow the same bean in the school garden that appears on their lunch tray, something changes.</p>
       </div>
-      <div class="photo"><img src="https://images.pexels.com/photos/4546114/pexels-photo-4546114.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Child tasting fruit at a student taste test"></div>
+      <div class="photo"><img src="assets/Lunch-To-Go-ChicopeeFresh.jpg" alt="Two grab-and-go lunch containers with apples, fresh salad, a roll, and local potato chips" style="height: 300px"></div>
     </div>
     <div class="quote-panel">
       <blockquote>"The more successful farm to school programs are not 'add-ons' to school policies and curricula, but integrated throughout the school priorities and culture."</blockquote>
@@ -508,7 +602,7 @@ Harvest Calendar</h2>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
         </a>
       </div>
-      <div class="photo"><img src="https://images.pexels.com/photos/5529599/pexels-photo-5529599.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Farmer holding fresh harvested vegetables and a basket"></div>
+      <div class="photo"><img src="assets/SchoolGarden5-USDA-noAtt.jpg" alt="A group of students raising garden trowels in a school garden, one holding a People's Garden sign"></div>
     </div>
   </div>
 </section>
@@ -526,10 +620,10 @@ Harvest Calendar</h2>
           <a class="btn btn-bright" href="#">Register
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
           </a>
-          <span class="closing">Questions? <a href="/cdn-cgi/l/email-protection#92fbfcf4fdd2fff3e1e1f4f3e0ffe6fde1f1fafdfdfebcfde0f5">Contact us</a> and we'll help you find the best way to participate.</span>
+          <span class="closing">Questions? <a href="mailto:info@massfarmtoschool.org">Contact us</a> and we'll help you find the best way to participate.</span>
         </div>
       </div>
-      <div class="photo"><img src="https://images.pexels.com/photos/2889442/pexels-photo-2889442.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Tractor working a green Massachusetts field"></div>
+      <div class="photo"><img src="assets/KI-REC-KidsinGarden.jpg" alt="An educator showing freshly pulled carrots to a line of young students in a community garden"></div>
     </div>
   </div>
 </section>
@@ -553,7 +647,7 @@ Harvest Calendar</h2>
         <ul>
           <li><a href="#">Source Local Food</a></li>
           <li><a href="#">Sell To Schools</a></li>
-          <li><a href="#">Terrific Tray Submission</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
         </ul>
       </div>
       <div>
@@ -569,11 +663,11 @@ Harvest Calendar</h2>
         <h5>Participate</h5>
         <ul>
           <li><a href="#">Event Calendar</a></li>
-          <li><a href="#">Institute</a></li>
-          <li><a href="#">Conference</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
           <li><a href="HOTM.html">Harvest of the Month</a></li>
           <li><a href="#">MA FRESH</a></li>
-          <li><a href="#">Food System Civics</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
         </ul>
       </div>
     </div>
@@ -585,9 +679,10 @@ Harvest Calendar</h2>
 </footer>
 
 <!-- ============================================================================
-IMPLEMENTATION NOTES — MFTS-HOTM.html  (Harvest of the Month program page)
+IMPLEMENTATION NOTES — HOTM.html  (Harvest of the Month program page)
 WordPress + Elementor 4.0 build (standard page, NOT The Events Calendar)
 ==============================================================================
+MENU LINKS (prototype): menu link targets are prototype filenames for client review; production menus are managed in WordPress and will use permalinks.
 - Lives under the "Participate" nav group (.current-menu-item maps to .active here).
 - Shared chrome (topbar + header + footer) = Elementor Theme Builder header/footer
   templates (or theme header.php / footer.php if chrome stays theme-side).
@@ -606,6 +701,15 @@ WordPress + Elementor 4.0 build (standard page, NOT The Events Calendar)
                                template (.cal-card); responsive columns 6 / 3 / 2.
                                "This month" state (.cal-card.now) = dynamic class when
                                post month == current month. NOT a TEC component.
+                               CARD ART: each card is a brand-teal tile (the teal is the
+                               "current color" overlay) with a full-bleed crop photo
+                               behind the text (.cal-card.photo .ph cover) + a top/bottom
+                               legibility scrim (.scrim). Placeholder photos are hot-
+                               linked from Pexels — per-crop farmers-market / harvest
+                               scenes, full-bleed cover behind the card text.
+                               REPLACE BEFORE LAUNCH with MFTS/licensed crop photography
+                               mapped to the CPT "photo" field — do not ship hotlinked
+                               third-party art in production.
 - WHO IT'S FOR (.aud-grid) .... ACF repeater "hotm_audiences" {title, body, cta_label,
                                cta_url} via Loop Grid (3 / 2 / 1 columns). The source
                                annotations are preserved as HTML comments per card.
@@ -624,6 +728,20 @@ WordPress + Elementor 4.0 build (standard page, NOT The Events Calendar)
 - Em dashes in body copy are verbatim client copy; no em dashes in new microcopy.
 ============================================================================ -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="image-slot.js"></script>
+<script src="image-slot.js"></script>
 
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
 </body></html>

@@ -164,9 +164,23 @@ footer a:hover{color:var(--gold)}
   .tt-copy{padding:34px 28px}
   .foot-grid{grid-template-columns:1fr}
 }
+
+/* __MFTS_DROPDOWN_CSS__  ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
 </style>
 <link id="gfont-Open-Sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&amp;display=swap">
-</head>
+<link id="gfont-extra-pairings" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Zilla+Slab:wght@300;400;500;600;700&amp;family=Lato:wght@300;400;700;900&amp;family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap"></head>
 <body>
 
 <!-- TOPBAR -->
@@ -178,14 +192,55 @@ footer a:hover{color:var(--gold)}
 <!-- HEADER -->
 <header>
   <div class="wrap header-inner">
-    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
     <ul class="nav-links">
-      <li><a href="#" class="active">Local Food</a></li>
-      <li><a href="#">About Us</a></li>
-      <li><a href="#">Learn</a></li>
-      <li><a href="#">Participate</a></li>
-      <li><a href="#">Explore</a></li>
-      <li><a href="#">Make Change</a></li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false" aria-current="page">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
     </ul>
     <a class="btn btn-green" href="#">Donate
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
@@ -207,7 +262,7 @@ footer a:hover{color:var(--gold)}
   <div class="wrap">
     <div class="section-head">
       <h2>Why Buy Local for Your School</h2>
-      <p>Food service directors across Massachusetts who've introduced local foods programs consistently see real, measurable wins in the cafeteria and beyond.</p>
+      <p style="padding-left: 54px; padding-right: 54px">Food service directors across Massachusetts who've introduced local foods programs consistently see real, measurable wins in the cafeteria and beyond.</p>
     </div>
     <div class="case-grid">
 
@@ -336,7 +391,7 @@ footer a:hover{color:var(--gold)}
         <div class="eyebrow">Harvest of the Month</div>
         <h2>Your program, in sync with the <em>monthly crop.</em></h2>
         <p>MA Farm to School's flagship program highlights a different locally grown crop each month, providing procurement templates, classroom lessons, cafeteria signage, and recipes — all coordinated so your school food program works in sync with educators.</p>
-        <a class="btn btn-green" href="MFTS-HOTM.html">Visit Harvest of the Month
+        <a class="btn btn-green" href="HOTM.html">Visit Harvest of the Month
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
         </a>
       </div>
@@ -382,7 +437,7 @@ footer a:hover{color:var(--gold)}
         <ul>
           <li><a href="#">Source Local Food</a></li>
           <li><a href="#">Sell To Schools</a></li>
-          <li><a href="#">Terrific Tray Submission</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
         </ul>
       </div>
       <div>
@@ -390,8 +445,8 @@ footer a:hover{color:var(--gold)}
         <ul>
           <li><a href="#">What is Farm to School?</a></li>
           <li><a href="#">Mission &amp; Vision</a></li>
-          <li><a href="MFTS-Impact.html">Impact</a></li>
-          <li><a href="MFTS-Team.html">Team &amp; Advisory</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
         </ul>
       </div>
       <div>
@@ -400,7 +455,7 @@ footer a:hover{color:var(--gold)}
           <li><a href="#">Event Calendar</a></li>
           <li><a href="MFTS-Institute.html">Institute</a></li>
           <li><a href="MFTS-Conference.html">Conference</a></li>
-          <li><a href="MFTS-HOTM.html">Harvest of the Month</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
           <li><a href="#">MA FRESH</a></li>
           <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
         </ul>
@@ -417,6 +472,7 @@ footer a:hover{color:var(--gold)}
 WORDPRESS IMPLEMENTATION NOTES — MFTS-Food-Service.html  (Food Service page)
 WordPress build — standard page template, NOT The Events Calendar
 ==============================================================================
+MENU LINKS (prototype): menu link targets are prototype filenames for client review; production menus are managed in WordPress and will use permalinks.
 NAV / CHROME
 - Active nav group = "Local Food" (.active). ASSUMPTION — confirm parent menu item.
 - Shared chrome (topbar + header + footer) inherited verbatim from the Nova v2 (Tidewater)
@@ -426,7 +482,7 @@ NAV / CHROME
 - Topbar "make your pledge" / "apply now"; header "Donate"; all nav items.
 - GETTING STARTED Step 2 "local food map" -> local food source page.
 - RUNNING TASTE TESTS "to the Guide" -> Taste Test Guide (adapted from Vermont F2S).
-- HARVEST OF THE MONTH "Visit Harvest of the Month" -> MFTS-HOTM.html (WIRED, page exists).
+- HARVEST OF THE MONTH "Visit Harvest of the Month" -> HOTM.html (WIRED, page exists).
 - NEED MORE SUPPORT "Contact Us" -> contact page.
 - Footer cluster links (Institute / Conference / HOTM / Food System Civics wired to siblings).
 
@@ -459,4 +515,18 @@ COMPONENT MAPPING (Elementor / ACF)
 - NEED MORE SUPPORT -> shared .getstarted dark band; ACF {eyebrow, heading, body, cta}.
 ============================================================================ -->
 
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
 </body></html>

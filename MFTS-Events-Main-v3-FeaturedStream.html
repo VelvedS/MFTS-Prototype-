@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
+
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Events — Massachusetts Farm to School</title>
@@ -230,9 +230,23 @@ footer a:hover{color:var(--gold)}
 .featured h1 em,.featured h2 em{color:#A8C663}
 .past-card .eyebrow{color:#A8C663}
 .past-card h2 em{color:#A8C663}
+
+/* __MFTS_DROPDOWN_CSS__  ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
 </style>
-</head>
-<body>
+<link id="gfont-extra-pairings" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Zilla+Slab:wght@300;400;500;600;700&amp;family=Lato:wght@300;400;700;900&amp;family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap"></head>
+<body style="">
 
 <div class="topbar">
   <span>#F2S Month is October — <a href="#">make your pledge</a></span>
@@ -241,17 +255,58 @@ footer a:hover{color:var(--gold)}
 
 <header>
   <div class="wrap header-inner">
-    <a class="logo" href="/"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
     <ul class="nav-links">
-      <li><a href="#">Local Food</a></li>
-      <li><a href="#">About Us</a></li>
-      <li><a href="#">Learn</a></li>
-      <li><a href="#">Participate</a></li>
-      <li><a href="#" class="active">Events</a></li>
-      <li><a href="#">Make Change</a></li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false" aria-current="page">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
     </ul>
     <a class="btn btn-green" href="#">Donate
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
     </a>
   </div>
 </header>
@@ -267,16 +322,16 @@ footer a:hover{color:var(--gold)}
     <!-- CONTROLS: view switcher + filter toggle -->
     <div class="controls">
       <div class="view-switcher" role="tablist" aria-label="Calendar views">
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Month</button>
-        <button class="is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>List</button>
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Day</button>
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M9 5v14M15 5v14"/></svg>Week</button>
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>Photo</button>
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4l-6 2v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v16M15 6v16"/></svg>Map</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>Month</button>
+        <button class="is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>List</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Day</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M9 5v14M15 5v14"></path></svg>Week</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg>Photo</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4l-6 2v14l6-2 6 2 6-2V4l-6 2z"></path><path d="M9 4v16M15 6v16"></path></svg>Map</button>
       </div>
 
       <button class="filter-toggle" id="filterToggle" onclick="document.getElementById('filterPanel').classList.toggle('is-open');this.classList.toggle('is-open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>
         Filter events
         <span class="count">0</span>
       </button>
@@ -288,7 +343,7 @@ footer a:hover{color:var(--gold)}
         <div class="fp-group">
           <span class="label">Keyword</span>
           <div class="fp-search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
             <input type="search" placeholder="Search events">
           </div>
         </div>
@@ -336,18 +391,18 @@ footer a:hover{color:var(--gold)}
 <div class="wrap">
 
   <!-- FEATURED HERO CARD -->
-  <a class="featured" href="#">
+  <a class="featured" href="Event-Single-v2html.html">
     <div class="featured-body">
-      <span class="featured-flag">The next one</span>
+      <span class="featured-flag" style=""><span style="color: rgb(255, 255, 255);">The next one</span></span>
       <div class="featured-meta">
-        <span class="cat-tag"><span style="width:7px;height:7px;border-radius:50%;background:var(--c-harvest);display:inline-block"></span>Harvest of the Month</span>
-        <span>Saturday · October 18 · 10:00 AM</span>
+        <span class="cat-tag" style=""><span style="width:7px;height:7px;border-radius:50%;background:var(--c-harvest);display:inline-block"></span><span style="color: rgb(255, 255, 255);">Harvest of the Month</span></span>
+        <span style=""><span style="color: rgb(255, 255, 255);">Saturday · October 18 · 10:00 AM</span></span>
       </div>
-      <h2>October's harvest<br>lands on the <em>tray.</em></h2>
+      <h2 style="">October's harvest<br>lands on the <em>tray.</em></h2>
       <p>The MFTS Education Team welcomes families, classrooms, and orchardists to a celebration of Massachusetts apples. Tasting flights, a kid-built cider press, classroom recipe cards, and a guided orchard walk.</p>
       <div class="featured-ctas">
         <span class="feat-btn-primary">RSVP for free
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
         </span>
         <span class="feat-btn-ghost">Event details</span>
       </div>
@@ -383,7 +438,7 @@ footer a:hover{color:var(--gold)}
       <div class="row-date"><span class="d">06</span><span class="m">Nov</span><span class="t">4:00 PM</span></div>
     </a>
 
-    <a class="row" href="#">
+    <a class="row" href="Event-Single-v2html.html">
       <div class="row-img">
         <span class="row-cat-bar" data-cat="conference"></span>
         <img src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg" alt="">
@@ -455,7 +510,7 @@ footer a:hover{color:var(--gold)}
       <a href="#">2</a>
       <a href="#">3</a>
       <a href="#" class="next">Next
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"></path></svg>
       </a>
     </div>
     <button class="load-more">Load 5 more events</button>
@@ -464,7 +519,7 @@ footer a:hover{color:var(--gold)}
   <!-- SUBSCRIBE -->
   <div class="subscribe-inline">
     <div class="icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h2M8 18h2M14 14h2M14 18h2"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M8 14h2M8 18h2M14 14h2M14 18h2"></path></svg>
     </div>
     <div>
       <h4>Add the MFTS calendar to your week</h4>
@@ -487,7 +542,7 @@ footer a:hover{color:var(--gold)}
       <h2>Catch up on <em>past</em> MFTS events.</h2>
       <p>Years of summits, harvest celebrations, educator workshops, and farmer convenings. Replays, recaps, and notes are all kept in the archive.</p>
       <a class="btn-primary" href="?tribe_event_display=past">View past events
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
       </a>
     </div>
     <div class="big-num">
@@ -506,15 +561,15 @@ footer a:hover{color:var(--gold)}
       </div>
       <div>
         <h5>Local Food</h5>
-        <ul><li><a href="#">Source Local Food</a></li><li><a href="#">Sell To Schools</a></li><li><a href="#">Terrific Tray Submission</a></li></ul>
+        <ul><li><a href="#">Source Local Food</a></li><li><a href="#">Sell To Schools</a></li><li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li></ul>
       </div>
       <div>
         <h5>About Us</h5>
-        <ul><li><a href="#">What is Farm to School?</a></li><li><a href="#">Mission &amp; Vision</a></li><li><a href="#">Impact</a></li></ul>
+        <ul><li><a href="#">What is Farm to School?</a></li><li><a href="#">Mission &amp; Vision</a></li><li><a href="Our-Impact.html">Impact</a></li></ul>
       </div>
       <div>
         <h5>Participate</h5>
-        <ul><li><a href="#">Event Calendar</a></li><li><a href="#">Institute</a></li><li><a href="#">Harvest of the Month</a></li></ul>
+        <ul><li><a href="#">Event Calendar</a></li><li><a href="MFTS-Institute.html">Institute</a></li><li><a href="HOTM.html">Harvest of the Month</a></li></ul>
       </div>
     </div>
     <div class="foot-bottom">
@@ -608,5 +663,20 @@ NOTES ON FIELDS USED
   No custom logic required to "pick" the featured event.
 ================================================================================ -->
 
-</body>
-</html>
+
+
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+</body></html>
