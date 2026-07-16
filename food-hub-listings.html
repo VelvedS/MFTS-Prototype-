@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+WORDPRESS IMPLEMENTATION NOTES — food-hub-listings.html (MFTS Atlas, Hub & Spoke)
+==============================================================================
+EMBEDDING
+- Option A (fastest): Elementor Pro HTML widget. Paste everything from
+  <section class="hero"> through the closing Atlas <script> tag. Global chrome
+  (topbar/header/footer) comes from theme template parts, not the widget.
+- Option B (cleaner): register a shortcode [mfts_atlas map="foodhubs"] whose
+  callback prints the markup + inline JS; use it on a standard page.
+LEAFLET ENQUEUE
+- wp_enqueue_style/script Leaflet 1.9.x from cdnjs (same URLs as below), footer
+  load, no jQuery dependency. Do NOT double-load if another map plugin exists.
+RESPONSIVE STRATEGY
+- Fluid to its container; WordPress/Elementor owns the outer container width.
+  Map height is clamp(420px, 60vh, 720px).
+DATA ADAPTER SWAP
+- This page renders from the hardcoded MFTS_MAP_DATA array holding the eleven
+  REAL client-supplied hub listings (locked copy). Production: replace with one
+  of the two commented fetch adapters below the array (WordPress REST or Google
+  Sheets CSV). Everything downstream consumes the same POI shape.
+PIPELINE
+- Airtable -> Air WP Sync plugin -> custom post type "atlas_poi" -> /wp-json
+  endpoint consumed by adapter 1. Alternative: Google Sheets published-CSV via
+  adapter 2. The Airtable API must never be called directly from the browser.
+- MIGRATION: these eleven records migrate into the master Airtable Locations
+  table tagged foodHub, at which point this page reads the same pipeline as the
+  rest of the Atlas.
+BASEMAP
+- Prototype default: CARTO Positron raster. Production swap to a MapTiler
+  custom Tidewater style or self-hosted Protomaps PMTiles is a one-line
+  change at TILE_URL below.
+============================================================================ -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Local Food Hub Listings — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Zilla+Slab:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Petrona:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme (canonical tokens, do not edit) */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#A8C663;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+  --pin-hub:#88B03F; --pin-hub-ink:#003A40;
+  --console:#00434B;
+  --tile-tint:sepia(.1) hue-rotate(14deg) saturate(1.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--green-light)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+:focus-visible{outline:3px solid var(--bridge);outline-offset:2px;border-radius:4px}
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a:hover{color:inherit}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);color:#fff;transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+/* ===== PAGE HERO ===== */
+.hero{background:linear-gradient(rgba(0,58,64,.78),rgba(0,58,64,.78)),url("uploads/PlantingWoman-NoAtt.jpeg") center/cover no-repeat;color:#fff;padding:72px 0 56px;position:relative;overflow:hidden;text-align:center}
+.hero::before{display:none}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 10%,rgba(136,176,63,.2),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(168,198,99,.14),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(40px,5vw,78px);color:#fff;line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-family:'Petrona',serif;font-style:italic;font-weight:500;color:var(--gold);font-size:.94em}
+.hero .intro-placeholder{margin:22px auto 0;max-width:640px;font-size:16px;font-style:italic;color:rgba(255,255,255,.5)}
+/* ===== CONSOLE (feature moment) ===== */
+.atlas-shell{padding:56px 0 96px}
+.atlas-console{background:var(--console);border-radius:24px;padding:26px 26px 22px;color:#fff;position:relative;overflow:hidden;box-shadow:0 40px 80px -50px rgba(0,58,64,.55)}
+.atlas-console::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 92% 4%,rgba(136,176,63,.2),transparent 50%),radial-gradient(ellipse at 4% 100%,rgba(168,198,99,.13),transparent 45%);pointer-events:none}
+.atlas-console > *{position:relative;z-index:1}
+.console-masthead{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.12)}
+.console-id{display:flex;align-items:baseline;gap:14px}
+.console-id .sig{font-family:'Bebas Neue';font-size:30px;letter-spacing:.06em;color:var(--gold);line-height:1}
+.console-id .sub{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.console-count{display:flex;align-items:baseline;gap:9px;font-family:'Raleway';font-weight:700;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.console-count b{font-family:'Bebas Neue';font-weight:400;font-size:28px;letter-spacing:.04em;color:#fff;line-height:1}
+/* filter row: two dropdowns, calm */
+.filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:22px;position:relative;z-index:5}
+.filter-row .flbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#fff;margin-right:2px}
+.dd{position:relative;display:inline-flex}
+.dd-trigger{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.88);border-radius:999px;font-family:'Raleway';font-weight:700;font-size:12.5px;padding:10px 18px;cursor:pointer;transition:.18s}
+.dd-trigger:hover{border-color:var(--gold)}
+.dd-trigger[aria-expanded="true"]{border-color:var(--gold);background:rgba(168,198,99,.14);color:#fff}
+.dd-trigger .dd-caret{width:12px;height:12px;opacity:.7;transition:transform .25s}
+.dd-trigger[aria-expanded="true"] .dd-caret{transform:rotate(180deg)}
+.dd-badge{background:var(--gold);color:var(--green-ink);border-radius:999px;font-size:10.5px;font-weight:800;padding:1px 8px}
+.dd-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:750;min-width:230px;max-height:270px;overflow-y:auto;background:var(--green-deep);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:8px;display:none;box-shadow:0 24px 50px -20px rgba(0,20,22,.6);scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.dd-pop.open{display:block}
+.dd-opt{display:flex;align-items:center;gap:10px;padding:7px 11px;border-radius:8px;color:rgba(255,255,255,.88);font-family:'Open Sans';font-size:13px;cursor:pointer}
+.dd-opt:hover{background:rgba(255,255,255,.08)}
+.dd-opt input{accent-color:var(--gold);width:15px;height:15px;flex:none;cursor:pointer}
+.filter-clear{background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;font-family:'Raleway';font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:6px 14px;cursor:pointer;transition:.2s;display:none}
+.filter-clear.show{display:inline-flex}
+.filter-clear:hover{border-color:var(--gold);color:var(--gold)}
+/* map stage */
+.map-frame{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:#dfe9e8}
+#atlasMap{height:clamp(420px,60vh,720px);width:100%;background:#dfe9e8}
+#atlasMap:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+#atlasMap .leaflet-tile-pane{filter:var(--tile-tint,none)}
+.map-hint{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,58,64,.55);backdrop-filter:blur(1px);z-index:800;opacity:0;pointer-events:none;transition:opacity .3s}
+.map-hint.show{opacity:1}
+.map-hint span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:14px;padding:14px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.25)}
+.map-legend{position:absolute;left:12px;bottom:12px;z-index:650;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;padding:7px 16px;display:flex;gap:14px;align-items:center;box-shadow:0 10px 24px -12px rgba(0,58,64,.4)}
+.map-legend .litem{display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:700;font-size:11.5px;color:var(--green-ink)}
+.map-legend .litem svg{width:16px;height:16px}
+.map-empty{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,58,64,.45);z-index:640}
+.map-empty.show{display:grid}
+.map-empty span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:13.5px;padding:13px 24px;border-radius:999px;border:1px solid rgba(255,255,255,.25)}
+.leaflet-container{font-family:'Open Sans',sans-serif}
+.leaflet-control-attribution{font-size:9.5px!important;background:rgba(255,255,255,.75)!important}
+/* pins */
+.atlas-pin{background:none;border:none}
+.atlas-pin .pinbox{width:44px;height:44px;display:grid;place-items:center;cursor:pointer}
+.atlas-pin .pinbox svg{width:28px;height:28px;filter:drop-shadow(0 2px 4px rgba(0,58,64,.4));transition:transform .18s}
+.atlas-pin.is-hot .pinbox svg,.atlas-pin .pinbox:hover svg{transform:scale(1.28)}
+.atlas-pin.is-selected .pinbox svg{transform:scale(1.42)}
+.atlas-pin.is-selected .pinbox::after{content:'';position:absolute;width:40px;height:40px;border-radius:50%;border:2.5px solid var(--green-ink);animation:pinring .35s ease}
+@keyframes pinring{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+/* ===== POI DETAIL MODULE (uniform across all Atlas maps) ===== */
+.atlas-poi-scrim{position:fixed;inset:0;background:rgba(0,58,64,.5);backdrop-filter:blur(2px);z-index:1000;opacity:0;pointer-events:none;transition:opacity .25s}
+.atlas-poi-scrim.open{opacity:1;pointer-events:auto}
+.atlas-poi{position:fixed;top:0;right:0;bottom:0;width:min(430px,100vw);background:#fff;z-index:1001;transform:translateX(105%);transition:transform .32s cubic-bezier(.32,.72,.28,1);box-shadow:-30px 0 70px -30px rgba(0,58,64,.45);display:flex;flex-direction:column;border-radius:0}
+.atlas-poi.open{transform:translateX(0)}
+.atlas-poi-head{background:var(--green-ink);color:#fff;padding:26px 28px 22px;position:relative;flex:none}
+.atlas-poi-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 0%,rgba(136,176,63,.22),transparent 60%);pointer-events:none}
+.atlas-poi-close{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:grid;place-items:center;transition:.2s;z-index:2}
+.atlas-poi-close:hover{background:var(--gold);color:var(--green-ink);border-color:var(--gold)}
+.atlas-poi-close svg{width:15px;height:15px}
+.atlas-poi-head h3{font-family:'Raleway';font-weight:900;font-size:23px;color:#fff;position:relative;padding-right:40px;line-height:1.15}
+.atlas-poi-chips{display:flex;gap:7px;margin-top:12px;position:relative;flex-wrap:wrap}
+.poi-chip{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:999px}
+.poi-chip.type{background:var(--pin-hub);color:var(--pin-hub-ink)}
+.poi-chip.region{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.atlas-poi-body{padding:24px 28px 32px;overflow-y:auto;flex:1}
+.poi-sec{margin-bottom:20px}
+.poi-sec .plbl{font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:7px}
+.poi-addr{font-size:14px;color:#333;line-height:1.55}
+.poi-contact{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.poi-contact a{color:var(--green-light);display:inline-flex;align-items:center;gap:9px;width:fit-content;word-break:break-all}
+.poi-contact a:hover{color:var(--green-deep);text-decoration:underline}
+.poi-contact svg{width:14px;height:14px;flex:none;color:var(--accent)}
+.poi-products{font-size:14px;line-height:1.6;color:#333}
+.poi-notes{font-size:14px;line-height:1.7;color:#3a3a3a;background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.poi-logo{border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;place-items:center;background:#fff}
+.poi-logo img{max-height:110px;width:auto}
+.poi-mono{border-radius:14px;height:120px;display:grid;place-items:center;background:linear-gradient(135deg,#00662C 0%,var(--bridge) 100%);position:relative;overflow:hidden}
+.poi-mono::after{content:'';position:absolute;right:-30px;bottom:-30px;width:110px;height:110px;border-radius:50%;border:1px solid rgba(255,255,255,.25)}
+.poi-mono span{font-family:'Bebas Neue';font-size:48px;letter-spacing:.08em;color:#fff}
+.poi-cta{display:inline-flex;align-items:center;gap:8px;background:var(--green-light);color:#fff;border:none;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.07em;text-transform:uppercase;padding:13px 24px;cursor:pointer;transition:.2s;width:100%;justify-content:center}
+.poi-cta:hover{background:var(--green-deep)}
+.poi-cta svg{width:14px;height:14px}
+/* ===== HUB DIRECTORY (spoke ledger) ===== */
+.hub-directory{background:#fff;border-top:1px solid var(--line);padding:88px 0 96px}
+.section-head{margin-bottom:48px}
+.section-head h2{font-size:clamp(34px,4.4vw,58px);color:var(--green-ink);line-height:1.04;display:flex;align-items:flex-start;gap:14px}
+.section-head h2::before{content:'';flex-shrink:0;width:28px;height:28px;margin-top:.18em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.section-head p{font-size:17px;color:#444;margin-top:16px;max-width:620px;line-height:1.7}
+.hub-list{display:flex;flex-direction:column;gap:22px}
+.hub-card{display:grid;grid-template-columns:216px 1fr;background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;scroll-margin-top:110px;transition:box-shadow .25s,border-color .25s}
+.hub-card.is-selected{border-color:var(--bridge);box-shadow:0 0 0 3px rgba(136,176,63,.35),0 24px 50px -30px rgba(0,58,64,.35)}
+.hub-rail{background:#fff;border-right:1px solid var(--line);padding:24px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.hub-rail .logo-box{width:100%;min-height:96px;display:grid;place-items:center}
+.hub-rail .logo-box img{max-height:96px;max-width:100%;width:auto}
+.hub-mono{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#00662C 0%,var(--bridge) 100%)}
+.hub-mono span{font-family:'Bebas Neue';font-size:30px;letter-spacing:.06em;color:#fff}
+.hub-region-tag{font-family:'Raleway';font-weight:800;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:999px;background:rgba(136,176,63,.14);color:#4C6420;border:1px solid rgba(136,176,63,.45)}
+.show-on-map{display:inline-flex;align-items:center;gap:7px;background:var(--green-light);color:#fff;border:none;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:9px 18px;cursor:pointer;transition:.2s;margin-top:auto}
+.show-on-map:hover{background:var(--green-deep)}
+.show-on-map svg{width:12px;height:12px}
+.list-only{display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:700;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#777;border:1px dashed rgba(0,90,102,.3);border-radius:999px;padding:8px 16px;margin-top:auto}
+.hub-body{padding:26px 30px 24px}
+.hub-body h3{font-size:24px;color:var(--green-ink);margin-bottom:4px}
+.hub-addr{font-size:13px;color:#666;margin-bottom:14px}
+.hub-addr a{color:var(--green-light);text-decoration:underline}
+.hub-addr a:hover{color:var(--green-deep)}
+.hub-desc{font-size:14.5px;line-height:1.7;color:#333;margin-bottom:16px;max-width:70ch}
+.hub-desc + .hub-desc{margin-top:-6px}
+.hub-facts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.hub-fact{display:flex;gap:10px;font-size:13.5px;line-height:1.6;color:#333}
+.hub-fact .k{font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#00662C;flex:none;min-width:72px;padding-top:3px}
+.hub-contact{border-top:1px solid var(--line);padding-top:14px;font-size:13.5px;color:#444;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.hub-contact a{color:var(--green-light);text-decoration:underline;word-break:break-all}
+.hub-contact a:hover{color:var(--green-deep)}
+.hub-contact .sep{color:rgba(0,90,102,.35)}
+.hub-empty{display:none;background:var(--cream);border:1px dashed rgba(0,90,102,.3);border-radius:var(--radius);padding:52px 28px;text-align:center}
+.hub-empty.show{display:block}
+.hub-empty .leaf{width:34px;height:34px;margin:0 auto 14px}
+.hub-empty h4{font-family:'Raleway';font-weight:900;font-size:18px;color:var(--green-ink);margin-bottom:8px}
+.hub-empty p{font-size:14px;color:#666;max-width:320px;margin:0 auto 18px}
+.hub-empty button{background:var(--green-light);color:#fff;border:none;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;padding:11px 22px;cursor:pointer}
+.hub-empty button:hover{background:var(--green-deep)}
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){.nav-links{display:none}}
+@media (max-width:760px){
+  #atlasMap{height:420px}
+  .atlas-console{padding:18px 14px;border-radius:18px}
+  .console-masthead{flex-direction:column;align-items:flex-start;gap:8px}
+  .hub-card{grid-template-columns:1fr}
+  .hub-rail{border-right:none;border-bottom:1px solid var(--line);flex-direction:row;flex-wrap:wrap;justify-content:space-between;padding:16px 20px}
+  .hub-rail .logo-box{width:auto;min-height:0}
+  .hub-rail .logo-box img{max-height:56px}
+  .hub-mono{width:56px;height:56px}
+  .hub-mono span{font-size:20px}
+  .show-on-map,.list-only{margin-top:0}
+  .atlas-poi{top:auto;left:0;right:0;bottom:0;width:100%;max-height:82vh;transform:translateY(105%);border-radius:20px 20px 0 0}
+  .atlas-poi.open{transform:translateY(0)}
+}
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+@media (max-width:1024px){.foot-grid{grid-template-columns:1fr 1fr;gap:28px}}
+@media (max-width:600px){.foot-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="MFTS-Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-About-Us.html">What is Farm to School</a></li>
+        <li><a href="MFTS-Team.html">Our Team</a></li>
+        <li><a href="MFTS-About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="MFTS-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-Main-v1-CalendarForward.html">Upcoming Events</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">News</a></li>
+        <li><a href="MFTS-Podcast.html">Podcast</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="sourcing-local-food.html">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">MA FRESH Grant</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- PAGE HEADER -->
+<section class="hero" data-screen-label="Local Food Hub Listings hero">
+  <div class="wrap">
+    <h1>Local Food <em>Hub Listings</em></h1>
+  </div>
+</section>
+
+<!-- HUB & SPOKE MAP CONSOLE -->
+<section class="atlas-shell" data-screen-label="Food hub map console">
+  <div class="wrap">
+    <div class="atlas-console">
+      <div class="console-masthead">
+        <div class="console-id"><span class="sig">Food Hub Map</span></div>
+        <div class="console-count" aria-live="polite"><b id="hubCount">0</b><span id="hubCountLbl">hubs shown</span></div>
+      </div>
+      <div class="filter-row">
+        <span class="flbl">Filter</span>
+        <div class="dd">
+          <button class="dd-trigger" id="prodTrigger" type="button" aria-haspopup="true" aria-expanded="false"><span id="prodTxt">Products: All</span><span class="dd-badge" id="prodBadge" hidden></span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="dd-pop" id="prodPop" role="group" aria-label="Filter by products"></div>
+        </div>
+        <div class="dd">
+          <button class="dd-trigger" id="regTrigger" type="button" aria-haspopup="true" aria-expanded="false"><span id="regTxt">Region: All</span><span class="dd-badge" id="regBadge" hidden></span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="dd-pop" id="regPop" role="group" aria-label="Filter by region"></div>
+        </div>
+        <button class="filter-clear" id="filterClear" type="button">Clear filters</button>
+      </div>
+      <div class="map-frame">
+        <div id="atlasMap" tabindex="0" role="application" aria-label="Map of local food hubs serving Massachusetts. The listing cards below offer the same directory as an accessible list."></div>
+        <div class="map-hint" id="mapHint" aria-hidden="true"><span id="mapHintTxt">Use ctrl + scroll to zoom the map</span></div>
+        <div class="map-empty" id="mapEmpty"><span>No hubs match the current filters</span></div>
+        <div class="map-legend"><span class="litem"><svg viewBox="0 0 24 24"><path d="M12 1.8l8.9 5.1v10.2L12 22.2l-8.9-5.1V6.9z" fill="#88B03F" stroke="#fff" stroke-width="1.6"></path><circle cx="12" cy="12" r="2" fill="#003A40"></circle><path d="M12 12L12 7M12 12l4.3 2.5M12 12l-4.3 2.5" stroke="#003A40" stroke-width="1.6" stroke-linecap="round"></path></svg>Food Hub</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HUB LISTINGS DIRECTORY (locked client copy, verbatim) -->
+<section class="hub-directory" data-screen-label="Hub listings directory">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>The hub directory</h2>
+      <p>Every hub on the map, in full. Delivery territories, minimums, and the person to email.</p>
+    </div>
+    <div class="hub-list" id="hubList">
+
+      <article class="hub-card" id="card-boston-food-hub" data-products="produce" data-region="eastern">
+        <div class="hub-rail">
+          <div class="logo-box"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2023/03/Boston-Food-Hub-231x300.png" alt="Boston Food Hub logo"></div>
+          <span class="hub-region-tag">Eastern MA</span>
+          <button class="show-on-map" type="button" data-id="boston-food-hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>Boston Food Hub</h3>
+          <p class="hub-addr">91 Martin St., Acton, MA, 01720&nbsp;&nbsp;<a href="https://www.bostonfoodhub.org/" target="_blank" rel="noopener">https://www.bostonfoodhub.org/</a></p>
+          <p class="hub-desc">Boston Food Hub is a wholesale aggregator and distributor of fresh produce, dedicated to supporting local and regional growers by streamlining the process of bringing farmers&rsquo; most plentiful harvests to the wholesale market.</p>
+          <div class="hub-facts">
+            <div class="hub-fact"><span class="k">Products</span><span>Vegetables, Fruit</span></div>
+            <div class="hub-fact"><span class="k">Delivery</span><span>Boston Food Hub has a $250 delivery minimum and can deliver to schools throughout Eastern and Central Massachusetts.</span></div>
+          </div>
+          <p class="hub-contact">Annie Broad, Associate Food Hub Director <span class="sep">|</span> (781) 546-4700 <span class="sep">|</span> <a href="mailto:sales@bostonfoodhub.org">sales@bostonfoodhub.org</a> <span class="sep">|</span> <a href="https://www.bostonfoodhub.org/" target="_blank" rel="noopener">https://www.bostonfoodhub.org/</a></p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-food-connects" data-products="produce meat dairy seafood valueAdded" data-region="outOfState">
+        <div class="hub-rail">
+          <div class="logo-box"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2023/04/FoodConnects_Logo_2020-300x146.png" alt="Food Connects logo"></div>
+          <span class="hub-region-tag">Regional Partner</span>
+          <button class="show-on-map" type="button" data-id="food-connects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>Food Connects</h3>
+          <p class="hub-addr">22 Browne Ct Unit 110, Brattleboro, VT 05301&nbsp;&nbsp;<a href="https://shop.foodconnects.org" target="_blank" rel="noopener">shop.foodconnects.org</a></p>
+          <p class="hub-desc">Food Connects operates a food hub that delivers local and regionally sourced products from over 120 farms and producers to over 100 schools throughout VT, NH, and western MA. Our mission is to cultivate healthy food and farm connections in cafeterias, classrooms and communities.</p>
+          <div class="hub-facts">
+            <div class="hub-fact"><span class="k">Products</span><span>Vegetables, Fruit, Meat, Poultry, Beans/Grains, Dairy, Seafood, Eggs, Maple Syrup, Honey, Value Added Products</span></div>
+            <div class="hub-fact"><span class="k">Delivery</span><span>Food Connects is thrilled to share that we have launched a new delivery route with the primary agenda to serve more schools! We take I-91 South from Bernardston as far as Holyoke. We can deliver to your district every Monday. Your minimum is based on school location(s).</span></div>
+          </div>
+          <p class="hub-contact">Tom Brewton, Institutional Sales Associate <span class="sep">|</span> 802-258-1546 <span class="sep">|</span> <a href="mailto:tom@foodconnects.org">tom@foodconnects.org</a></p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-new-entry" data-products="produce valueAdded" data-region="eastern">
+        <div class="hub-rail">
+          <div class="logo-box"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2023/04/New-Entry-Food-Hub-logo-300x239.jpg" alt="New Entry Food Hub logo"></div>
+          <span class="hub-region-tag">Eastern MA</span>
+          <button class="show-on-map" type="button" data-id="new-entry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>New Entry Food Hub</h3>
+          <p class="hub-addr">733 Cabot Street, Beverly, MA 01915&nbsp;&nbsp;<a href="https://nesfp.nutrition.tufts.edu/foodhub" target="_blank" rel="noopener">https://nesfp.nutrition.tufts.edu/foodhub</a></p>
+          <p class="hub-desc">The New Entry Food Hub focuses on supporting small-scale beginning farmers to establish and grow their businesses through training, technical assistance and marketing support. Your wholesale purchases from New Entry allow us to continue connecting beginning farmers to institutional markets and supports our mission of bringing fresh and nutritious produce to underserved communities in the Greater Boston Area.</p>
+          <div class="hub-facts">
+            <div class="hub-fact"><span class="k">Products</span><span>Vegetables, Fruit, Value Added Products</span></div>
+            <div class="hub-fact"><span class="k">Delivery</span><span>Offered year-round and free of charge for orders of $200 or more. We currently deliver Tuesday-Thursday throughout the Greater Boston Area and the Northshore. We are willing to expand our delivery range to bring local produce to schools.</span></div>
+          </div>
+          <p class="hub-contact">Sara Poggi Davis, New Entry Food Hub Program Manager <span class="sep">|</span> 978-656-1654 <span class="sep">|</span> <a href="mailto:foodhub@nesfp.org">foodhub@nesfp.org</a></p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-red-tomato" data-products="produce" data-region="outOfState">
+        <div class="hub-rail">
+          <div class="logo-box"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2023/04/Red-Tomato-Logo-1024x350.jpg" alt="Red Tomato logo"></div>
+          <span class="hub-region-tag">Regional Partner</span>
+          <button class="show-on-map" type="button" data-id="red-tomato"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>Red Tomato</h3>
+          <p class="hub-addr">10 Sims Ave, Suite 102, Providence, RI 02909&nbsp;&nbsp;<a href="https://redtomato.org" target="_blank" rel="noopener">redtomato.org</a></p>
+          <p class="hub-desc">Red Tomato is a non-profit food hub working with ~40 growers in the Northeast region. EcoCertified is our signature program, which is an ecological growing certification for apple, peach and stone fruit farmers in the Northeast. We are currently working with Whitsons to deliver EcoCertified local/regional apples and assorted vegetables to schools in MA &amp; CT.</p>
+          <div class="hub-facts">
+            <div class="hub-fact"><span class="k">Products</span><span>Vegetables, Fruit</span></div>
+            <div class="hub-fact"><span class="k">Delivery</span><span>Details are dependent on location, number of deliveries required, etc. Red Tomato develops customer-specific programs, so please reach out with your needs!</span></div>
+          </div>
+          <p class="hub-contact">Alessandra Cancalosi , Trade &amp; Marketing Associate <span class="sep">|</span> 262-527-5550 <span class="sep">|</span> <a href="mailto:acancalosi@redtomato.org">acancalosi@redtomato.org</a></p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-wmfpc" data-products="produce valueAdded" data-region="western">
+        <div class="hub-rail">
+          <div class="logo-box"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2023/04/Western-MA-Food-Processing-Center_logo-300x300.png" alt="Western MA Food Processing Center logo"></div>
+          <span class="hub-region-tag">Western MA</span>
+          <button class="show-on-map" type="button" data-id="wmfpc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>Western MA Food Processing Center</h3>
+          <p class="hub-addr">324 Wells St, Greenfield, MA 01301&nbsp;&nbsp;<a href="https://wmfpc.org" target="_blank" rel="noopener">wmfpc.org</a></p>
+          <p class="hub-desc">The Western Mass Food Processing Center offers value added co-manufacturing, co-packaging, as well as ambient, refrigerated and frozen storage and cross docking, with over 80 pallet spaces per section.</p>
+          <div class="hub-facts">
+            <div class="hub-fact"><span class="k">Products</span><span>Vegetables, Fruit, Cross Docking, Storage</span></div>
+            <div class="hub-fact"><span class="k">Shipping</span><span>WMFPC staff receive/prepares client orders for incoming/ outgoing shipments.</span></div>
+          </div>
+          <p class="hub-contact">Toni Hall <span class="sep">|</span> 413-774-7204 ex 116 <span class="sep">|</span> <a href="mailto:Tonih@fccdc.org">Tonih@fccdc.org</a> <span class="sep">|</span> Food Entrepreneurship Program Coordinator</p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-martys-local" data-products="produce meat dairy valueAdded" data-region="western">
+        <div class="hub-rail">
+          <div class="logo-box"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2023/04/Martys-Local-Logo-300x234.jpg" alt="Marty's Local logo"></div>
+          <span class="hub-region-tag">Western MA</span>
+          <button class="show-on-map" type="button" data-id="martys-local"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>Marty's Local</h3>
+          <p class="hub-addr">10 Greenfield Road / PO Box 276, South Deerfield, MA 01373&nbsp;&nbsp;<a href="https://www.martyslocal.com" target="_blank" rel="noopener">www.martyslocal.com</a></p>
+          <p class="hub-desc">Marty&rsquo;s Local strengthens our regional food system by linking exceptional farmers and food producers with local institutions. We are a wholesale distributor of local, high-quality fruits, vegetables, flour &amp; grains, dairy, meats, cheeses, and specialty foods, along with produce from farther afield.</p>
+          <div class="hub-facts">
+            <div class="hub-fact"><span class="k">Products</span><span>Vegetables, Fruit, Meat, Poultry, Beans/Grains, Dairy, Eggs, Maple Syrup, Honey, Value Added Products</span></div>
+            <div class="hub-fact"><span class="k">Delivery</span><span>$350 minimum. Delivery throughout western Massachusetts from the Berkshires east through the Pioneer Valley, Barre, Worcester to Metro West. Deliveries to eastern Massachusetts may be possible.</span></div>
+          </div>
+          <p class="hub-contact">Sandra Thomas, Director of Marketing &amp; Customer Support <span class="sep">|</span> 413.347.9401 <span class="sep">|</span> <a href="mailto:sandra@martyslocal.com">sandra@martyslocal.com</a></p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-myers-produce" data-products="" data-region="outOfState">
+        <div class="hub-rail">
+          <div class="logo-box"><div class="hub-mono"><span>MP</span></div></div>
+          <span class="hub-region-tag">Regional Partner</span>
+          <span class="list-only">List Only</span>
+        </div>
+        <div class="hub-body">
+          <h3>Myers Produce</h3>
+          <p class="hub-desc">Myers Produce is a woman-owned regional trucking company based out of hubs in New York City, Western Massachusetts, and Northern Vermont.</p>
+          <p class="hub-contact"><a href="http://www.myersproduce.com" target="_blank" rel="noopener">http://www.myersproduce.com</a> <span class="sep">|</span> <a href="mailto:info@myersproduce.com">info@myersproduce.com</a></p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-world-farmers" data-products="produce valueAdded" data-region="central">
+        <div class="hub-rail">
+          <div class="logo-box"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2023/04/World-Farmers-Logo.png" alt="World Farmers logo"></div>
+          <span class="hub-region-tag">Central MA</span>
+          <button class="show-on-map" type="button" data-id="world-farmers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>World Farmers</h3>
+          <p class="hub-addr">769 Main Street, Lancaster, MA 01523&nbsp;&nbsp;<a href="https://www.worldfarmers.org" target="_blank" rel="noopener">www.worldfarmers.org</a></p>
+          <p class="hub-desc">World Farmers advocates for and supports small-scale immigrant, refugee, and historically underserved farmers from farm to market. Our aggregation and distribution work follows a model similar to a growers association and a food hub and provides a stable market for immigrant and refugee farmers within our network. We support all vegetable farmers who specialize in cultural crop production.</p>
+          <div class="hub-facts">
+            <div class="hub-fact"><span class="k">Products</span><span>Vegetables, Beans/Grains, Value Added Products</span></div>
+            <div class="hub-fact"><span class="k">Delivery</span><span>Specific range and minimums for delivery will be reviewed and discussed according to each account.</span></div>
+          </div>
+          <p class="hub-contact">Jessy Gill, Program &amp; Policy Director <span class="sep">|</span> 978-706-7935 <span class="sep">|</span> <a href="mailto:sales@worldfarmers.org">sales@worldfarmers.org</a></p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-local-food-works" data-products="produce valueAdded" data-region="central">
+        <div class="hub-rail">
+          <div class="logo-box"><div class="hub-mono"><span>LFW</span></div></div>
+          <span class="hub-region-tag">Central MA</span>
+          <button class="show-on-map" type="button" data-id="local-food-works"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>Local Food Works</h3>
+          <p class="hub-addr">325 Lindell Ave., Leominster, MA 01453&nbsp;&nbsp;<a href="https://www.growingplaces.org" target="_blank" rel="noopener">www.growingplaces.org</a></p>
+          <p class="hub-desc">Local Food Works is a Regional Food Center that collectively aggregates and distributes local food products from 30+ farms in North Central MA. We offer wholesale local produce and are able to connect you with local farms in our region that sell eggs, dairy products and meat. Very soon we will be opening a food processing facility in Gardner, MA with the ability to lightly process local fruits and vegetables (cubed butternut squash, frozen broccoli florets) to make preparation easier for institutions like schools.</p>
+          <div class="hub-facts">
+            <div class="hub-fact"><span class="k">Products</span><span>Vegetables, Fruit, Value Added Products</span></div>
+            <div class="hub-fact"><span class="k">Delivery</span><span>Delivery to North Central MA is part of their mission to create an equitable and sustainable local food system.</span></div>
+          </div>
+          <p class="hub-contact">Ayn Yeagle, Executive Director – Growing Places – Local Food Works Fiscal Sponsor <span class="sep">|</span> 508-331-6663 <span class="sep">|</span> <a href="mailto:ayn@growingplaces.org">ayn@growingplaces.org</a></p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-worcester-regional" data-products="" data-region="central">
+        <div class="hub-rail">
+          <div class="logo-box"><div class="hub-mono"><span>WR</span></div></div>
+          <span class="hub-region-tag">Central MA</span>
+          <button class="show-on-map" type="button" data-id="worcester-regional"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>Worcester Regional Food Hub</h3>
+          <p class="hub-addr">25 Francis Street, Worcester, MA 01606&nbsp;&nbsp;<a href="http://worcesterfoodhub.org" target="_blank" rel="noopener">worcesterfoodhub.org</a></p>
+          <p class="hub-desc">By forming relationships with local farmers and distributing their food to schools, universities, health care facilities, markets, specialty shops and restaurants, the Worcester Regional Food Hub gets food into the hands of the people that need it the most.</p>
+          <p class="hub-contact">(508) 425-3145 <span class="sep">|</span> <a href="mailto:info@worcesterfoodhub.org">info@worcesterfoodhub.org</a></p>
+        </div>
+      </article>
+
+      <article class="hub-card" id="card-coastal-foodshed" data-products="" data-region="eastern">
+        <div class="hub-rail">
+          <div class="logo-box"><img src="https://www.massfarmtoschool.org/wp-content/uploads/2024/01/CoastalFoodshed-logo-300x300.png" alt="Coastal Foodshed logo"></div>
+          <span class="hub-region-tag">Eastern MA</span>
+          <button class="show-on-map" type="button" data-id="coastal-foodshed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Show on Map</button>
+        </div>
+        <div class="hub-body">
+          <h3>Coastal Foodshed</h3>
+          <p class="hub-addr">127 Rodney French Blvd, STE 312, New Bedford MA 027444&nbsp;&nbsp;<a href="http://www.coastalfoodshed.org" target="_blank" rel="noopener">coastalfoodshed.org</a></p>
+          <p class="hub-desc">Coastal Foodshed is a farmer food hub with a mission to make it easier for farmers to sell local food and for the community to purchase it. We aggregate and distribute local food from over 65 farmers and producers through D2C and B2B channels.</p>
+          <p class="hub-desc">We have a $300 delivery minimum and deliver to Southeastern MA.</p>
+          <p class="hub-contact">Stephanie Perks, Executive Director <span class="sep">|</span> 508-259-2647 <span class="sep">|</span> <a href="mailto:stephanie@coastalfoodshed.org">stephanie@coastalfoodshed.org</a></p>
+        </div>
+      </article>
+
+      <div class="hub-empty" id="hubEmpty">
+        <svg class="leaf" viewBox="0 0 24 24" fill="#88B03F"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg>
+        <h4>No hubs match those filters</h4>
+        <p>Try removing a product category or opening the region back up.</p>
+        <button id="hubEmptyReset" type="button">Clear filters</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POI DETAIL MODULE (uniform markup across all Atlas maps) -->
+<div class="atlas-poi-scrim" id="poiScrim"></div>
+<aside class="atlas-poi" id="poiPanel" role="dialog" aria-modal="true" aria-labelledby="poiName" hidden>
+  <div class="atlas-poi-head">
+    <button class="atlas-poi-close" id="poiClose" type="button" aria-label="Close details">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+    </button>
+    <h3 id="poiName"></h3>
+    <div class="atlas-poi-chips" id="poiChips"></div>
+  </div>
+  <div class="atlas-poi-body" id="poiBody"></div>
+</aside>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="sourcing-local-food.html">Source Local Food</a></li>
+          <li><a href="food-hub-listings.html">Food Hub Listings</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="#">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="MFTS-About-Us.html">What is Farm to School?</a></li>
+          <li><a href="MFTS-About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+          <li><a href="MFTS-Impact.html">Impact</a></li>
+          <li><a href="MFTS-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="MFTS-Events-Main-v1-CalendarForward.html">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="MFTS-HOTM.html">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+<script>
+/* ============ REAL CLIENT DATA — eleven locked food hub listings.
+   meta.* fields carry the client copy verbatim; products[] is a normalized,
+   never-displayed filter mapping. These records migrate into the master
+   Airtable Locations table tagged foodHub. ============ */
+const MFTS_MAP_DATA=[
+{id:"boston-food-hub",name:"Boston Food Hub",entityType:"foodHub",programs:["foodHub"],region:"eastern",address:"91 Martin St.",city:"Acton",zip:"01720",lat:42.45407,lng:-71.45964,contact:{email:"sales@bostonfoodhub.org",phone:"(781) 546-4700",website:"https://www.bostonfoodhub.org/"},products:["produce"],sellingStatus:"notApplicable",notes:"Boston Food Hub is a wholesale aggregator and distributor of fresh produce, dedicated to supporting local and regional growers by streamlining the process of bringing farmers\u2019 most plentiful harvests to the wholesale market.",photoUrl:null,meta:{productsVerbatim:"Vegetables, Fruit",deliveryVerbatim:"Boston Food Hub has a $250 delivery minimum and can deliver to schools throughout Eastern and Central Massachusetts.",contactName:"Annie Broad",contactTitle:"Associate Food Hub Director",logoUrl:"https://www.massfarmtoschool.org/wp-content/uploads/2023/03/Boston-Food-Hub-231x300.png",listOnly:false}},
+{id:"food-connects",name:"Food Connects",entityType:"foodHub",programs:["foodHub"],region:"outOfState",address:"22 Browne Ct Unit 110",city:"Brattleboro, VT",zip:"05301",lat:42.889242,lng:-72.550541,contact:{email:"tom@foodconnects.org",phone:"802-258-1546",website:"https://shop.foodconnects.org"},products:["produce","meat","dairy","seafood","valueAdded"],sellingStatus:"notApplicable",notes:"Food Connects operates a food hub that delivers local and regionally sourced products from over 120 farms and producers to over 100 schools throughout VT, NH, and western MA. Our mission is to cultivate healthy food and farm connections in cafeterias, classrooms and communities.",photoUrl:null,meta:{productsVerbatim:"Vegetables, Fruit, Meat, Poultry, Beans/Grains, Dairy, Seafood, Eggs, Maple Syrup, Honey, Value Added Products",deliveryVerbatim:"Food Connects is thrilled to share that we have launched a new delivery route with the primary agenda to serve more schools! We take I-91 South from Bernardston as far as Holyoke. We can deliver to your district every Monday. Your minimum is based on school location(s).",contactName:"Tom Brewton",contactTitle:"Institutional Sales Associate",logoUrl:"https://www.massfarmtoschool.org/wp-content/uploads/2023/04/FoodConnects_Logo_2020-300x146.png",listOnly:false}},
+{id:"new-entry",name:"New Entry Food Hub",entityType:"foodHub",programs:["foodHub"],region:"eastern",address:"733 Cabot Street",city:"Beverly",zip:"01915",lat:42.58336,lng:-70.89921,contact:{email:"foodhub@nesfp.org",phone:"978-656-1654",website:"https://nesfp.nutrition.tufts.edu/foodhub"},products:["produce","valueAdded"],sellingStatus:"notApplicable",notes:"The New Entry Food Hub focuses on supporting small-scale beginning farmers to establish and grow their businesses through training, technical assistance and marketing support. Your wholesale purchases from New Entry allow us to continue connecting beginning farmers to institutional markets and supports our mission of bringing fresh and nutritious produce to underserved communities in the Greater Boston Area.",photoUrl:null,meta:{productsVerbatim:"Vegetables, Fruit, Value Added Products",deliveryVerbatim:"Offered year-round and free of charge for orders of $200 or more. We currently deliver Tuesday-Thursday throughout the Greater Boston Area and the Northshore. We are willing to expand our delivery range to bring local produce to schools.",contactName:"Sara Poggi Davis",contactTitle:"New Entry Food Hub Program Manager",logoUrl:"https://www.massfarmtoschool.org/wp-content/uploads/2023/04/New-Entry-Food-Hub-logo-300x239.jpg",listOnly:false}},
+{id:"red-tomato",name:"Red Tomato",entityType:"foodHub",programs:["foodHub"],region:"outOfState",address:"10 Sims Ave, Suite 102",city:"Providence, RI",zip:"02909",lat:41.82704,lng:-71.4335,contact:{email:"acancalosi@redtomato.org",phone:"262-527-5550",website:"https://redtomato.org"},products:["produce"],sellingStatus:"notApplicable",notes:"Red Tomato is a non-profit food hub working with ~40 growers in the Northeast region. EcoCertified is our signature program, which is an ecological growing certification for apple, peach and stone fruit farmers in the Northeast. We are currently working with Whitsons to deliver EcoCertified local/regional apples and assorted vegetables to schools in MA & CT.",photoUrl:null,meta:{productsVerbatim:"Vegetables, Fruit",deliveryVerbatim:"Details are dependent on location, number of deliveries required, etc. Red Tomato develops customer-specific programs, so please reach out with your needs!",contactName:"Alessandra Cancalosi ",contactTitle:"Trade & Marketing Associate",logoUrl:"https://www.massfarmtoschool.org/wp-content/uploads/2023/04/Red-Tomato-Logo-1024x350.jpg",listOnly:false}},
+{id:"wmfpc",name:"Western MA Food Processing Center",entityType:"foodHub",programs:["foodHub"],region:"western",address:"324 Wells St",city:"Greenfield",zip:"01301",lat:42.60258,lng:-72.60807,contact:{email:"Tonih@fccdc.org",phone:"413-774-7204 ex 116",website:"https://wmfpc.org"},products:["produce","valueAdded"],sellingStatus:"notApplicable",notes:"The Western Mass Food Processing Center offers value added co-manufacturing, co-packaging, as well as ambient, refrigerated and frozen storage and cross docking, with over 80 pallet spaces per section.",photoUrl:null,meta:{productsVerbatim:"Vegetables, Fruit, Cross Docking, Storage",deliveryVerbatim:"WMFPC staff receive/prepares client orders for incoming/ outgoing shipments.",deliveryLabel:"Shipping",contactName:"Toni Hall",contactTitle:"Food Entrepreneurship Program Coordinator",logoUrl:"https://www.massfarmtoschool.org/wp-content/uploads/2023/04/Western-MA-Food-Processing-Center_logo-300x300.png",listOnly:false}},
+{id:"martys-local",name:"Marty's Local",entityType:"foodHub",programs:["foodHub"],region:"western",address:"10 Greenfield Road / PO Box 276",city:"South Deerfield",zip:"01373",lat:42.47239,lng:-72.6128,contact:{email:"sandra@martyslocal.com",phone:"413.347.9401",website:"https://www.martyslocal.com"},products:["produce","meat","dairy","valueAdded"],sellingStatus:"notApplicable",notes:"Marty\u2019s Local strengthens our regional food system by linking exceptional farmers and food producers with local institutions. We are a wholesale distributor of local, high-quality fruits, vegetables, flour & grains, dairy, meats, cheeses, and specialty foods, along with produce from farther afield.",photoUrl:null,meta:{productsVerbatim:"Vegetables, Fruit, Meat, Poultry, Beans/Grains, Dairy, Eggs, Maple Syrup, Honey, Value Added Products",deliveryVerbatim:"$350 minimum. Delivery throughout western Massachusetts from the Berkshires east through the Pioneer Valley, Barre, Worcester to Metro West. Deliveries to eastern Massachusetts may be possible.",contactName:"Sandra Thomas",contactTitle:"Director of Marketing & Customer Support",logoUrl:"https://www.massfarmtoschool.org/wp-content/uploads/2023/04/Martys-Local-Logo-300x234.jpg",listOnly:false}},
+{id:"myers-produce",name:"Myers Produce",entityType:"foodHub",programs:["foodHub"],region:"outOfState",address:"",city:"",zip:"",lat:null,lng:null,contact:{email:"info@myersproduce.com",phone:"",website:"http://www.myersproduce.com"},products:[],sellingStatus:"notApplicable",notes:"Myers Produce is a woman-owned regional trucking company based out of hubs in New York City, Western Massachusetts, and Northern Vermont.",photoUrl:null,meta:{productsVerbatim:"",deliveryVerbatim:"",contactName:"",contactTitle:"",logoUrl:null,listOnly:true}},
+{id:"world-farmers",name:"World Farmers",entityType:"foodHub",programs:["foodHub"],region:"central",address:"769 Main Street",city:"Lancaster",zip:"01523",lat:42.45647,lng:-71.67338,contact:{email:"sales@worldfarmers.org",phone:"978-706-7935",website:"https://www.worldfarmers.org"},products:["produce","valueAdded"],sellingStatus:"notApplicable",notes:"World Farmers advocates for and supports small-scale immigrant, refugee, and historically underserved farmers from farm to market. Our aggregation and distribution work follows a model similar to a growers association and a food hub and provides a stable market for immigrant and refugee farmers within our network. We support all vegetable farmers who specialize in cultural crop production.",photoUrl:null,meta:{productsVerbatim:"Vegetables, Beans/Grains, Value Added Products",deliveryVerbatim:"Specific range and minimums for delivery will be reviewed and discussed according to each account.",contactName:"Jessy Gill",contactTitle:"Program & Policy Director",logoUrl:"https://www.massfarmtoschool.org/wp-content/uploads/2023/04/World-Farmers-Logo.png",listOnly:false}},
+{id:"local-food-works",name:"Local Food Works",entityType:"foodHub",programs:["foodHub"],region:"central",address:"325 Lindell Ave.",city:"Leominster",zip:"01453",lat:42.5487,lng:-71.77439,contact:{email:"ayn@growingplaces.org",phone:"508-331-6663",website:"https://www.growingplaces.org"},products:["produce","valueAdded"],sellingStatus:"notApplicable",notes:"Local Food Works is a Regional Food Center that collectively aggregates and distributes local food products from 30+ farms in North Central MA. We offer wholesale local produce and are able to connect you with local farms in our region that sell eggs, dairy products and meat. Very soon we will be opening a food processing facility in Gardner, MA with the ability to lightly process local fruits and vegetables (cubed butternut squash, frozen broccoli florets) to make preparation easier for institutions like schools.",photoUrl:null,meta:{productsVerbatim:"Vegetables, Fruit, Value Added Products",deliveryVerbatim:"Delivery to North Central MA is part of their mission to create an equitable and sustainable local food system.",contactName:"Ayn Yeagle",contactTitle:"Executive Director \u2013 Growing Places \u2013 Local Food Works Fiscal Sponsor",logoUrl:null,listOnly:false}},
+/* PLACEHOLDER COORDINATES: Worcester town center approximation — staff geocoding pass needed for 25 Francis Street. */
+{id:"worcester-regional",name:"Worcester Regional Food Hub",entityType:"foodHub",programs:["foodHub"],region:"central",address:"25 Francis Street",city:"Worcester",zip:"01606",lat:42.2626,lng:-71.8023,contact:{email:"info@worcesterfoodhub.org",phone:"(508) 425-3145",website:"http://worcesterfoodhub.org"},products:[],sellingStatus:"notApplicable",notes:"By forming relationships with local farmers and distributing their food to schools, universities, health care facilities, markets, specialty shops and restaurants, the Worcester Regional Food Hub gets food into the hands of the people that need it the most.",photoUrl:null,meta:{productsVerbatim:"",deliveryVerbatim:"",contactName:"",contactTitle:"",logoUrl:null,listOnly:false}},
+/* PLACEHOLDER COORDINATES: New Bedford town center approximation — staff geocoding pass needed for 127 Rodney French Blvd. */
+{id:"coastal-foodshed",name:"Coastal Foodshed",entityType:"foodHub",programs:["foodHub"],region:"eastern",address:"127 Rodney French Blvd, STE 312",city:"New Bedford",zip:"027444",lat:41.6362,lng:-70.9342,contact:{email:"stephanie@coastalfoodshed.org",phone:"508-259-2647",website:"http://www.coastalfoodshed.org"},products:[],sellingStatus:"notApplicable",notes:"Coastal Foodshed is a farmer food hub with a mission to make it easier for farmers to sell local food and for the community to purchase it. We aggregate and distribute local food from over 65 farmers and producers through D2C and B2B channels.",photoUrl:null,meta:{productsVerbatim:"",deliveryVerbatim:"We have a $300 delivery minimum and deliver to Southeastern MA.",contactName:"Stephanie Perks",contactTitle:"Executive Director",logoUrl:"https://www.massfarmtoschool.org/wp-content/uploads/2024/01/CoastalFoodshed-logo-300x300.png",listOnly:false}}
+];
+/* ---------------------------------------------------------------------------
+PRODUCTION DATA ADAPTERS (commented out; swap for MFTS_MAP_DATA above).
+The Airtable API must never be called directly from the browser: Airtable ->
+Air WP Sync -> custom post type -> /wp-json is the supported pipeline.
+
+// Adapter 1 — WordPress REST (Airtable via Air WP Sync -> CPT "atlas_poi"):
+// async function loadAtlasData(){
+//   const res=await fetch('/wp-json/wp/v2/atlas_poi?per_page=100&_fields=acf&atlas_tag=foodHub');
+//   const rows=await res.json();
+//   return rows.map(r=>({id:r.acf.slug,name:r.acf.name,entityType:r.acf.entity_type,
+//     programs:r.acf.programs||[],region:r.acf.region,address:r.acf.address,
+//     city:r.acf.city,zip:r.acf.zip,lat:r.acf.lat?+r.acf.lat:null,lng:r.acf.lng?+r.acf.lng:null,
+//     contact:{email:r.acf.email,phone:r.acf.phone,website:r.acf.website},
+//     products:r.acf.products||[],sellingStatus:r.acf.selling_status,
+//     notes:r.acf.notes,photoUrl:r.acf.photo_url||null,
+//     meta:{productsVerbatim:r.acf.products_verbatim,deliveryVerbatim:r.acf.delivery_verbatim,
+//       contactName:r.acf.contact_name,contactTitle:r.acf.contact_title,
+//       logoUrl:r.acf.logo_url||null,listOnly:!!r.acf.list_only}}));
+// }
+
+// Adapter 2 — Google Sheets published CSV:
+// async function loadAtlasData(){
+//   const res=await fetch('https://docs.google.com/spreadsheets/d/e/PUBLISHED_ID/pub?output=csv');
+//   const [head,...lines]=(await res.text()).trim().split('\n').map(l=>l.split(','));
+//   return lines.map(c=>Object.fromEntries(head.map((h,i)=>[h,c[i]]))).map(r=>({
+//     id:r.id,name:r.name,entityType:r.entityType,programs:r.programs.split('|'),
+//     region:r.region,address:r.address,city:r.city,zip:r.zip,
+//     lat:r.lat?+r.lat:null,lng:r.lng?+r.lng:null,
+//     contact:{email:r.email,phone:r.phone,website:r.website},
+//     products:r.products?r.products.split('|'):[],sellingStatus:r.sellingStatus,notes:r.notes,
+//     photoUrl:r.photoUrl||null,meta:{productsVerbatim:r.productsVerbatim,
+//       deliveryVerbatim:r.deliveryVerbatim,contactName:r.contactName,
+//       contactTitle:r.contactTitle,logoUrl:r.logoUrl||null,listOnly:r.listOnly==='true'}}));
+// }
+--------------------------------------------------------------------------- */
+const PRODUCT_LABEL={produce:"Produce",dairy:"Dairy",meat:"Meat",seafood:"Seafood",valueAdded:"Value-Added",readyToCook:"Ready-to-Cook"};
+const REGION_LABEL={eastern:"Eastern MA",central:"Central MA",western:"Western MA",outOfState:"Regional Partners"};
+const REGION_CHIP={eastern:"Eastern Massachusetts",central:"Central Massachusetts",western:"Western Massachusetts",outOfState:"Regional Partner"};
+</script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const state={products:new Set(),region:new Set()};
+const PIN='<svg viewBox="0 0 24 24"><path d="M12 1.8l8.9 5.1v10.2L12 22.2l-8.9-5.1V6.9z" fill="#88B03F" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="2" fill="#003A40"/><path d="M12 12L12 7M12 12l4.3 2.5M12 12l-4.3 2.5" stroke="#003A40" stroke-width="1.6" stroke-linecap="round"/></svg>';
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+/* map */
+const TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'; // production: swap to MapTiler Tidewater style or self-hosted Protomaps PMTiles (one-line change)
+const map=L.map('atlasMap',{scrollWheelZoom:false,zoomControl:true,attributionControl:true}).setView([42.25,-71.8],8);
+L.tileLayer(TILE_URL,{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',maxZoom:18}).addTo(map);
+const markerLayer=L.layerGroup().addTo(map);
+let markers={},selectedId=null;
+/* scroll guards: never hijack page scroll */
+const mapEl=$('#atlasMap'),hint=$('#mapHint'),hintTxt=$('#mapHintTxt');
+const isMac=/Mac|iPhone|iPad/.test(navigator.platform||'');
+let hintT=null;
+function flashHint(msg){hintTxt.textContent=msg;hint.classList.add('show');clearTimeout(hintT);hintT=setTimeout(()=>hint.classList.remove('show'),1400);}
+mapEl.addEventListener('wheel',e=>{
+  if(e.ctrlKey||e.metaKey){e.preventDefault();hint.classList.remove('show');
+    const pt=map.mouseEventToContainerPoint(e);
+    map.setZoomAround(map.containerPointToLatLng(pt),map.getZoom()+(e.deltaY<0?1:-1));
+  }else{flashHint('Use '+(isMac?'\u2318':'ctrl')+' + scroll to zoom the map');}
+},{passive:false});
+if(matchMedia('(pointer:coarse)').matches){
+  map.dragging.disable();
+  mapEl.addEventListener('touchstart',e=>{if(e.touches.length>=2){map.dragging.enable();hint.classList.remove('show');}},{passive:true});
+  mapEl.addEventListener('touchmove',e=>{if(e.touches.length===1)flashHint('Use two fingers to move the map');},{passive:true});
+  mapEl.addEventListener('touchend',e=>{if(e.touches.length<2)map.dragging.disable();},{passive:true});
+}
+/* dropdown factory */
+function buildDropdown(popId,triggerId,txtId,badgeId,options,set,allLabel,onChange){
+  const pop=$(popId),trigger=$(triggerId);
+  options.forEach(([val,label])=>{
+    const l=document.createElement('label');l.className='dd-opt';
+    const i=document.createElement('input');i.type='checkbox';i.value=val;
+    const s=document.createElement('span');s.textContent=label;
+    l.appendChild(i);l.appendChild(s);pop.appendChild(l);
+  });
+  function sync(){
+    const n=set.size;
+    $(txtId).textContent=n?allLabel.split(':')[0]+': '+options.filter(o=>set.has(o[0]))[0][1]+(n>1?' +'+(n-1):''):allLabel;
+    const b=$(badgeId);b.hidden=!n;b.textContent=n;
+  }
+  trigger.addEventListener('click',()=>{
+    const open=!pop.classList.contains('open');
+    document.querySelectorAll('.dd-pop').forEach(p=>p.classList.remove('open'));
+    document.querySelectorAll('.dd-trigger').forEach(t=>t.setAttribute('aria-expanded','false'));
+    pop.classList.toggle('open',open);trigger.setAttribute('aria-expanded',open);
+  });
+  pop.addEventListener('change',e=>{
+    const cb=e.target;if(cb.type!=='checkbox')return;
+    cb.checked?set.add(cb.value):set.delete(cb.value);
+    sync();onChange();
+  });
+  return {sync,reset(){pop.querySelectorAll('input').forEach(i=>{i.checked=false;});set.clear();sync();}};
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.dd')){document.querySelectorAll('.dd-pop').forEach(p=>p.classList.remove('open'));document.querySelectorAll('.dd-trigger').forEach(t=>t.setAttribute('aria-expanded','false'));}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.dd-pop').forEach(p=>p.classList.remove('open'));document.querySelectorAll('.dd-trigger').forEach(t=>t.setAttribute('aria-expanded','false'));}});
+/* options derived from the normalized products mapping actually present in the data */
+const present=[...new Set(MFTS_MAP_DATA.flatMap(r=>r.products))];
+const prodOptions=Object.entries(PRODUCT_LABEL).filter(([k])=>present.includes(k));
+const regOptions=[["eastern","Eastern MA"],["central","Central MA"],["western","Western MA"],["outOfState","Regional Partners"]];
+/* filtering */
+function matches(r){
+  if(state.products.size&&!r.products.some(p=>state.products.has(p)))return false;
+  if(state.region.size&&!state.region.has(r.region))return false;
+  return true;
+}
+function currentSet(){return MFTS_MAP_DATA.filter(matches);}
+function pinIcon(){return L.divIcon({className:'atlas-pin atlas-pin--foodHub',html:'<span class="pinbox">'+PIN+'</span>',iconSize:[44,44],iconAnchor:[22,22]});}
+function renderMap(set){
+  markerLayer.clearLayers();markers={};
+  set.filter(r=>!r.meta.listOnly&&r.lat!=null).forEach(r=>{
+    const m=L.marker([r.lat,r.lng],{icon:pinIcon(),keyboard:true,title:r.name,alt:r.name+', Food Hub, '+r.city});
+    m.on('click',()=>{openPoi(r.id,m.getElement());highlightCard(r.id);});
+    m.on('mouseover',()=>{const c=document.getElementById('card-'+r.id);if(c)c.classList.add('is-selected');});
+    m.on('mouseout',()=>{if(selectedId!==r.id){const c=document.getElementById('card-'+r.id);if(c)c.classList.remove('is-selected');}});
+    m.addTo(markerLayer);markers[r.id]=m;
+  });
+  $('#mapEmpty').classList.toggle('show',Object.keys(markers).length===0);
+  refreshSelected();
+}
+function renderCards(set){
+  const ids=new Set(set.map(r=>r.id));
+  let visible=0;
+  document.querySelectorAll('.hub-card').forEach(c=>{
+    const id=c.id.replace('card-','');
+    const show=ids.has(id);
+    c.style.display=show?'':'none';
+    if(show)visible++;
+  });
+  $('#hubEmpty').classList.toggle('show',visible===0);
+  $('#hubCount').textContent=visible;
+  $('#hubCountLbl').textContent=visible===1?'hub shown':'hubs shown';
+  $('#filterClear').classList.toggle('show',state.products.size+state.region.size>0);
+}
+function renderAll(){const set=currentSet();renderMap(set);renderCards(set);}
+function refreshSelected(){
+  Object.entries(markers).forEach(([id,m])=>{const el=m.getElement();if(el)el.classList.toggle('is-selected',id===selectedId);});
+}
+function highlightCard(id){
+  document.querySelectorAll('.hub-card').forEach(c=>c.classList.toggle('is-selected',c.id==='card-'+id));
+}
+/* ===== POI DETAIL MODULE ===== */
+const poi=$('#poiPanel'),scrim=$('#poiScrim');let lastTrigger=null;
+function monogram(name){return name.split(/\s+/).filter(w=>/^[A-Za-z]/.test(w)).slice(0,2).map(w=>w[0].toUpperCase()).join('')}
+function openPoi(id,trigger){
+  const r=MFTS_MAP_DATA.find(x=>x.id===id);if(!r)return;
+  selectedId=id;refreshSelected();lastTrigger=trigger||document.activeElement;
+  $('#poiName').textContent=r.name;
+  $('#poiChips').innerHTML='<span class="poi-chip type">Food Hub</span><span class="poi-chip region">'+REGION_CHIP[r.region]+'</span>';
+  $('#poiBody').innerHTML=
+  (r.address?'<div class="poi-sec"><span class="plbl">Address</span><p class="poi-addr">'+esc(r.address)+'<br>'+esc(r.city)+(r.zip?' '+esc(r.zip):'')+'</p></div>':'')+
+  '<div class="poi-sec"><span class="plbl">Contact</span><div class="poi-contact">'+
+    (r.contact.email?'<a href="mailto:'+r.contact.email+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 7l10 7L22 7"/></svg>'+r.contact.email+'</a>':'')+
+    (r.contact.phone?'<a href="tel:'+r.contact.phone.replace(/[^0-9]/g,'')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 1.9z"/></svg>'+r.contact.phone+'</a>':'')+
+    (r.contact.website?'<a href="'+r.contact.website+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'+r.contact.website.replace(/^https?:\/\//,'')+'</a>':'')+'</div></div>'+
+  (r.meta.productsVerbatim?'<div class="poi-sec"><span class="plbl">Products</span><p class="poi-products">'+esc(r.meta.productsVerbatim)+'</p></div>':'')+
+  '<div class="poi-sec"><span class="plbl">MFTS notes</span><p class="poi-notes">'+esc(r.notes)+'</p></div>'+
+  '<div class="poi-sec">'+(r.meta.logoUrl?'<div class="poi-logo"><img src="'+r.meta.logoUrl+'" alt="'+esc(r.name)+' logo"></div>':'<div class="poi-mono" role="img" aria-label="'+esc(r.name)+' monogram placeholder"><span>'+monogram(r.name)+'</span></div>')+'</div>'+
+  '<button class="poi-cta" id="poiListing" type="button" data-id="'+r.id+'">View Full Listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button>';
+  poi.hidden=false;scrim.classList.add('open');void poi.offsetWidth;poi.classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>$('#poiClose').focus(),80);
+}
+function closePoi(){
+  poi.classList.remove('open');scrim.classList.remove('open');
+  document.body.style.overflow='';
+  selectedId=null;refreshSelected();
+  setTimeout(()=>{poi.hidden=true;if(lastTrigger&&lastTrigger.focus)lastTrigger.focus();},320);
+}
+$('#poiClose').addEventListener('click',closePoi);
+scrim.addEventListener('click',closePoi);
+$('#poiBody').addEventListener('click',e=>{
+  const b=e.target.closest('#poiListing');if(!b)return;
+  const id=b.dataset.id;closePoi();
+  setTimeout(()=>{
+    const card=document.getElementById('card-'+id);
+    if(card){highlightCard(id);const y=card.getBoundingClientRect().top+window.scrollY-110;window.scrollTo({top:y,behavior:'smooth'});}
+  },330);
+});
+document.addEventListener('keydown',e=>{
+  if(poi.hidden)return;
+  if(e.key==='Escape'){closePoi();return;}
+  if(e.key==='Tab'){ /* focus trap */
+    const f=poi.querySelectorAll('button,a[href]');if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
+/* ===== CONTROLS ===== */
+const prodDD=buildDropdown('#prodPop','#prodTrigger','#prodTxt','#prodBadge',prodOptions,state.products,'Products: All',renderAll);
+const regDD=buildDropdown('#regPop','#regTrigger','#regTxt','#regBadge',regOptions,state.region,'Region: All',renderAll);
+function clearFilters(){prodDD.reset();regDD.reset();renderAll();}
+$('#filterClear').addEventListener('click',clearFilters);
+$('#hubEmptyReset').addEventListener('click',()=>{clearFilters();const c=document.querySelector('.atlas-console');if(c){const y=c.getBoundingClientRect().top+window.scrollY-100;window.scrollTo({top:y,behavior:'smooth'});}});
+/* Show on Map: pan/zoom to pin and open the module */
+document.querySelectorAll('.show-on-map').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const id=b.dataset.id,r=MFTS_MAP_DATA.find(x=>x.id===id);
+    if(!r||r.lat==null)return;
+    const mapY=$('#atlasMap').getBoundingClientRect().top+window.scrollY-140;
+    window.scrollTo({top:mapY,behavior:'smooth'});
+    if(!markers[id]){clearFilters();}
+    map.setView([r.lat,r.lng],11,{animate:true});
+    highlightCard(id);
+    setTimeout(()=>openPoi(id,b),450);
+  });
+});
+/* initial view: fit all pins */
+renderAll();
+const pts=MFTS_MAP_DATA.filter(r=>r.lat!=null).map(r=>[r.lat,r.lng]);
+map.fitBounds(L.latLngBounds(pts),{padding:[36,36]});
+})();
+</script>
+</body></html>

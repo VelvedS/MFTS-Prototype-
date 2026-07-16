@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+WORDPRESS IMPLEMENTATION NOTES — sourcing-local-food.html (MFTS Atlas, Map 1 of 6)
+==============================================================================
+EMBEDDING
+- Option A (fastest): Elementor Pro HTML widget. Paste everything from
+  <section class="hero"> through the closing Atlas <script> tag. Global chrome
+  (topbar/header/footer) comes from theme template parts, not the widget.
+- Option B (cleaner): register a shortcode [mfts_atlas map="sourcing"] whose
+  callback prints the Atlas markup + inline JS; use it on a standard page.
+LEAFLET ENQUEUE
+- wp_enqueue_style/script Leaflet 1.9.x from cdnjs (same URLs as below), footer
+  load, no jQuery dependency. Do NOT double-load if another map plugin exists.
+RESPONSIVE STRATEGY
+- The Atlas is fluid to its container; WordPress/Elementor owns the outer
+  container width. No fixed page widths inside .atlas-console. Map height is
+  clamp(420px, 64vh, 760px).
+DATA ADAPTER SWAP
+- Prototype renders from the hardcoded MFTS_MAP_DATA array (SAMPLE DATA).
+- Production: replace MFTS_MAP_DATA with one of the two commented fetch
+  adapters directly below the array (WordPress REST or Google Sheets CSV).
+  Everything downstream consumes the same POI shape; nothing else changes.
+PIPELINE
+- Airtable -> Air WP Sync plugin -> custom post type "atlas_poi" -> /wp-json
+  endpoint consumed by adapter 1. Alternative: Google Sheets published-CSV
+  consumed by adapter 2. The Airtable API must never be called directly from
+  the browser.
+BASEMAP
+- Prototype default: CARTO Positron raster. Production swap to a MapTiler
+  custom Tidewater style or self-hosted Protomaps PMTiles is a one-line
+  change at TILE_URL below.
+============================================================================ -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sourcing Local Food — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme (canonical tokens, do not edit) */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#A8C663;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+  --pin-farm:#00662C; --pin-fishery:#007C89; --pin-hub:#88B03F; --ring:#88B03F;
+  --pin-farm-ink:#fff; --pin-fishery-ink:#fff; --pin-hub-ink:#003A40;
+  --tile-tint:sepia(.1) hue-rotate(14deg) saturate(1.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--green-light)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+:focus-visible{outline:3px solid var(--highlight);outline-offset:2px;border-radius:4px}
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a:hover{color:inherit}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);color:#fff;transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+/* ===== PAGE HERO (established page-header pattern) ===== */
+.hero{background:linear-gradient(rgba(0,58,64,.75),rgba(0,58,64,.75)),url("uploads/lettuce-growing-noAtt.jpeg") center/cover no-repeat;color:#fff;padding:72px 0 56px;position:relative;overflow:hidden;text-align:center}
+.hero::before{display:none}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 10%,rgba(136,176,63,.2),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(168,198,99,.14),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:var(--gold)}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(44px,5.6vw,86px);color:#fff;line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-family:'Libre Baskerville',serif;font-style:italic;font-weight:400;color:var(--gold);font-size:.9em}
+/* ===== SECTION HEAD (shared, leaf glyph) ===== */
+.section-head{margin-bottom:48px}
+.section-head h2{font-size:clamp(34px,4.4vw,58px);color:var(--green-ink);line-height:1.04;display:flex;align-items:flex-start;gap:14px}
+.section-head h2::before{content:'';flex-shrink:0;width:28px;height:28px;margin-top:.18em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.section-head p{font-size:17px;color:#444;margin-top:16px;max-width:620px;line-height:1.7}
+/* ===== LOCKED COPY BLOCK ===== */
+.atlas-intro{padding:72px 0 40px}
+.atlas-intro .section-head{margin-bottom:26px}
+.atlas-ctas{display:flex;gap:14px;flex-wrap:wrap}
+/* ===== CONSOLE (feature moment: dark ink + green glow) ===== */
+.atlas-shell{padding:0 0 96px}
+.atlas-console{background:#00434B;border-radius:24px;padding:26px 26px 22px;color:#fff;position:relative;overflow:hidden;box-shadow:0 40px 80px -50px rgba(0,58,64,.55)}
+.atlas-console::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 92% 4%,rgba(136,176,63,.2),transparent 50%),radial-gradient(ellipse at 4% 100%,rgba(168,198,99,.13),transparent 45%);pointer-events:none}
+.atlas-console > *{position:relative;z-index:1}
+.console-masthead{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.12)}
+.console-id{display:flex;align-items:baseline;gap:14px}
+.console-id .sig{font-family:'Bebas Neue';font-size:30px;letter-spacing:.06em;color:var(--gold);line-height:1}
+.console-id .sub{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.cb-status{width:100%;display:none;align-items:center;gap:12px}
+.cb-status.show{display:flex}
+.locbit{color:var(--gold);font-family:'Raleway';font-weight:700;font-size:12.5px;letter-spacing:.02em}
+.clear-loc{background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;font-family:'Raleway';font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;cursor:pointer;transition:.2s}
+.clear-loc:hover{border-color:var(--gold);color:var(--gold)}
+/* command bar */
+.command-bar{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap;margin:8px 0 26px}
+.cb-search{flex:1;min-width:260px;display:flex;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:999px;overflow:hidden;transition:border-color .2s}
+.cb-search:focus-within{border-color:var(--gold)}
+.cb-search svg{width:16px;height:16px;align-self:center;margin-left:18px;flex:none;color:var(--gold)}
+.cb-search input{flex:1;background:transparent;border:none;color:#fff;font-family:'Open Sans';font-size:14.5px;padding:13px 14px;outline:none;min-width:0}
+.cb-search input::placeholder{color:rgba(255,255,255,.45)}
+.cb-search button{background:var(--gold);color:var(--green-ink);border:none;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:0 22px;cursor:pointer;transition:.2s}
+.cb-search button:hover{background:#fff}
+.radius-set{display:flex;align-items:center;gap:8px}
+.radius-set .rlbl{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-right:2px}
+.pill-radio{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.8);border-radius:999px;font-family:'Raleway';font-weight:800;font-size:12.5px;letter-spacing:.04em;padding:11px 18px;cursor:pointer;transition:.2s}
+.pill-radio[aria-checked="true"]{background:var(--gold);border-color:var(--gold);color:var(--green-ink)}
+.pill-radio:hover:not([aria-checked="true"]){border-color:var(--gold);color:#fff}
+.cb-msg{width:100%;font-size:13px;color:var(--gold);font-style:italic;display:none}
+.cb-msg.show{display:block}
+/* filter arrays */
+.filters-toggle{display:none}
+.console-filters{position:relative;z-index:5;display:flex;flex-direction:column;gap:9px;margin-bottom:26px}
+.fgroup{display:flex;align-items:baseline;gap:8px 12px;flex-wrap:wrap}
+.fgroup .flbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#fff;flex:none;min-width:118px}
+.fgroup .fchips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.82);border-radius:999px;font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.02em;padding:7px 15px;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:7px}
+.chip::before{content:'';width:7px;height:7px;border-radius:50%;border:1.5px solid rgba(255,255,255,.45);transition:.18s;flex:none}
+.chip[aria-pressed="true"],.chip[aria-checked="true"]{background:rgba(168,198,99,.18);border-color:var(--gold);color:#fff}
+.chip[aria-pressed="true"]::before,.chip[aria-checked="true"]::before{background:var(--gold);border-color:var(--gold)}
+.chip:hover{border-color:var(--gold)}
+.hotm-dd{position:relative;display:inline-flex}
+.hotm-trigger{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);border-radius:999px;font-family:'Raleway';font-weight:700;font-size:12px;padding:7px 15px;cursor:pointer;transition:.18s}
+.hotm-trigger:hover{border-color:var(--gold)}
+.hotm-trigger[aria-expanded="true"]{border-color:var(--gold);background:rgba(168,198,99,.14);color:#fff}
+.hotm-trigger .dd-caret{width:12px;height:12px;opacity:.7;transition:transform .25s}
+.hotm-trigger[aria-expanded="true"] .dd-caret{transform:rotate(180deg)}
+.hotm-badge{background:var(--gold);color:var(--green-ink);border-radius:999px;font-size:10.5px;font-weight:800;padding:1px 8px}
+.hotm-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:750;min-width:250px;max-height:270px;overflow-y:auto;background:var(--green-deep);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:8px;display:none;box-shadow:0 24px 50px -20px rgba(0,20,22,.6);scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.hotm-pop.open{display:block}
+.hotm-opt{display:flex;align-items:center;gap:10px;padding:7px 11px;border-radius:8px;color:rgba(255,255,255,.88);font-family:'Open Sans';font-size:13px;cursor:pointer}
+.hotm-opt:hover{background:rgba(255,255,255,.08)}
+.hotm-opt input{accent-color:var(--gold);width:15px;height:15px;flex:none;cursor:pointer}
+/* ===== STAGE: map + ledger ===== */
+.stage-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.view-toggle{display:inline-flex;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:3px}
+.view-toggle button{background:transparent;border:none;color:rgba(255,255,255,.7);font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;padding:8px 18px;border-radius:999px;cursor:pointer;transition:.2s}
+.view-toggle button[aria-pressed="true"]{background:var(--gold);color:var(--green-ink)}
+.map-legend{position:absolute;left:12px;bottom:12px;z-index:650;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;padding:7px 16px;display:flex;gap:14px;align-items:center;box-shadow:0 10px 24px -12px rgba(0,58,64,.4)}
+.map-legend .litem{display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:700;font-size:11.5px;color:var(--green-ink)}
+.map-legend .litem svg{width:16px;height:16px}
+.atlas-stage{display:flex;flex-direction:column;gap:14px}
+.map-frame{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:#dfe9e8}
+#atlasMap{height:clamp(440px,70vh,820px);width:100%;background:#dfe9e8}
+#atlasMap:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+.map-hint{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,58,64,.55);backdrop-filter:blur(1px);z-index:800;opacity:0;pointer-events:none;transition:opacity .3s}
+.map-hint.show{opacity:1}
+.map-hint span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:14px;padding:14px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.25)}
+#atlasMap .leaflet-tile-pane{filter:var(--tile-tint,none)}
+.leaflet-container{font-family:'Open Sans',sans-serif}
+.leaflet-control-attribution{font-size:9.5px!important;background:rgba(255,255,255,.75)!important}
+/* pins */
+.atlas-pin{background:none;border:none}
+.atlas-pin .pinbox{width:44px;height:44px;display:grid;place-items:center;cursor:pointer}
+.atlas-pin .pinbox svg{width:27px;height:27px;filter:drop-shadow(0 2px 4px rgba(0,58,64,.4));transition:transform .18s}
+.atlas-pin.is-hot .pinbox svg,.atlas-pin .pinbox:hover svg{transform:scale(1.28)}
+.atlas-pin.is-selected .pinbox svg{transform:scale(1.42)}
+.atlas-pin.is-selected .pinbox::after{content:'';position:absolute;width:40px;height:40px;border-radius:50%;border:2.5px solid var(--green-ink);animation:pinring .35s ease}
+@keyframes pinring{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+/* ledger */
+.results-panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:18px;overflow:hidden}
+.rpanel-toggle{display:flex;width:100%;align-items:center;gap:14px;background:none;border:none;cursor:pointer;text-align:left;padding:14px 20px 12px;border-bottom:1px solid rgba(255,255,255,.12)}
+.results-panel.collapsed .rpanel-toggle{border-bottom:none}
+.rpanel-toggle .t{font-family:'Bebas Neue';font-size:19px;letter-spacing:.09em;color:#fff}
+.rpanel-toggle .c{flex:1;font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.rpanel-toggle .c b{font-family:'Bebas Neue';font-weight:400;font-size:22px;letter-spacing:.04em;color:var(--gold);margin-right:7px}
+.rpanel-toggle .dd-caret{width:14px;height:14px;color:rgba(255,255,255,.65);transition:transform .25s}
+.results-panel.collapsed .dd-caret{transform:rotate(-90deg)}
+.ledger-rows{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));max-height:330px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.lrow{display:grid;grid-template-columns:30px 1fr auto;gap:4px 10px;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);padding:12px 16px;cursor:pointer;color:#fff;font-family:'Open Sans';transition:background .15s;align-items:center}
+.lrow:hover,.lrow.is-hot{background:rgba(168,198,99,.12)}
+.lrow.is-selected{background:rgba(168,198,99,.2)}
+.lrow .idx{font-family:'Bebas Neue';font-size:17px;color:rgba(255,255,255,.35);grid-row:span 2;align-self:start;padding-top:2px}
+.lrow .nm{font-family:'Raleway';font-weight:800;font-size:13.5px;line-height:1.25}
+.lrow .dist{font-family:'Bebas Neue';font-size:15px;letter-spacing:.04em;color:var(--gold);white-space:nowrap;justify-self:end}
+.lrow .meta{grid-column:2;font-size:11.5px;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lrow .tchip{font-family:'Raleway';font-weight:800;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:999px}
+.lrow .badge{grid-column:3;justify-self:end;display:inline-flex;align-items:center;gap:5px;font-family:'Raleway';font-weight:700;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.badge .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.st-active .dot{background:var(--bridge)}.st-active{color:#C4DE8F}
+.st-interested .dot{background:var(--highlight)}.st-interested{color:#8FE0DC}
+.st-verifiedCapacity .dot{background:transparent;border:2px solid var(--gold)}.st-verifiedCapacity{color:#C4DE8F}
+.tc-farm{background:color-mix(in srgb,var(--pin-farm) 92%,transparent);color:var(--pin-farm-ink);border:1px solid rgba(255,255,255,.25)}
+.tc-fishery{background:color-mix(in srgb,var(--pin-fishery) 92%,transparent);color:var(--pin-fishery-ink)}
+.tc-foodHub{background:color-mix(in srgb,var(--pin-hub) 95%,transparent);color:var(--pin-hub-ink)}
+/* empty state */
+.stage-empty{display:none;padding:44px 28px;text-align:center}
+.stage-empty.show{display:block}
+.stage-empty .leaf{width:34px;height:34px;margin:0 auto 14px;opacity:.8}
+.stage-empty h4{font-family:'Raleway';font-weight:900;font-size:17px;color:#fff;margin-bottom:8px}
+.stage-empty p{font-size:13px;color:rgba(255,255,255,.6);max-width:250px;margin:0 auto 18px}
+.stage-empty button{background:var(--gold);color:var(--green-ink);border:none;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;padding:10px 20px;cursor:pointer}
+.stage-empty button:hover{background:#fff}
+/* ===== TABLE VIEW ===== */
+.atlas-table-wrap{display:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);border-radius:18px;overflow:auto;max-height:clamp(420px,64vh,760px)}
+.atlas-stage.table-mode{grid-template-columns:1fr}
+.atlas-stage.table-mode .map-frame,.atlas-stage.table-mode .results-panel{display:none}
+.atlas-stage.table-mode .atlas-table-wrap{display:block}
+.atlas-table{width:100%;border-collapse:collapse;font-size:13px;color:#fff;min-width:900px}
+.atlas-table th{position:sticky;top:0;background:var(--green-deep);font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);text-align:left;padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.2);white-space:nowrap;z-index:2}
+.atlas-table th button{background:none;border:none;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.atlas-table th .arr{font-size:9px;opacity:.5}
+.atlas-table th[aria-sort="ascending"] .arr::after{content:'▲';opacity:1}
+.atlas-table th[aria-sort="descending"] .arr::after{content:'▼';opacity:1}
+.atlas-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}
+.atlas-table tbody tr{cursor:pointer;transition:background .15s}
+.atlas-table tbody tr:hover{background:rgba(168,198,99,.12)}
+.atlas-table .tnm{font-family:'Raleway';font-weight:800;font-size:13.5px}
+.atlas-table .tsub{font-size:11px;color:rgba(255,255,255,.5)}
+.atlas-table a{color:var(--gold);text-decoration:underline}
+.atlas-table a:hover{color:#fff}
+/* ===== POI DETAIL MODULE (uniform across all six Atlas maps) ===== */
+.atlas-poi-scrim{position:fixed;inset:0;background:rgba(0,58,64,.5);backdrop-filter:blur(2px);z-index:1000;opacity:0;pointer-events:none;transition:opacity .25s}
+.atlas-poi-scrim.open{opacity:1;pointer-events:auto}
+.atlas-poi{position:fixed;top:0;right:0;bottom:0;width:min(430px,100vw);background:#fff;z-index:1001;transform:translateX(105%);transition:transform .32s cubic-bezier(.32,.72,.28,1);box-shadow:-30px 0 70px -30px rgba(0,58,64,.45);display:flex;flex-direction:column;border-radius:0}
+.atlas-poi.open{transform:translateX(0)}
+.atlas-poi-head{background:var(--green-ink);color:#fff;padding:26px 28px 22px;position:relative;flex:none}
+.atlas-poi-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 0%,rgba(136,176,63,.22),transparent 60%);pointer-events:none}
+.atlas-poi-close{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:grid;place-items:center;transition:.2s;z-index:2}
+.atlas-poi-close:hover{background:var(--gold);color:var(--green-ink);border-color:var(--gold)}
+.atlas-poi-close svg{width:15px;height:15px}
+.atlas-poi-head h3{font-family:'Raleway';font-weight:900;font-size:23px;color:#fff;position:relative;padding-right:40px;line-height:1.15}
+.atlas-poi-chips{display:flex;gap:7px;margin-top:12px;position:relative;flex-wrap:wrap}
+.poi-chip{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:999px}
+.poi-chip.region{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.atlas-poi-body{padding:24px 28px 32px;overflow-y:auto;flex:1}
+.poi-sec{margin-bottom:20px}
+.poi-sec .plbl{font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:7px}
+.poi-addr{font-size:14px;color:#333;line-height:1.55}
+.poi-contact{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.poi-contact a{color:var(--green-light);display:inline-flex;align-items:center;gap:9px;width:fit-content}
+.poi-contact a:hover{color:var(--green-deep);text-decoration:underline}
+.poi-contact svg{width:14px;height:14px;flex:none;color:var(--accent)}
+.poi-prodchips{display:flex;gap:6px;flex-wrap:wrap}
+.pchip{background:var(--cream);border:1px solid var(--line);color:var(--green-ink);font-family:'Raleway';font-weight:700;font-size:11.5px;padding:5px 12px;border-radius:999px}
+.pchip.hotm{background:rgba(136,176,63,.14);border-color:rgba(136,176,63,.4);color:#4C6420}
+.poi-status{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.07em;text-transform:uppercase;padding:7px 15px;border-radius:999px;border:1px solid}
+.poi-status.st-active{background:rgba(136,176,63,.12);border-color:var(--bridge);color:#4C6420}
+.poi-status.st-interested{background:rgba(0,181,175,.1);border-color:var(--highlight);color:var(--green-light)}
+.poi-status.st-verifiedCapacity{background:rgba(168,198,99,.14);border-color:var(--gold);color:#4C6420}
+.poi-notes{font-size:14px;line-height:1.7;color:#3a3a3a;background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.poi-photo{border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.poi-photo img{width:100%;height:190px;object-fit:cover}
+.poi-mono{border-radius:14px;height:150px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green) 0%,var(--green-light) 70%,var(--highlight) 100%);position:relative;overflow:hidden}
+.poi-mono::after{content:'';position:absolute;right:-30px;bottom:-30px;width:130px;height:130px;border-radius:50%;border:1px solid rgba(255,255,255,.25)}
+.poi-mono span{font-family:'Bebas Neue';font-size:56px;letter-spacing:.08em;color:#fff}
+/* ===== REGIONAL PANELS ===== */
+.regions{background:#fff;border-top:1px solid var(--line);padding:96px 0}
+.region-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.region-panel{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.region-panel .rp-head{background:var(--green);color:#fff;padding:20px 24px;display:flex;justify-content:space-between;align-items:baseline}
+.region-panel:nth-child(2) .rp-head{background:var(--green-light)}
+.region-panel:nth-child(3) .rp-head{background:var(--green-deep)}
+.rp-head .rn{font-family:'Bebas Neue';font-size:26px;letter-spacing:.07em}
+.rp-head .rc{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.rp-list{list-style:none;flex:1}
+.rp-list li{border-bottom:1px solid var(--line)}
+.rp-list li:last-child{border-bottom:none}
+.rp-row{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;text-align:left;padding:13px 22px;cursor:pointer;font-family:'Open Sans';transition:background .15s}
+.rp-row:hover{background:rgba(0,124,137,.07)}
+.rp-row svg{width:15px;height:15px;flex:none}
+.rp-row .rnm{font-family:'Raleway';font-weight:700;font-size:13.5px;color:var(--green-ink);flex:1;line-height:1.3}
+.rp-row .rct{font-size:11px;color:#777;white-space:nowrap}
+.award{font-family:'Raleway';font-weight:800;font-size:8.5px;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap;flex:none}
+.award.maFresh{background:rgba(136,176,63,.16);color:#4C6420;border:1px solid rgba(136,176,63,.5)}
+.award.nfs{background:rgba(0,181,175,.12);color:var(--green-light);border:1px solid rgba(0,181,175,.45)}
+.rp-empty{padding:26px 22px;font-size:13px;color:#666;font-style:italic}
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .nav-links{display:none}
+  .ledger-rows{grid-template-columns:1fr}
+  .region-grid{grid-template-columns:1fr}
+  .fgroup .flbl{min-width:100%}
+}
+@media (max-width:760px){
+  .filters-toggle{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.07em;text-transform:uppercase;padding:11px 20px;cursor:pointer;margin-bottom:14px}
+  .filters-toggle .fcount{background:var(--gold);color:var(--green-ink);border-radius:999px;font-size:11px;padding:1px 9px}
+  .console-filters{display:none;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px}
+  .console-filters.open{display:flex}
+  #atlasMap{height:420px}
+  .atlas-poi{top:auto;left:0;right:0;bottom:0;width:100%;max-height:82vh;transform:translateY(105%);border-radius:20px 20px 0 0}
+  .atlas-poi.open{transform:translateY(0)}
+  .atlas-console{padding:18px 14px;border-radius:18px}
+  .console-masthead{flex-direction:column;align-items:flex-start;gap:8px}
+}
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+@media (max-width:1024px){.foot-grid{grid-template-columns:1fr 1fr;gap:28px}}
+@media (max-width:600px){.foot-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="MFTS-Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-About-Us.html">What is Farm to School</a></li>
+        <li><a href="MFTS-Team.html">Our Team</a></li>
+        <li><a href="MFTS-About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="MFTS-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-Main-v1-CalendarForward.html">Upcoming Events</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">News</a></li>
+        <li><a href="MFTS-Podcast.html">Podcast</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="sourcing-local-food.html">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">MA FRESH Grant</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- PAGE HEADER -->
+<section class="hero" data-screen-label="Sourcing Local Food hero">
+  <div class="wrap">
+    <h1>Sourcing <em>Local Food</em></h1>
+  </div>
+</section>
+
+<!-- LOCKED COPY BLOCK -->
+<section class="atlas-intro" data-screen-label="Where to Find Local Food">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Where to Find Local Food</h2>
+      <p>Use our searchable database to find farmers and food producers interested in supplying your institution.</p>
+    </div>
+    <div class="atlas-ctas">
+      <a class="btn btn-green" href="https://docs.google.com/spreadsheets/d/1ZDYG7P9l0qv_XHuZnpCqxhs4V-tS7AIWokJv-hrvhY8/edit?usp=sharing" target="_blank" rel="noopener">View Local Producer List
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      <a class="btn btn-outline" href="https://www.massfarmtoschool.org/food-hubs/" target="_blank" rel="noopener">View Food Hub List</a>
+      <a class="btn btn-outline" href="https://forms.gle/BwusMQRxwUtNrNe78" target="_blank" rel="noopener">List Your Business Here</a>
+    </div>
+  </div>
+</section>
+
+<!-- LOCAL FOOD SOURCE MAP CONSOLE -->
+<section class="atlas-shell" data-screen-label="Local Food Source Map console">
+  <div class="wrap">
+    <div class="atlas-console">
+      <div class="console-masthead">
+        <div class="console-id"><span class="sig">Local Food Source Map</span><span class="sub">Producers · Fisheries · Food Hubs</span></div>
+      </div>
+      <!-- COMMAND BAR -->
+      <div class="command-bar" role="search">
+        <div class="cb-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+          <input id="locInput" type="text" placeholder="Search by school zip or city, like 01002 or Worcester" aria-label="Search by school zip or city">
+          <button id="locGo" type="button">Search</button>
+        </div>
+        <div class="radius-set" role="radiogroup" aria-label="Search radius">
+          <span class="rlbl">Radius</span>
+          <button class="pill-radio" role="radio" aria-checked="false" data-radius="10" type="button">10 mi</button>
+          <button class="pill-radio" role="radio" aria-checked="true" data-radius="25" type="button">25 mi</button>
+          <button class="pill-radio" role="radio" aria-checked="false" data-radius="50" type="button">50 mi</button>
+        </div>
+        <p class="cb-status" id="cbStatus"><span class="locbit" id="locLabel"></span><button class="clear-loc" id="clearLoc" type="button">Clear location</button></p>
+        <p class="cb-msg" id="cbMsg" role="status"></p>
+      </div>
+      <!-- FILTER ARRAYS -->
+      <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="consoleFilters">Filters <span class="fcount" id="filterCount">3</span></button>
+      <div class="console-filters" id="consoleFilters">
+        <div class="fgroup" role="group" aria-label="Product categories">
+          <span class="flbl">Products</span>
+          <div class="fchips">
+            <button class="chip" aria-pressed="true" data-group="products" data-val="produce" type="button">Produce</button>
+            <button class="chip" aria-pressed="false" data-group="products" data-val="dairy" type="button">Dairy</button>
+            <button class="chip" aria-pressed="true" data-group="products" data-val="meat" type="button">Meat</button>
+            <button class="chip" aria-pressed="false" data-group="products" data-val="seafood" type="button">Seafood</button>
+            <button class="chip" aria-pressed="false" data-group="products" data-val="valueAdded" type="button">Value-Added</button>
+            <button class="chip" aria-pressed="false" data-group="products" data-val="readyToCook" type="button">Ready-to-Cook</button>
+          </div>
+        </div>
+        <div class="fgroup" role="group" aria-label="Institutional readiness">
+          <span class="flbl">Readiness</span>
+          <div class="fchips">
+            <button class="chip" aria-pressed="true" data-group="readiness" data-val="active" type="button">Actively Selling to Schools</button>
+            <button class="chip" aria-pressed="false" data-group="readiness" data-val="interested" type="button">Interested</button>
+            <button class="chip" aria-pressed="false" data-group="readiness" data-val="verifiedCapacity" type="button">Verified Capacity</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <span class="flbl" id="hotmLbl">Filter by "Harvest of the Month" or Specialty:</span>
+          <div class="hotm-dd">
+            <button class="hotm-trigger" id="hotmTrigger" type="button" aria-haspopup="true" aria-expanded="false"><span id="hotmTriggerTxt">All</span><span class="hotm-badge" id="hotmBadge" hidden></span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+            <div class="hotm-pop" id="hotmPop" role="group" aria-labelledby="hotmLbl"></div>
+          </div>
+        </div>
+      </div>
+      <!-- STAGE BAR -->
+      <div class="stage-bar">
+        <div class="view-toggle" role="group" aria-label="Results view">
+          <button id="viewMap" aria-pressed="true" type="button">Map</button>
+          <button id="viewTable" aria-pressed="false" type="button">Table</button>
+        </div>
+      </div>
+      <!-- SPLIT WORKING STAGE -->
+      <div class="atlas-stage" id="atlasStage">
+        <div class="map-frame">
+          <div id="atlasMap" tabindex="0" role="application" aria-label="Map of local food sources in Massachusetts. The table view offers the same results as an accessible list."></div>
+          <div class="map-hint" id="mapHint" aria-hidden="true"><span id="mapHintTxt">Use ctrl + scroll to zoom the map</span></div>
+          <div class="legend map-legend"><span class="litem"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="var(--pin-farm)" stroke="#fff" stroke-width="1.6"></circle><path d="M15.5 8c-4 .9-5 3.6-6 6l.9.3.4-1c.2.1.5.1.7.1 3.8 0 5-5.4 5-5.4-.5.9-3.6 1-5.9 1.5-2.3.5-3.1 1.9-3.1 2.8 0 .9.8 1.7.8 1.7 1.5-4 7.2-6 7.2-6z" fill="#fff"></path></svg>Farm</span><span class="litem"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="var(--pin-fishery)" stroke="#fff" stroke-width="1.6"></circle><path d="M6.5 12c1.8-2.6 4-3.9 6.3-3.9 2 0 3.7 1.5 4.7 3.9-1 2.4-2.7 3.9-4.7 3.9-2.3 0-4.5-1.3-6.3-3.9zm9.3 0a.9.9 0 1 0-1.8 0 .9.9 0 0 0 1.8 0z" fill="#003A40"></path></svg>Fishery</span><span class="litem"><svg viewBox="0 0 24 24"><path d="M12 1.8l8.9 5.1v10.2L12 22.2l-8.9-5.1V6.9z" fill="var(--pin-hub)" stroke="#fff" stroke-width="1.6"></path><circle cx="12" cy="12" r="2" fill="#003A40"></circle><path d="M12 12L12 7M12 12l4.3 2.5M12 12l-4.3 2.5" stroke="#003A40" stroke-width="1.6" stroke-linecap="round"></path></svg>Food Hub</span></div>
+        </div>
+        <div class="results-panel" id="resultsPanel" hidden>
+          <button class="rpanel-toggle" id="ledgerToggle" type="button" aria-expanded="true" aria-controls="ledgerBody"><span class="t">Results Ledger</span><span class="c" aria-live="polite"><b id="resultCount">0</b><span id="countLabel">sources shown</span></span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div id="ledgerBody">
+          <div class="ledger-rows" id="ledgerRows"></div>
+          <div class="stage-empty" id="ledgerEmpty">
+            <svg class="leaf" viewBox="0 0 24 24" fill="#A8C663"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg>
+            <h4>No sources match yet</h4>
+            <p>Try widening the radius, adding a product category, or setting Harvest of the Month back to All.</p>
+            <button id="resetFilters" type="button">Reset all filters</button>
+          </div>
+          </div>
+        </div>
+        <!-- TABLE VIEW (accessible alternative to pin interaction) -->
+        <div class="atlas-table-wrap" role="region" aria-label="Table of current results">
+          <table class="atlas-table">
+            <thead><tr>
+              <th aria-sort="ascending"><button data-sort="name" type="button">Name <span class="arr"></span></button></th>
+              <th><button data-sort="entityType" type="button">Type <span class="arr"></span></button></th>
+              <th><button data-sort="city" type="button">City <span class="arr"></span></button></th>
+              <th><button data-sort="region" type="button">Region <span class="arr"></span></button></th>
+              <th>Products</th>
+              <th><button data-sort="sellingStatus" type="button">Status <span class="arr"></span></button></th>
+              <th><button data-sort="dist" type="button">Distance <span class="arr"></span></button></th>
+              <th>Contact</th>
+            </tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGIONAL SEGMENTATION PANELS -->
+<section class="regions" data-screen-label="Regional vendor lists">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Browse by <span class="accent-italic">region</span></h2>
+      <p>Every source in the current result set, sorted A to Z. Award badges mark MA FRESH and Northeast Food for Schools cohort members.</p>
+    </div>
+    <div class="region-grid" id="regionGrid"></div>
+  </div>
+</section>
+
+<!-- POI DETAIL MODULE (uniform markup across all six Atlas maps) -->
+<div class="atlas-poi-scrim" id="poiScrim"></div>
+<aside class="atlas-poi" id="poiPanel" role="dialog" aria-modal="true" aria-labelledby="poiName" hidden>
+  <div class="atlas-poi-head">
+    <button class="atlas-poi-close" id="poiClose" type="button" aria-label="Close details">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+    </button>
+    <h3 id="poiName"></h3>
+    <div class="atlas-poi-chips" id="poiChips"></div>
+  </div>
+  <div class="atlas-poi-body" id="poiBody"></div>
+</aside>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="sourcing-local-food.html">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="#">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="MFTS-About-Us.html">What is Farm to School?</a></li>
+          <li><a href="MFTS-About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+          <li><a href="MFTS-Impact.html">Impact</a></li>
+          <li><a href="MFTS-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="MFTS-Events-Main-v1-CalendarForward.html">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="MFTS-HOTM.html">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+<script>
+/* ============ SAMPLE DATA — fictional Massachusetts entities at real-town
+   coordinates. Do not publish. Emails on example.org, phones in 555. ============ */
+const MFTS_MAP_DATA=[
+{id:"gm-greens",name:"Great Marsh Greens",entityType:"farm",programs:["producer","hotm","maFresh"],region:"eastern",address:"48 Saltmarsh Ln",city:"Ipswich",zip:"01938",lat:42.679,lng:-70.841,contact:{email:"orders@greatmarshgreens.example.org",phone:"(978) 555-0141",website:"https://greatmarshgreens.example.org"},products:["produce"],sellingStatus:"active",notes:"Year-round hydroponic and field greens. Delivers north of Boston twice weekly; case minimums are school-friendly.",photoUrl:"https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=800&q=60",meta:{hotmCrops:["Salad Greens","Kale"]}},
+{id:"capeann-shellfish",name:"Cape Ann Shellfish Co.",entityType:"fishery",programs:["producer"],region:"eastern",address:"7 Harbor Loop",city:"Gloucester",zip:"01930",lat:42.616,lng:-70.662,contact:{email:"dock@capeannshellfish.example.org",phone:"(978) 555-0177",website:"https://capeannshellfish.example.org"},products:["seafood"],sellingStatus:"active",notes:"Day-boat shellfish and groundfish. HACCP certified; supplies two North Shore districts today.",photoUrl:null,meta:{hotmCrops:["Seafood"]}},
+{id:"harborlight",name:"Harbor Light Fisheries",entityType:"fishery",programs:["producer","nfs"],region:"eastern",address:"122 Pier Rd",city:"New Bedford",zip:"02740",lat:41.636,lng:-70.934,contact:{email:"sales@harborlightfish.example.org",phone:"(508) 555-0165",website:"https://harborlightfish.example.org"},products:["seafood","valueAdded"],sellingStatus:"verifiedCapacity",notes:"Frozen portioned pollock and hake sized for K-12 lines. Verified capacity for 10,000 servings weekly.",photoUrl:null,meta:{hotmCrops:["Seafood"]}},
+{id:"standish-orchard",name:"Standish Orchard &amp; Cidery",entityType:"farm",programs:["producer","hotm"],region:"eastern",address:"310 Old Colony Rd",city:"Plymouth",zip:"02360",lat:41.958,lng:-70.667,contact:{email:"fruit@standishorchard.example.org",phone:"(508) 555-0112",website:"https://standishorchard.example.org"},products:["produce","valueAdded"],sellingStatus:"interested",notes:"Apples, pears, and unsweetened cider cups. Exploring first school accounts for fall delivery.",photoUrl:null,meta:{hotmCrops:["Apples","Pears"]}},
+{id:"middlesex-coop",name:"Middlesex Growers Cooperative",entityType:"foodHub",programs:["foodHub","nfs"],region:"eastern",address:"55 Commonwealth Depot",city:"Concord",zip:"01742",lat:42.46,lng:-71.349,contact:{email:"hub@middlesexgrowers.example.org",phone:"(978) 555-0128",website:"https://middlesexgrowers.example.org"},products:["produce","dairy","valueAdded"],sellingStatus:"active",notes:"Aggregates 22 member farms. Single PO, single delivery, source-identified by farm on every case.",photoUrl:null,meta:{hotmCrops:[]}},
+{id:"baystate-hub",name:"Bay State Provisions Hub",entityType:"foodHub",programs:["foodHub","nfs"],region:"eastern",address:"900 Market Ter",city:"Boston",zip:"02125",lat:42.32,lng:-71.089,contact:{email:"orders@baystateprovisions.example.org",phone:"(617) 555-0190",website:"https://baystateprovisions.example.org"},products:["produce","dairy","meat","readyToCook"],sellingStatus:"active",notes:"Metro Boston distribution with refrigerated fleet. Handles bid paperwork and USDA crediting sheets.",photoUrl:null,meta:{hotmCrops:[]}},
+{id:"saltmarsh-dairy",name:"Saltmarsh Dairy",entityType:"farm",programs:["producer","hotm"],region:"eastern",address:"16 River Bend Rd",city:"Westport",zip:"02790",lat:41.588,lng:-71.079,contact:{email:"milk@saltmarshdairy.example.org",phone:"(508) 555-0153",website:"https://saltmarshdairy.example.org"},products:["dairy"],sellingStatus:"verifiedCapacity",notes:"8 oz cartons and bulk yogurt. Verified cold-chain capacity for southeastern Mass districts.",photoUrl:null,meta:{hotmCrops:["Dairy"]}},
+{id:"greenharbor",name:"Green Harbor Farm",entityType:"farm",programs:["producer","hotm","maFresh"],region:"eastern",address:"75 Dike Rd",city:"Marshfield",zip:"02050",lat:42.092,lng:-70.706,contact:{email:"crew@greenharborfarm.example.org",phone:"(781) 555-0119",website:"https://greenharborfarm.example.org"},products:["produce","meat"],sellingStatus:"active",notes:"Sweet corn, winter squash, and fall cranberries plus pastured ground beef. Delivers South Shore.",photoUrl:null,meta:{hotmCrops:["Corn","Winter Squash","Cranberries"]}},
+{id:"paskamansett",name:"Paskamansett River Farm",entityType:"farm",programs:["producer","hotm"],region:"eastern",address:"401 Tucker Ln",city:"Dartmouth",zip:"02748",lat:41.579,lng:-70.986,contact:{email:"farm@paskamansett.example.org",phone:"(508) 555-0134",website:"https://paskamansett.example.org"},products:["produce","readyToCook"],sellingStatus:"interested",notes:"June strawberries and melons; pilot-ready on pre-cut fruit cups with a co-packer partner.",photoUrl:null,meta:{hotmCrops:["Strawberries","Melons"]}},
+{id:"northshore-exchange",name:"North Shore Harvest Exchange",entityType:"foodHub",programs:["foodHub"],region:"eastern",address:"210 Broad St",city:"Lynn",zip:"01902",lat:42.464,lng:-70.945,contact:{email:"team@nsharvest.example.org",phone:"(781) 555-0186",website:"https://nsharvest.example.org"},products:["produce","readyToCook"],sellingStatus:"interested",notes:"New hub focused on fresh-cut processing for cafeterias. Seeking pilot districts for spring.",photoUrl:null,meta:{hotmCrops:[]}},
+{id:"agawam-oysters",name:"Agawam Point Oysters",entityType:"fishery",programs:["producer"],region:"eastern",address:"3 Bay Ave",city:"Duxbury",zip:"02332",lat:42.042,lng:-70.672,contact:{email:"tides@agawampoint.example.org",phone:"(781) 555-0171",website:"https://agawampoint.example.org"},products:["seafood"],sellingStatus:"interested",notes:"Farmed oysters and taste-test kits for classroom aquaculture units. Interested in culinary programs.",photoUrl:null,meta:{hotmCrops:["Seafood"]}},
+{id:"quinebaug-beef",name:"Quinebaug Valley Beef",entityType:"farm",programs:["producer"],region:"central",address:"88 Breakneck Rd",city:"Sturbridge",zip:"01566",lat:42.108,lng:-72.079,contact:{email:"beef@quinebaugvalley.example.org",phone:"(508) 555-0147",website:"https://quinebaugvalley.example.org"},products:["meat"],sellingStatus:"verifiedCapacity",notes:"USDA-inspected ground beef in 10 lb chubs. Verified monthly capacity for mid-size districts.",photoUrl:null,meta:{hotmCrops:[]}},
+{id:"sevenhills-hub",name:"Seven Hills Food Hub",entityType:"foodHub",programs:["foodHub","nfs"],region:"central",address:"140 Canal District Way",city:"Worcester",zip:"01608",lat:42.262,lng:-71.802,contact:{email:"hello@sevenhillsfood.example.org",phone:"(508) 555-0108",website:"https://sevenhillsfood.example.org"},products:["produce","dairy","meat"],sellingStatus:"active",notes:"Central Mass aggregation with weekly routes to 30 school kitchens. NFS cohort logistics partner.",photoUrl:null,meta:{hotmCrops:[]}},
+{id:"barre-plains",name:"Barre Plains Farm",entityType:"farm",programs:["producer","hotm","maFresh"],region:"central",address:"52 Valley Rd",city:"Barre",zip:"01005",lat:42.423,lng:-72.105,contact:{email:"roots@barreplains.example.org",phone:"(978) 555-0122",website:"https://barreplains.example.org"},products:["produce"],sellingStatus:"active",notes:"Storage crops at scale: carrots, potatoes, and cabbage graded for cafeteria prep.",photoUrl:"https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=60",meta:{hotmCrops:["Carrots","Potatoes","Cabbage"]}},
+{id:"stillwater-creamery",name:"Stillwater Creamery",entityType:"farm",programs:["producer","hotm"],region:"central",address:"9 Greenwich Rd",city:"Hardwick",zip:"01037",lat:42.35,lng:-72.199,contact:{email:"churn@stillwatercreamery.example.org",phone:"(413) 555-0139",website:"https://stillwatercreamery.example.org"},products:["dairy"],sellingStatus:"active",notes:"Single-herd yogurt and cheese sticks. Currently on the line in three central Mass districts.",photoUrl:null,meta:{hotmCrops:["Dairy"]}},
+{id:"nashua-orchards",name:"Nashua Valley Orchards",entityType:"farm",programs:["producer","hotm"],region:"central",address:"217 Seven Bridge Rd",city:"Lancaster",zip:"01523",lat:42.456,lng:-71.673,contact:{email:"pick@nashuavalley.example.org",phone:"(978) 555-0115",website:"https://nashuavalley.example.org"},products:["produce"],sellingStatus:"active",notes:"Lunchbox-size apples August through March from CA storage; peaches in season.",photoUrl:"https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=800&q=60",meta:{hotmCrops:["Apples","Peaches"]}},
+{id:"wachusett-greenhouse",name:"Wachusett Greenhouse Growers",entityType:"farm",programs:["producer","hotm"],region:"central",address:"31 Redemption Rock Trl",city:"Sterling",zip:"01564",lat:42.437,lng:-71.76,contact:{email:"grow@wachusettgreenhouse.example.org",phone:"(978) 555-0158",website:"https://wachusettgreenhouse.example.org"},products:["produce"],sellingStatus:"interested",notes:"Greenhouse tomatoes, cucumbers, and culinary herbs. Interested in winter salad bar contracts.",photoUrl:null,meta:{hotmCrops:["Tomatoes","Cucumbers","Herbs"]}},
+{id:"blackstone-provisions",name:"Blackstone Valley Provisions",entityType:"foodHub",programs:["foodHub"],region:"central",address:"77 Mill Village Rd",city:"Grafton",zip:"01519",lat:42.207,lng:-71.685,contact:{email:"kitchen@blackstoneprovisions.example.org",phone:"(508) 555-0183",website:"https://blackstoneprovisions.example.org"},products:["produce","valueAdded","readyToCook"],sellingStatus:"verifiedCapacity",notes:"Shared processing kitchen turning seconds into sauces and ready-to-heat sides. Verified co-pack capacity.",photoUrl:null,meta:{hotmCrops:[]}},
+{id:"montachusett-bean",name:"Montachusett Bean &amp; Grain",entityType:"farm",programs:["producer","hotm"],region:"central",address:"12 Rollstone Hill Rd",city:"Fitchburg",zip:"01420",lat:42.583,lng:-71.802,contact:{email:"dry@montachusettbean.example.org",phone:"(978) 555-0126",website:"https://montachusettbean.example.org"},products:["produce"],sellingStatus:"active",notes:"Dried beans and flint corn cleaned and bagged for institutional recipes.",photoUrl:null,meta:{hotmCrops:["Dried Beans","Corn"]}},
+{id:"pvge-hub",name:"Pioneer Valley Growers Exchange",entityType:"foodHub",programs:["foodHub","nfs"],region:"western",address:"260 Russell St",city:"Hadley",zip:"01035",lat:42.359,lng:-72.588,contact:{email:"exchange@pvgrowers.example.org",phone:"(413) 555-0102",website:"https://pvgrowers.example.org"},products:["produce","readyToCook"],sellingStatus:"active",notes:"Valley-wide aggregation since 2011. Peeled and diced root crop program built for school ovens.",photoUrl:"https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=800&q=60",meta:{hotmCrops:[]}},
+{id:"rivermeadow",name:"River Meadow Farm",entityType:"farm",programs:["producer","hotm","maFresh"],region:"western",address:"5 Meadow Rd",city:"Sunderland",zip:"01375",lat:42.466,lng:-72.578,contact:{email:"greens@rivermeadow.example.org",phone:"(413) 555-0149",website:"https://rivermeadow.example.org"},products:["produce"],sellingStatus:"active",notes:"Cut greens washed and boxed to cafeteria spec. MA FRESH partner on two district salad bars.",photoUrl:"https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=800&q=60",meta:{hotmCrops:["Salad Greens","Collard Greens","Kale"]}},
+{id:"norwottuck-berry",name:"Norwottuck Berry Co.",entityType:"farm",programs:["producer","hotm"],region:"western",address:"333 Bay Rd",city:"Hadley",zip:"01035",lat:42.342,lng:-72.566,contact:{email:"berries@norwottuck.example.org",phone:"(413) 555-0161",website:"https://norwottuck.example.org"},products:["produce"],sellingStatus:"active",notes:"IQF strawberries year-round from June harvest; melon flats in late summer.",photoUrl:null,meta:{hotmCrops:["Strawberries","Melons"]}},
+{id:"clearbrook",name:"Clearbrook Farmstead",entityType:"farm",programs:["producer","hotm"],region:"western",address:"92 Shutesbury Rd",city:"Amherst",zip:"01002",lat:42.395,lng:-72.49,contact:{email:"stand@clearbrookfarmstead.example.org",phone:"(413) 555-0170",website:"https://clearbrookfarmstead.example.org"},products:["produce","dairy"],sellingStatus:"interested",notes:"Diversified farmstead with winter squash, potatoes, and small-batch cheese. New to institutional sales.",photoUrl:null,meta:{hotmCrops:["Winter Squash","Potatoes"]}},
+{id:"deerfield-aquafarm",name:"Deerfield River Aquafarm",entityType:"fishery",programs:["producer","hotm"],region:"western",address:"18 Stillwater Rd",city:"Deerfield",zip:"01342",lat:42.543,lng:-72.605,contact:{email:"trout@deerfieldaquafarm.example.org",phone:"(413) 555-0193",website:"https://deerfieldaquafarm.example.org"},products:["seafood"],sellingStatus:"interested",notes:"Land-based rainbow trout. Exploring portioned fillets for western Mass menus.",photoUrl:null,meta:{hotmCrops:["Seafood"]}},
+{id:"housatonic-heritage",name:"Housatonic Heritage Farm",entityType:"farm",programs:["producer","hotm"],region:"western",address:"440 Division St",city:"Great Barrington",zip:"01230",lat:42.196,lng:-73.362,contact:{email:"barn@housatonicheritage.example.org",phone:"(413) 555-0136",website:"https://housatonicheritage.example.org"},products:["meat","produce"],sellingStatus:"verifiedCapacity",notes:"Pastured pork and storage vegetables. Verified capacity documented with Berkshire district buyers.",photoUrl:null,meta:{hotmCrops:["Cabbage","Carrots"]}},
+{id:"berkshire-grown-prov",name:"Berkshire Grown Provisions",entityType:"foodHub",programs:["foodHub","nfs"],region:"western",address:"71 Depot St",city:"Pittsfield",zip:"01201",lat:42.45,lng:-73.245,contact:{email:"routes@berkshireprovisions.example.org",phone:"(413) 555-0118",website:"https://berkshireprovisions.example.org"},products:["produce","valueAdded"],sellingStatus:"active",notes:"County-wide cold routes twice weekly. Consolidates 15 hill-town farms for school delivery.",photoUrl:null,meta:{hotmCrops:[]}},
+{id:"greylock-maple",name:"Greylock Maple &amp; Grain",entityType:"farm",programs:["producer"],region:"western",address:"1024 Notch Rd",city:"Williamstown",zip:"01267",lat:42.712,lng:-73.204,contact:{email:"sugarhouse@greylockmaple.example.org",phone:"(413) 555-0144",website:"https://greylockmaple.example.org"},products:["valueAdded"],sellingStatus:"interested",notes:"Maple syrup in food-service jugs and rolled oats. Interested in breakfast program pilots.",photoUrl:null,meta:{hotmCrops:[]}},
+{id:"millriver-collards",name:"Mill River Collard Collective",entityType:"farm",programs:["producer","hotm"],region:"western",address:"27 Grove Ave",city:"Northampton",zip:"01060",lat:42.325,lng:-72.641,contact:{email:"collective@millrivercollards.example.org",phone:"(413) 555-0180",website:"https://millrivercollards.example.org"},products:["produce"],sellingStatus:"active",notes:"Grower collective specializing in collards and culturally relevant greens with bilingual recipe cards.",photoUrl:null,meta:{hotmCrops:["Collard Greens","Herbs"]}},
+{id:"franklin-kitchen",name:"Franklin County Community Kitchen",entityType:"foodHub",programs:["foodHub"],region:"western",address:"324 Wells St",city:"Greenfield",zip:"01301",lat:42.588,lng:-72.6,contact:{email:"prep@franklinkitchen.example.org",phone:"(413) 555-0167",website:"https://franklinkitchen.example.org"},products:["valueAdded","readyToCook"],sellingStatus:"verifiedCapacity",notes:"Licensed processing kitchen producing heat-and-serve entrees from county farms. Verified batch capacity.",photoUrl:null,meta:{hotmCrops:[]}},
+{id:"sheffield-rootcellar",name:"Sheffield Root Cellar",entityType:"farm",programs:["producer","hotm"],region:"western",address:"689 Salisbury Rd",city:"Sheffield",zip:"01257",lat:42.11,lng:-73.355,contact:{email:"cellar@sheffieldroot.example.org",phone:"(413) 555-0129",website:"https://sheffieldroot.example.org"},products:["produce"],sellingStatus:"active",notes:"Winter storage share for institutions: carrots, potatoes, and squash November through April.",photoUrl:null,meta:{hotmCrops:["Carrots","Potatoes","Winter Squash"]}}
+];
+/* ---------------------------------------------------------------------------
+PRODUCTION DATA ADAPTERS (commented out; swap for MFTS_MAP_DATA above).
+The Airtable API must never be called directly from the browser: Airtable ->
+Air WP Sync -> custom post type -> /wp-json is the supported pipeline.
+
+// Adapter 1 — WordPress REST (Airtable via Air WP Sync -> CPT "atlas_poi"):
+// async function loadAtlasData(){
+//   const res=await fetch('/wp-json/wp/v2/atlas_poi?per_page=100&_fields=acf');
+//   const rows=await res.json();
+//   return rows.map(r=>({id:r.acf.slug,name:r.acf.name,entityType:r.acf.entity_type,
+//     programs:r.acf.programs||[],region:r.acf.region,address:r.acf.address,
+//     city:r.acf.city,zip:r.acf.zip,lat:+r.acf.lat,lng:+r.acf.lng,
+//     contact:{email:r.acf.email,phone:r.acf.phone,website:r.acf.website},
+//     products:r.acf.products||[],sellingStatus:r.acf.selling_status,
+//     notes:r.acf.notes,photoUrl:r.acf.photo_url||null,
+//     meta:{hotmCrops:r.acf.hotm_crops||[]}}));
+// }
+
+// Adapter 2 — Google Sheets published CSV:
+// async function loadAtlasData(){
+//   const res=await fetch('https://docs.google.com/spreadsheets/d/e/PUBLISHED_ID/pub?output=csv');
+//   const [head,...lines]=(await res.text()).trim().split('\n').map(l=>l.split(','));
+//   return lines.map(c=>Object.fromEntries(head.map((h,i)=>[h,c[i]]))).map(r=>({
+//     id:r.id,name:r.name,entityType:r.entityType,programs:r.programs.split('|'),
+//     region:r.region,address:r.address,city:r.city,zip:r.zip,lat:+r.lat,lng:+r.lng,
+//     contact:{email:r.email,phone:r.phone,website:r.website},
+//     products:r.products.split('|'),sellingStatus:r.sellingStatus,notes:r.notes,
+//     photoUrl:r.photoUrl||null,meta:{hotmCrops:r.hotmCrops?r.hotmCrops.split('|'):[]}}));
+// }
+--------------------------------------------------------------------------- */
+/* MA zip centroids covering the sample data; production swaps in a full centroid table. */
+const ZIP_CENTROIDS={
+"01002":{c:"Amherst",lat:42.377,lng:-72.5},"01005":{c:"Barre",lat:42.423,lng:-72.105},"01035":{c:"Hadley",lat:42.359,lng:-72.588},"01037":{c:"Hardwick",lat:42.35,lng:-72.199},"01060":{c:"Northampton",lat:42.325,lng:-72.641},"01201":{c:"Pittsfield",lat:42.45,lng:-73.245},"01230":{c:"Great Barrington",lat:42.196,lng:-73.362},"01257":{c:"Sheffield",lat:42.11,lng:-73.355},"01267":{c:"Williamstown",lat:42.712,lng:-73.204},"01301":{c:"Greenfield",lat:42.588,lng:-72.6},"01342":{c:"Deerfield",lat:42.543,lng:-72.605},"01375":{c:"Sunderland",lat:42.466,lng:-72.578},"01420":{c:"Fitchburg",lat:42.583,lng:-71.802},"01519":{c:"Grafton",lat:42.207,lng:-71.685},"01523":{c:"Lancaster",lat:42.456,lng:-71.673},"01564":{c:"Sterling",lat:42.437,lng:-71.76},"01566":{c:"Sturbridge",lat:42.108,lng:-72.079},"01608":{c:"Worcester",lat:42.262,lng:-71.802},"01742":{c:"Concord",lat:42.46,lng:-71.349},"01902":{c:"Lynn",lat:42.464,lng:-70.945},"01930":{c:"Gloucester",lat:42.616,lng:-70.662},"01938":{c:"Ipswich",lat:42.679,lng:-70.841},"02050":{c:"Marshfield",lat:42.092,lng:-70.706},"02125":{c:"Boston",lat:42.32,lng:-71.089},"02332":{c:"Duxbury",lat:42.042,lng:-70.672},"02360":{c:"Plymouth",lat:41.958,lng:-70.667},"02740":{c:"New Bedford",lat:41.636,lng:-70.934},"02748":{c:"Dartmouth",lat:41.579,lng:-70.986},"02790":{c:"Westport",lat:41.588,lng:-71.079}
+};
+const HOTM_VOCAB=["Tomatoes","Pears","Kale","Carrots","Apples","Winter Squash","Dairy","Potatoes","Seafood","Strawberries","Cucumbers","Peaches","Cranberries","Corn","Collard Greens","Dried Beans","Cabbage","Herbs","Salad Greens","Melons"];
+const TYPE_LABEL={farm:"Farm",fishery:"Fishery",foodHub:"Food Hub",school:"School",garden:"Garden",district:"District",partner:"Partner"};
+const PRODUCT_LABEL={produce:"Produce",dairy:"Dairy",meat:"Meat",seafood:"Seafood",valueAdded:"Value-Added",readyToCook:"Ready-to-Cook"};
+const STATUS_LABEL={active:"Actively Selling to Schools",interested:"Interested",verifiedCapacity:"Verified Capacity",notApplicable:"Not Applicable"};
+const REGION_LABEL={eastern:"Eastern Massachusetts",central:"Central Massachusetts",western:"Western Massachusetts"};
+</script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const state={products:new Set(["produce","meat"]),readiness:new Set(["active"]),hotm:new Set(),radius:25,center:null,centerLabel:"",view:"map",sortKey:"name",sortDir:1};
+const decode=s=>{const t=document.createElement('textarea');t.innerHTML=s;return t.value};
+const DATA=MFTS_MAP_DATA.map(r=>Object.assign({},r,{name:decode(r.name)}));
+const hav=(a,b,c,d)=>{const R=3958.8,p=Math.PI/180,dLa=(c-a)*p,dLo=(d-b)*p,h=Math.sin(dLa/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+/* pin SVGs: shape + Tidewater color encode entityType (one encoding across the Atlas family) */
+const PIN={
+farm:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="var(--pin-farm)" stroke="#fff" stroke-width="1.6"/><path d="M15.5 8c-4 .9-5 3.6-6 6l.9.3.4-1c.2.1.5.1.7.1 3.8 0 5-5.4 5-5.4-.5.9-3.6 1-5.9 1.5-2.3.5-3.1 1.9-3.1 2.8 0 .9.8 1.7.8 1.7 1.5-4 7.2-6 7.2-6z" fill="#fff"/></svg>',
+fishery:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="var(--pin-fishery)" stroke="#fff" stroke-width="1.6"/><path d="M6.5 12c1.8-2.6 4-3.9 6.3-3.9 2 0 3.7 1.5 4.7 3.9-1 2.4-2.7 3.9-4.7 3.9-2.3 0-4.5-1.3-6.3-3.9zm9.3 0a.9.9 0 1 0-1.8 0 .9.9 0 0 0 1.8 0z" fill="#003A40"/></svg>',
+foodHub:'<svg viewBox="0 0 24 24"><path d="M12 1.8l8.9 5.1v10.2L12 22.2l-8.9-5.1V6.9z" fill="var(--pin-hub)" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="2" fill="#003A40"/><path d="M12 12L12 7M12 12l4.3 2.5M12 12l-4.3 2.5" stroke="#003A40" stroke-width="1.6" stroke-linecap="round"/></svg>'};
+/* results reveal: default is a clean full-width map; panel appears on first search/filter touch */
+let revealed=false;
+function reveal(){if(!revealed){revealed=true;$('#resultsPanel').hidden=false;}}
+/* HOTM dropdown (multi-select; empty selection = All) */
+const hotmPop=$("#hotmPop"),hotmTrigger=$("#hotmTrigger");
+HOTM_VOCAB.forEach(t=>{const l=document.createElement('label');l.className='hotm-opt';const i=document.createElement('input');i.type='checkbox';i.value=t;const s=document.createElement('span');s.textContent=t;l.appendChild(i);l.appendChild(s);hotmPop.appendChild(l);});
+function syncHotm(){const n=state.hotm.size;$('#hotmTriggerTxt').textContent=n?([...state.hotm][0]+(n>1?' +'+(n-1):'')):'All';const b=$('#hotmBadge');b.hidden=!n;b.textContent=n;}
+hotmTrigger.addEventListener('click',()=>{reveal();const open=!hotmPop.classList.contains('open');hotmPop.classList.toggle('open',open);hotmTrigger.setAttribute('aria-expanded',open);});
+hotmPop.addEventListener('change',e=>{const cb=e.target;if(cb.type!=='checkbox')return;cb.checked?state.hotm.add(cb.value):state.hotm.delete(cb.value);syncHotm();renderAll();});
+document.addEventListener('click',e=>{if(!e.target.closest('.hotm-dd')&&hotmPop.classList.contains('open')){hotmPop.classList.remove('open');hotmTrigger.setAttribute('aria-expanded','false');}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&hotmPop.classList.contains('open')){hotmPop.classList.remove('open');hotmTrigger.setAttribute('aria-expanded','false');}});
+/* map */
+const TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'; // production: swap to MapTiler Tidewater style or self-hosted Protomaps PMTiles (one-line change)
+const map=L.map('atlasMap',{scrollWheelZoom:false,zoomControl:true,attributionControl:true}).setView([42.19,-71.8],8);
+L.tileLayer(TILE_URL,{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',maxZoom:18}).addTo(map);
+const markerLayer=L.layerGroup().addTo(map);
+let markers={},selectedId=null,searchRing=null;
+/* scroll guards: never hijack page scroll */
+const mapEl=$('#atlasMap'),hint=$('#mapHint'),hintTxt=$('#mapHintTxt');
+const isMac=/Mac|iPhone|iPad/.test(navigator.platform||'');
+let hintT=null;
+function flashHint(msg){hintTxt.textContent=msg;hint.classList.add('show');clearTimeout(hintT);hintT=setTimeout(()=>hint.classList.remove('show'),1400);}
+mapEl.addEventListener('wheel',e=>{
+  if(e.ctrlKey||e.metaKey){e.preventDefault();hint.classList.remove('show');
+    const pt=map.mouseEventToContainerPoint(e);
+    map.setZoomAround(map.containerPointToLatLng(pt),map.getZoom()+(e.deltaY<0?1:-1));
+  }else{flashHint('Use '+(isMac?'\u2318':'ctrl')+' + scroll to zoom the map');}
+},{passive:false});
+if(matchMedia('(pointer:coarse)').matches){
+  map.dragging.disable();
+  mapEl.addEventListener('touchstart',e=>{if(e.touches.length>=2){map.dragging.enable();hint.classList.remove('show');}},{passive:true});
+  mapEl.addEventListener('touchmove',e=>{if(e.touches.length===1)flashHint('Use two fingers to move the map');},{passive:true});
+  mapEl.addEventListener('touchend',e=>{if(e.touches.length<2)map.dragging.disable();},{passive:true});
+}
+/* filtering */
+function currentSet(){
+  let out=DATA.filter(r=>{
+    if(state.products.size&&!r.products.some(p=>state.products.has(p)))return false;
+    if(state.readiness.size&&!state.readiness.has(r.sellingStatus))return false;
+    if(state.hotm.size&&!(r.meta.hotmCrops||[]).some(c=>state.hotm.has(c)))return false;
+    return true;
+  });
+  if(state.center){out=out.map(r=>Object.assign({},r,{dist:hav(state.center.lat,state.center.lng,r.lat,r.lng)})).filter(r=>r.dist<=state.radius);}
+  else out=out.map(r=>Object.assign({},r,{dist:null}));
+  return out;
+}
+function fmtDist(d){return d==null?'':(Math.round(d*10)/10).toFixed(1)+' mi'}
+/* renders */
+function pinIcon(r){return L.divIcon({className:'atlas-pin atlas-pin--'+r.entityType,html:'<span class="pinbox">'+PIN[r.entityType]+'</span>',iconSize:[44,44],iconAnchor:[22,22]});}
+function renderMap(set){
+  markerLayer.clearLayers();markers={};
+  set.forEach(r=>{
+    const m=L.marker([r.lat,r.lng],{icon:pinIcon(r),keyboard:true,title:r.name,alt:r.name+', '+TYPE_LABEL[r.entityType]+', '+r.city});
+    m.on('click',()=>openPoi(r.id,m.getElement()));
+    m.on('mouseover',()=>{const row=document.querySelector('.lrow[data-id="'+r.id+'"]');if(row){row.classList.add('is-hot');const c=$('#ledgerRows');c.scrollTop=row.offsetTop-c.clientHeight/2+row.clientHeight/2;}});
+    m.on('mouseout',()=>{const row=document.querySelector('.lrow[data-id="'+r.id+'"]');if(row)row.classList.remove('is-hot');});
+    m.addTo(markerLayer);markers[r.id]=m;
+  });
+  if(searchRing){searchRing.remove();searchRing=null;}
+  if(state.center){
+    const ringC=getComputedStyle(document.documentElement).getPropertyValue('--ring').trim()||'#88B03F';searchRing=L.circle([state.center.lat,state.center.lng],{radius:state.radius*1609.34,color:ringC,weight:2,dashArray:'6 6',fillColor:ringC,fillOpacity:.06}).addTo(map);
+    map.fitBounds(searchRing.getBounds(),{padding:[20,20]});
+  }
+  refreshSelected();
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function renderLedger(set){
+  const rows=$('#ledgerRows'),empty=$('#ledgerEmpty');
+  const sorted=set.slice().sort((a,b)=>state.center?(a.dist-b.dist):a.name.localeCompare(b.name));
+  rows.innerHTML=sorted.map((r,i)=>'<button class="lrow" type="button" data-id="'+r.id+'"><span class="idx">'+String(i+1).padStart(2,'0')+'</span><span class="nm">'+esc(r.name)+'</span><span class="dist">'+fmtDist(r.dist)+'</span><span class="meta"><span class="tchip tc-'+r.entityType+'">'+TYPE_LABEL[r.entityType]+'</span>'+esc(r.city)+'</span><span class="badge st-'+r.sellingStatus+'"><span class="dot"></span>'+({active:"Selling",interested:"Interested",verifiedCapacity:"Verified"})[r.sellingStatus]+'</span></button>').join('');
+  empty.classList.toggle('show',set.length===0);
+  rows.style.display=set.length?'':'none';
+  rows.querySelectorAll('.lrow').forEach(row=>{
+    const id=row.dataset.id;
+    row.addEventListener('mouseenter',()=>{const m=markers[id];if(m&&m.getElement())m.getElement().classList.add('is-hot');});
+    row.addEventListener('mouseleave',()=>{const m=markers[id];if(m&&m.getElement())m.getElement().classList.remove('is-hot');});
+    row.addEventListener('click',()=>openPoi(id,row));
+  });
+}
+function renderRegions(set){
+  const grid=$('#regionGrid');grid.innerHTML='';
+  ['eastern','central','western'].forEach(reg=>{
+    const items=set.filter(r=>r.region===reg).sort((a,b)=>a.name.localeCompare(b.name));
+    const total=DATA.filter(r=>r.region===reg).length;
+    const panel=document.createElement('div');panel.className='region-panel';
+    panel.innerHTML='<div class="rp-head"><span class="rn">'+REGION_LABEL[reg].replace(' Massachusetts','')+' Mass.</span><span class="rc">'+items.length+' of '+total+'</span></div>'+
+    (items.length?'<ul class="rp-list">'+items.map(r=>'<li><button class="rp-row" type="button" data-id="'+r.id+'">'+PIN[r.entityType]+'<span class="rnm">'+esc(r.name)+'</span>'+(r.programs.includes('maFresh')?'<span class="award maFresh">MA FRESH</span>':'')+(r.programs.includes('nfs')?'<span class="award nfs">NFS</span>':'')+'<span class="rct">'+esc(r.city)+'</span></button></li>').join('')+'</ul>':'<p class="rp-empty">No matches here under the current filters.</p>');
+    grid.appendChild(panel);
+  });
+  grid.querySelectorAll('.rp-row').forEach(b=>b.addEventListener('click',()=>openPoi(b.dataset.id,b)));
+}
+function renderTable(set){
+  const tb=$('#tableBody');
+  const key=state.sortKey,dir=state.sortDir;
+  const val=r=>key==='dist'?(r.dist==null?1e9:r.dist):key==='entityType'?TYPE_LABEL[r.entityType]:key==='sellingStatus'?STATUS_LABEL[r.sellingStatus]:String(r[key]||'');
+  const sorted=set.slice().sort((a,b)=>{const x=val(a),y=val(b);return(typeof x==='number'?x-y:String(x).localeCompare(String(y)))*dir});
+  tb.innerHTML=sorted.length?sorted.map(r=>'<tr data-id="'+r.id+'" tabindex="0"><td><span class="tnm">'+esc(r.name)+'</span><div class="tsub">'+esc(r.address)+'</div></td><td><span class="tchip tc-'+r.entityType+'">'+TYPE_LABEL[r.entityType]+'</span></td><td>'+esc(r.city)+'</td><td>'+REGION_LABEL[r.region].replace(' Massachusetts','')+'</td><td>'+r.products.map(p=>PRODUCT_LABEL[p]).join(', ')+'</td><td><span class="badge st-'+r.sellingStatus+'"><span class="dot"></span>'+STATUS_LABEL[r.sellingStatus]+'</span></td><td>'+(r.dist==null?'\u2014':fmtDist(r.dist))+'</td><td><a href="mailto:'+r.contact.email+'">Email</a></td></tr>').join(''):'<tr><td colspan="8" style="text-align:center;padding:40px;color:rgba(255,255,255,.6);font-style:italic">No sources match the current filters. Widen the radius or add a category.</td></tr>';
+  tb.querySelectorAll('tr[data-id]').forEach(tr=>{
+    tr.addEventListener('click',e=>{if(!e.target.closest('a'))openPoi(tr.dataset.id,tr);});
+    tr.addEventListener('keydown',e=>{if(e.key==='Enter')openPoi(tr.dataset.id,tr);});
+  });
+  document.querySelectorAll('.atlas-table th').forEach(th=>{const b=th.querySelector('button');th.setAttribute('aria-sort',b&&b.dataset.sort===key?(dir===1?'ascending':'descending'):'none');});
+}
+function updateCount(set){
+  $('#resultCount').textContent=set.length;
+  $('#countLabel').textContent=set.length===1?'source shown':'sources shown';
+  $('#locLabel').textContent=state.center?('within '+state.radius+' mi of '+state.centerLabel):'';
+  $('#cbStatus').classList.toggle('show',!!state.center);
+  const n=state.products.size+state.readiness.size+state.hotm.size+(state.center?1:0);
+  $('#filterCount').textContent=n;
+}
+function renderAll(){const set=currentSet();renderMap(set);renderLedger(set);renderRegions(set);renderTable(set);updateCount(set);}
+function refreshSelected(){
+  document.querySelectorAll('.lrow').forEach(r=>r.classList.toggle('is-selected',r.dataset.id===selectedId));
+  Object.entries(markers).forEach(([id,m])=>{const el=m.getElement();if(el)el.classList.toggle('is-selected',id===selectedId);});
+}
+/* ===== POI DETAIL MODULE ===== */
+const poi=$('#poiPanel'),scrim=$('#poiScrim');let lastTrigger=null;
+function monogram(name){return name.split(/\s+/).filter(w=>/^[A-Za-z]/.test(w)).slice(0,2).map(w=>w[0].toUpperCase()).join('')}
+function openPoi(id,trigger){
+  const r=DATA.find(x=>x.id===id);if(!r)return;
+  selectedId=id;refreshSelected();lastTrigger=trigger||document.activeElement;
+  $('#poiName').textContent=r.name;
+  $('#poiChips').innerHTML='<span class="poi-chip tc-'+r.entityType+'">'+TYPE_LABEL[r.entityType]+'</span><span class="poi-chip region">'+REGION_LABEL[r.region]+'</span>';
+  const crops=r.meta.hotmCrops||[];
+  $('#poiBody').innerHTML=
+  '<div class="poi-sec"><span class="plbl">Address</span><p class="poi-addr">'+esc(r.address)+'<br>'+esc(r.city)+', MA '+r.zip+'</p></div>'+
+  '<div class="poi-sec"><span class="plbl">Contact</span><div class="poi-contact">'+
+    '<a href="mailto:'+r.contact.email+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 7l10 7L22 7"/></svg>'+r.contact.email+'</a>'+
+    '<a href="tel:'+r.contact.phone.replace(/[^0-9]/g,'')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 1.9z"/></svg>'+r.contact.phone+'</a>'+
+    '<a href="'+r.contact.website+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'+r.contact.website.replace('https://','')+'</a></div></div>'+
+  '<div class="poi-sec"><span class="plbl">Products</span><div class="poi-prodchips">'+r.products.map(p=>'<span class="pchip">'+PRODUCT_LABEL[p]+'</span>').join('')+'</div></div>'+
+  (crops.length?'<div class="poi-sec"><span class="plbl">Harvest of the Month crops</span><div class="poi-prodchips">'+crops.map(c=>'<span class="pchip hotm">'+c+'</span>').join('')+'</div></div>':'')+
+  '<div class="poi-sec"><span class="plbl">Selling status</span><span class="poi-status st-'+r.sellingStatus+'"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:currentColor"></span>'+STATUS_LABEL[r.sellingStatus]+'</span></div>'+
+  '<div class="poi-sec"><span class="plbl">MFTS notes</span><p class="poi-notes">'+esc(r.notes)+'</p></div>'+
+  '<div class="poi-sec">'+(r.photoUrl?'<div class="poi-photo"><img src="'+r.photoUrl+'" alt="'+esc(r.name)+'"></div>':'<div class="poi-mono" role="img" aria-label="'+esc(r.name)+' monogram placeholder"><span>'+monogram(r.name)+'</span></div>')+'</div>';
+  poi.hidden=false;scrim.classList.add('open');void poi.offsetWidth;poi.classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>$('#poiClose').focus(),80);
+}
+function closePoi(){
+  poi.classList.remove('open');scrim.classList.remove('open');
+  document.body.style.overflow='';
+  selectedId=null;refreshSelected();
+  setTimeout(()=>{poi.hidden=true;if(lastTrigger&&lastTrigger.focus)lastTrigger.focus();},320);
+}
+$('#poiClose').addEventListener('click',closePoi);
+scrim.addEventListener('click',closePoi);
+document.addEventListener('keydown',e=>{
+  if(poi.hidden)return;
+  if(e.key==='Escape'){closePoi();return;}
+  if(e.key==='Tab'){ /* focus trap */
+    const f=poi.querySelectorAll('button,a[href]');if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
+/* ===== CONTROLS ===== */
+document.querySelectorAll('.chip[data-group]').forEach(ch=>{
+  ch.addEventListener('click',()=>{reveal();
+    const on=ch.getAttribute('aria-pressed')!=='true';
+    ch.setAttribute('aria-pressed',on);
+    const set=state[ch.dataset.group];
+    on?set.add(ch.dataset.val):set.delete(ch.dataset.val);
+    renderAll();
+  });
+});
+$('#ledgerToggle').addEventListener('click',()=>{
+  const p=$('#resultsPanel'),c=p.classList.toggle('collapsed');
+  $('#ledgerBody').hidden=c;$('#ledgerToggle').setAttribute('aria-expanded',!c);
+});
+document.querySelectorAll('.pill-radio').forEach(p=>{
+  p.addEventListener('click',()=>{reveal();
+    document.querySelectorAll('.pill-radio').forEach(x=>x.setAttribute('aria-checked','false'));
+    p.setAttribute('aria-checked','true');state.radius=+p.dataset.radius;renderAll();
+  });
+});
+function runSearch(){reveal();
+  const q=$('#locInput').value.trim().toLowerCase();
+  const msg=$('#cbMsg');
+  if(!q){msg.classList.remove('show');return;}
+  let hit=null,label='';
+  if(/^\d{5}$/.test(q)&&ZIP_CENTROIDS[q]){hit=ZIP_CENTROIDS[q];label=hit.c+' ('+q+')';}
+  else{const entry=Object.entries(ZIP_CENTROIDS).find(([,v])=>v.c.toLowerCase()===q);if(entry){hit=entry[1];label=entry[1].c;}}
+  if(hit){state.center={lat:hit.lat,lng:hit.lng};state.centerLabel=label;msg.classList.remove('show');renderAll();}
+  else{msg.textContent='We could not find that zip or city in this prototype. Try a sample town like Worcester, Amherst, or 02360.';msg.classList.add('show');}
+}
+$('#locGo').addEventListener('click',runSearch);
+$('#locInput').addEventListener('keydown',e=>{if(e.key==='Enter')runSearch();});
+$('#locInput').addEventListener('input',reveal);
+$('#clearLoc').addEventListener('click',()=>{state.center=null;state.centerLabel='';$('#locInput').value='';map.setView([42.19,-71.8],8);renderAll();});
+$('#resetFilters').addEventListener('click',()=>{
+  state.products=new Set(["produce","dairy","meat","seafood","valueAdded","readyToCook"]);
+  state.readiness=new Set();state.hotm=new Set();state.center=null;state.centerLabel='';$('#locInput').value='';
+  document.querySelectorAll('.chip[data-group="products"]').forEach(c=>c.setAttribute('aria-pressed','true'));
+  document.querySelectorAll('.chip[data-group="readiness"]').forEach(c=>c.setAttribute('aria-pressed','false'));
+  hotmPop.querySelectorAll('input').forEach(i=>{i.checked=false;});syncHotm();
+  map.setView([42.19,-71.8],8);renderAll();
+});
+$('#filtersToggle').addEventListener('click',()=>{
+  const f=$('#consoleFilters'),open=!f.classList.contains('open');
+  f.classList.toggle('open',open);$('#filtersToggle').setAttribute('aria-expanded',open);
+});
+/* view toggle */
+function setView(v){
+  state.view=v;
+  $('#atlasStage').classList.toggle('table-mode',v==='table');
+  $('#viewMap').setAttribute('aria-pressed',v==='map');
+  $('#viewTable').setAttribute('aria-pressed',v==='table');
+  if(v==='map')setTimeout(()=>map.invalidateSize(),60);
+}
+$('#viewMap').addEventListener('click',()=>setView('map'));
+$('#viewTable').addEventListener('click',()=>setView('table'));
+/* table sorting */
+document.querySelectorAll('.atlas-table th button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const k=b.dataset.sort;
+    if(state.sortKey===k)state.sortDir*=-1;else{state.sortKey=k;state.sortDir=1;}
+    renderTable(currentSet());
+  });
+});
+renderAll();
+window.__atlasRepaint=renderAll;
+})();
+</script>
+<!-- Tweaks panel: design-review control, not part of the WP handoff -->
+<div id="tweaks-root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "mapPalette": [
+    "#005A66",
+    "#00B5AF",
+    "#88B03F",
+    "#00B5AF"
+  ],
+  "basemapTint": 25
+}/*EDITMODE-END*/;
+const atlasLum=h=>{const n=parseInt(h.slice(1),16);return(.299*(n>>16&255)+.587*(n>>8&255)+.114*(n&255))/255};
+const atlasInk=c=>atlasLum(c)>.45?'#003A40':'#fff';
+function applyPalette(p){
+  const r=document.documentElement.style,[farm,fishery,hub,ring]=p;
+  r.setProperty('--pin-farm',farm);r.setProperty('--pin-fishery',fishery);r.setProperty('--pin-hub',hub);r.setProperty('--ring',ring);
+  r.setProperty('--pin-farm-ink',atlasInk(farm));r.setProperty('--pin-fishery-ink',atlasInk(fishery));r.setProperty('--pin-hub-ink',atlasInk(hub));
+  if(window.__atlasRepaint)window.__atlasRepaint();
+}
+function applyTint(v){
+  document.documentElement.style.setProperty('--tile-tint',v?('sepia('+(v*.004).toFixed(3)+') hue-rotate('+Math.round(v*.55)+'deg) saturate('+(1+v*.0015).toFixed(3)+')'):'none');
+}
+function AtlasTweaks(){
+  const [t,setTweak]=useTweaks(TWEAK_DEFAULTS);
+  React.useEffect(()=>{applyPalette(t.mapPalette)},[t.mapPalette]);
+  React.useEffect(()=>{applyTint(t.basemapTint)},[t.basemapTint]);
+  return (
+    <TweaksPanel>
+      <TweakSection label="Map colors" />
+      <TweakColor label="Pin palette" value={t.mapPalette}
+        options={[["#00662C","#007C89","#88B03F","#88B03F"],["#4C6420","#005A66","#A8C663","#A8C663"],["#005A66","#00B5AF","#88B03F","#00B5AF"]]}
+        onChange={(v)=>setTweak('mapPalette',v)} />
+      <TweakSlider label="Basemap green tint" value={t.basemapTint} min={0} max={100} unit="%"
+        onChange={(v)=>setTweak('basemapTint',v)} />
+    </TweaksPanel>
+  );
+}
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<AtlasTweaks/>);
+</script>
+</body></html>
