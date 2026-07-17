@@ -58,6 +58,21 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdro
 /* ===== WEBINAR ARCHIVE (cream band) ===== */
 .archive{padding:80px 0 96px;background:var(--cream)}
 .web-list{display:flex;flex-direction:column;gap:28px;max-width:980px;margin:0 auto}
+.web-filters{max-width:980px;margin:0 auto 28px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:18px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 24px}
+.wf-field{display:flex;flex-direction:column;gap:7px}
+.wf-field > label{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent)}
+.wf-select{position:relative;display:inline-flex}
+.wf-select select{appearance:none;-webkit-appearance:none;font-family:'Raleway';font-weight:700;font-size:14px;color:var(--green-ink);background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:12px 42px 12px 18px;min-width:190px;cursor:pointer;line-height:1}
+.wf-select::after{content:'';position:absolute;right:18px;top:50%;width:8px;height:8px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.wf-select select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wf-clear{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);background:transparent;border:0;cursor:pointer;padding:12px 4px;text-decoration:underline;text-underline-offset:3px}
+.wf-clear:hover{color:var(--green-ink)}
+.wf-count{margin-left:auto;align-self:center;font-family:'Raleway';font-weight:700;font-size:13px;color:var(--muted)}
+.webinar[hidden]{display:none}
+.web-empty{max-width:980px;margin:0 auto;text-align:center;padding:44px 24px;font-family:'Raleway';font-weight:700;font-size:15px;color:var(--muted);border:1px dashed var(--line);border-radius:16px;background:#fff}
+.web-empty[hidden]{display:none}
+.wf-reset{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);background:transparent;border:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin-left:6px}
+@media(max-width:640px){.web-filters{padding:18px}.wf-field{flex:1 1 100%}.wf-select,.wf-select select{width:100%}.wf-count{margin-left:0;width:100%}}
 /* Repeating entry template (loop-ready): label, title, description, presenters, body, video (below text), resources */
 .webinar{background:#fff;border:1px solid var(--line);border-radius:20px;padding:40px 44px;display:flex;flex-direction:column;gap:16px;scroll-margin-top:100px}
 .web-label{display:inline-flex;align-items:center;gap:8px;width:fit-content;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:6px 15px}
@@ -207,19 +222,32 @@ footer a:hover{color:var(--gold)}
 <!-- ELEMENTOR: Section > 1 container > Heading widget + Text Editor widget (page hero) -->
 <section class="hero" data-screen-label="Webinar Archive hero">
   <div class="wrap">
-    <span class="hero-flag">Mass. Farm to School Webinars</span>
+    <span class="hero-flag">MFTS WEBINARS</span>
     <h1>Webinar Archive</h1>
-    <p class="lede">Recordings of past Mass. Farm to School hosted webinars. Browse, watch, and use them in your work.</p>
+    <p class="lede" style="font-family: Open Sans">Recordings of past Mass. Farm to School hosted webinars. Browse, watch, and use them in your work.</p>
   </div>
 </section>
 
 <!-- ELEMENTOR: Section > 1 container > repeating Webinar entry template (see notes: manual WYSIWYG today, or future CPT + Loop Grid). Each .web-video maps to an Elementor Pro Video widget (YouTube source). -->
 <section class="archive" data-screen-label="Webinar entries">
   <div class="wrap">
+    <!-- ELEMENTOR: date filter bar. Manual build = same Custom HTML widget as the entries; future CPT + Loop Grid = swap for Elementor Pro Taxonomy Filter bound to the Loop Grid (Year + Month taxonomy / post date). Select options are derived from the entries in the DOM, so newly-added webinars appear in the filters automatically. -->
+    <div class="web-filters" role="group" aria-label="Filter webinars by date">
+      <div class="wf-field">
+        <label for="wf-year">Year</label>
+        <span class="wf-select"><select id="wf-year"><option value="">All years</option></select></span>
+      </div>
+      <div class="wf-field">
+        <label for="wf-month">Month</label>
+        <span class="wf-select"><select id="wf-month"><option value="">All months</option></select></span>
+      </div>
+      <button type="button" class="wf-clear">Clear</button>
+      <span class="wf-count" aria-live="polite"></span>
+    </div>
     <div class="web-list">
 
       <!-- ENTRY 1 -->
-      <article class="webinar" data-screen-label="Entry: Pollinator Gardens">
+      <article class="webinar" data-year="2026" data-month="03" data-screen-label="Entry: Pollinator Gardens">
         <span class="web-label">March 2026</span>
         <h2 class="web-title">Pollinator Gardens: From Design to Curriculum</h2>
         <p class="web-desc">This webinar took place on March 25, 2026, scroll down to watch a recording.</p>
@@ -234,7 +262,7 @@ footer a:hover{color:var(--gold)}
       </article>
 
       <!-- ENTRY 2 -->
-      <article class="webinar" data-screen-label="Entry: Indigenous Contributions">
+      <article class="webinar" data-year="2026" data-month="03" data-screen-label="Entry: Indigenous Contributions">
         <span class="web-label">March 2026</span>
         <h2 class="web-title">Indigenous Contributions &amp; Perspectives in Farm to School</h2>
         <p class="web-desc">This webinar took place on March 4, 2026</p>
@@ -249,7 +277,7 @@ footer a:hover{color:var(--gold)}
       </article>
 
       <!-- ENTRY 3 — FOUR-SESSION SERIES (permitted structural variant: nested session sub-blocks) -->
-      <article class="webinar" data-screen-label="Entry: Kids in the Garden series">
+      <article class="webinar" data-year="2026" data-month="01" data-screen-label="Entry: Kids in the Garden series">
         <span class="web-label">January 2026 · Series</span>
         <h2 class="web-title">Kids in the Garden: Young Learners Workshop Series 2026</h2>
         <p class="web-desc">This series took place January 2026. Scroll down to watch recordings and download resources.</p>
@@ -325,7 +353,7 @@ footer a:hover{color:var(--gold)}
       </article>
 
       <!-- ENTRY 4 -->
-      <article class="webinar" data-screen-label="Entry: Responding to School Solicitations">
+      <article class="webinar" data-year="2025" data-month="11" data-screen-label="Entry: Responding to School Solicitations">
         <span class="web-label">November 2025</span>
         <h2 class="web-title">Responding to School Solicitations as a Farmer or Food Business</h2>
         <p class="web-desc">This event took place on November 6, 2025.</p>
@@ -340,7 +368,7 @@ footer a:hover{color:var(--gold)}
       </article>
 
       <!-- ENTRY 5 -->
-      <article class="webinar" data-screen-label="Entry: School-Wide Composting">
+      <article class="webinar" data-year="2025" data-month="11" data-screen-label="Entry: School-Wide Composting">
         <span class="web-label">November 2025</span>
         <h2 class="web-title">School-Wide Composting</h2>
         <p class="web-desc">This event took place on November 5, 2025.</p>
@@ -355,7 +383,7 @@ footer a:hover{color:var(--gold)}
       </article>
 
       <!-- ENTRY 6 -->
-      <article class="webinar" data-screen-label="Entry: Growing Success K-6">
+      <article class="webinar" data-year="2025" data-month="10" data-screen-label="Entry: Growing Success K-6">
         <span class="web-label">October 2025</span>
         <h2 class="web-title">Growing Success: Building an Inclusive K-6 Farm to School Program</h2>
         <p class="web-desc">This event took place on October 22nd, 2025.</p>
@@ -370,7 +398,7 @@ footer a:hover{color:var(--gold)}
       </article>
 
       <!-- ENTRY 7 -->
-      <article class="webinar" data-screen-label="Entry: Farm to School 101">
+      <article class="webinar" data-year="2025" data-month="09" data-screen-label="Entry: Farm to School 101">
         <span class="web-label">September 2025</span>
         <h2 class="web-title">Farm to School 101</h2>
         <p class="web-desc">This webinar took place on September 10, 2025. Scroll down to view a recording of the webinar.</p>
@@ -385,7 +413,7 @@ footer a:hover{color:var(--gold)}
       </article>
 
       <!-- ENTRY 8 -->
-      <article class="webinar" data-screen-label="Entry: Local Procurement 101">
+      <article class="webinar" data-year="2025" data-month="08" data-screen-label="Entry: Local Procurement 101">
         <span class="web-label">August 2025</span>
         <h2 class="web-title">Local Procurement 101</h2>
         <p class="web-desc">This webinar took place on August 21, 2025. Scroll down to view a recording of the webinar.</p>
@@ -400,7 +428,7 @@ footer a:hover{color:var(--gold)}
       </article>
 
       <!-- ENTRY 9 (no resources on the live page — resources row omitted) -->
-      <article class="webinar" data-screen-label="Entry: School Garden Management Summer">
+      <article class="webinar" data-year="2025" data-month="05" data-screen-label="Entry: School Garden Management Summer">
         <span class="web-label">May 2025</span>
         <h2 class="web-title">School Garden Management in the Summer Months [5/7/25]</h2>
         <p class="web-desc">This webinar took place on May 7, 2025. Scroll down to watch a recording.</p>
@@ -410,6 +438,7 @@ footer a:hover{color:var(--gold)}
       </article>
 
     </div>
+    <p class="web-empty" role="status" hidden>No webinars match your filters. <button type="button" class="wf-reset">Clear filters</button></p>
   </div>
 </section>
 
@@ -528,6 +557,30 @@ DATA SOURCE
   });
   document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
   document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+<script>
+/* __MFTS_WEBINAR_FILTER_JS__ vanilla, self-contained (runs inside an Elementor HTML widget). Year + Month AND filter; options derived from entry data-year/data-month so new entries auto-populate. */
+(function(){
+  var list=document.querySelector('.web-list');if(!list)return;
+  var entries=[].slice.call(list.querySelectorAll('.webinar'));
+  var ySel=document.getElementById('wf-year'),mSel=document.getElementById('wf-month');
+  var countEl=document.querySelector('.wf-count'),empty=document.querySelector('.web-empty');
+  if(!ySel||!mSel)return;
+  var MONTHS={'01':'January','02':'February','03':'March','04':'April','05':'May','06':'June','07':'July','08':'August','09':'September','10':'October','11':'November','12':'December'};
+  var years={},months={};
+  entries.forEach(function(el){var y=el.getAttribute('data-year'),m=el.getAttribute('data-month');if(y)years[y]=1;if(m)months[m]=1;});
+  Object.keys(years).sort().reverse().forEach(function(y){var o=document.createElement('option');o.value=y;o.textContent=y;ySel.appendChild(o);});
+  Object.keys(months).sort().forEach(function(m){var o=document.createElement('option');o.value=m;o.textContent=MONTHS[m]||m;mSel.appendChild(o);});
+  function apply(){
+    var y=ySel.value,m=mSel.value,shown=0;
+    entries.forEach(function(el){var ok=(!y||el.getAttribute('data-year')===y)&&(!m||el.getAttribute('data-month')===m);el.hidden=!ok;if(ok)shown++;});
+    if(countEl)countEl.textContent=shown+(shown===1?' webinar':' webinars');
+    if(empty)empty.hidden=shown!==0;
+  }
+  ySel.addEventListener('change',apply);mSel.addEventListener('change',apply);
+  [].slice.call(document.querySelectorAll('.wf-clear,.wf-reset')).forEach(function(b){b.addEventListener('click',function(){ySel.value='';mSel.value='';apply();});});
+  apply();
 })();
 </script>
 </body></html>

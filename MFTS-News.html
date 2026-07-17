@@ -46,7 +46,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdro
 .btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;transform:translateY(-2px)}
 
 /* ===== PAGE HERO (shared dark hero pattern) ===== */
-.hero{background:var(--green-ink) url('assets/Leominster_FarmersMarket.jpg') center/cover no-repeat;color:#fff;padding:80px 0 72px;position:relative;overflow:hidden;text-align:center}
+.hero{background:var(--green-ink) url('assets/GreenSproutsInSoil-NoAtt.jpg') center/cover no-repeat;color:#fff;padding:80px 0 72px;position:relative;overflow:hidden;text-align:center}
 .hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.78),rgba(0,58,64,.82)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
 .hero .wrap{position:relative;z-index:1;max-width:900px}
 .hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#A8C663;margin-bottom:26px;justify-content:center}
@@ -71,6 +71,14 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdro
 .feed-bar .eyebrow::before{content:'';width:22px;height:2px;background:var(--accent)}
 .feed-bar .feed-note{font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
 .news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.news-filter{display:flex;flex-wrap:wrap;gap:10px;margin:-16px 0 34px}
+.nf-chip{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--green-ink);background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:10px 20px;cursor:pointer;transition:color .2s,background .2s,border-color .2s;line-height:1}
+.nf-chip:hover{border-color:var(--accent);color:var(--accent)}
+.nf-chip.is-active{background:var(--accent);border-color:var(--accent);color:#fff}
+.nf-chip:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.news-card[hidden]{display:none}
+.news-empty{text-align:center;padding:40px 20px 8px;font-family:'Raleway';font-weight:700;font-size:15px;color:var(--muted)}
+.news-empty[hidden]{display:none}
 /* Loop item template: image, date, title, excerpt, read-more — identical anatomy for every card */
 .news-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;height:100%}
 .news-card:hover{transform:translateY(-5px);box-shadow:0 26px 52px -34px rgba(0,90,102,.4);border-color:var(--accent)}
@@ -209,9 +217,9 @@ footer a:hover{color:var(--gold)}
 <!-- ELEMENTOR: Section > 1 container > Heading widget + Text Editor widget (page hero) -->
 <section class="hero" data-screen-label="News hero">
   <div class="wrap">
-    <span class="hero-flag">Massachusetts Farm to School</span>
+    <span class="hero-flag">MFTS IN THE NEWS</span>
     <h1>News</h1>
-    <p class="lede">Check out the latest press, reports, events and other announcements from across the Farm to School movement in Massachusetts.</p>
+    <p class="lede" style="font-family: Open Sans">Check out the latest press, reports, events and other announcements from across the Farm to School movement in Massachusetts.</p>
   </div>
 </section>
 
@@ -222,10 +230,18 @@ footer a:hover{color:var(--gold)}
       <span class="eyebrow">Latest from the movement</span>
       <span class="feed-note">Newest announcements first</span>
     </div>
+    <!-- ELEMENTOR: category filter = Elementor Pro Taxonomy Filter widget bound to the News Loop Grid (announcement-types terms). Chip data-filter = term slug. -->
+    <div class="news-filter" role="group" aria-label="Filter news by category">
+      <button type="button" class="nf-chip is-active" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" class="nf-chip" data-filter="news" aria-pressed="false">News</button>
+      <button type="button" class="nf-chip" data-filter="opportunities" aria-pressed="false">Opportunities</button>
+      <button type="button" class="nf-chip" data-filter="press-media" aria-pressed="false">Press/Media</button>
+      <button type="button" class="nf-chip" data-filter="profile" aria-pressed="false">Profile</button>
+    </div>
     <div class="news-grid" id="newsGrid">
 
       <!-- LOOP ITEM 1 -->
-      <a class="news-card" href="https://www.massfarmtoschool.org/announcement/ma-fresh-spring-2025-highlights/">
+      <a class="news-card" data-cat="news" href="https://www.massfarmtoschool.org/announcement/ma-fresh-spring-2025-highlights/">
         <div class="news-media">
           <img src="https://www.massfarmtoschool.org/wp-content/uploads/2017/09/ournews-1024x683.jpg" alt="MA FRESH Spring 2025 Highlights">
           <span class="news-cat">News</span>
@@ -239,10 +255,10 @@ footer a:hover{color:var(--gold)}
       </a>
 
       <!-- LOOP ITEM 2 -->
-      <a class="news-card" href="https://www.massfarmtoschool.org/announcement/congratulationsfy25grantees/">
+      <a class="news-card" data-cat="opportunities" href="https://www.massfarmtoschool.org/announcement/congratulationsfy25grantees/">
         <div class="news-media">
           <img src="https://www.massfarmtoschool.org/wp-content/uploads/2024/08/hydroponic-tower-NoAtt.jpg" alt="Congratulations to the New MA FRESH &amp; FRESH CORP Grantees">
-          <span class="news-cat">News</span>
+          <span class="news-cat">Opportunities</span>
         </div>
         <div class="news-body">
           <span class="news-date"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg>April 1, 2025</span>
@@ -253,10 +269,10 @@ footer a:hover{color:var(--gold)}
       </a>
 
       <!-- LOOP ITEM 3 -->
-      <a class="news-card" href="https://www.massfarmtoschool.org/announcement/northeast-food-for-schools-northampton-public-schools/">
+      <a class="news-card" data-cat="profile" href="https://www.massfarmtoschool.org/announcement/northeast-food-for-schools-northampton-public-schools/">
         <div class="news-media">
           <img src="https://www.massfarmtoschool.org/wp-content/uploads/2025/02/Northampton_TasteTest-640x480.png" alt="Northeast Food for Schools: Northampton Public Schools">
-          <span class="news-cat">News</span>
+          <span class="news-cat">Profile</span>
         </div>
         <div class="news-body">
           <span class="news-date"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg>February 10, 2025</span>
@@ -267,7 +283,7 @@ footer a:hover{color:var(--gold)}
       </a>
 
       <!-- LOOP ITEM 4 -->
-      <a class="news-card" href="https://www.massfarmtoschool.org/announcement/2022-23-institute-wrap-up/">
+      <a class="news-card" data-cat="news" href="https://www.massfarmtoschool.org/announcement/2022-23-institute-wrap-up/">
         <div class="news-media">
           <img src="https://www.massfarmtoschool.org/wp-content/uploads/2024/12/2022-23_Institute_Salem2-578x480.png" alt="2022-23 Institute Wrap Up">
           <span class="news-cat">News</span>
@@ -281,7 +297,7 @@ footer a:hover{color:var(--gold)}
       </a>
 
       <!-- LOOP ITEM 5 -->
-      <a class="news-card" href="https://www.massfarmtoschool.org/announcement/2024-mass-farm-to-school-institute-fall-retreat/">
+      <a class="news-card" data-cat="news" href="https://www.massfarmtoschool.org/announcement/2024-mass-farm-to-school-institute-fall-retreat/">
         <div class="news-media">
           <img src="https://www.massfarmtoschool.org/wp-content/uploads/2024/11/3cs_presentation-640x480.png" alt="2024 Mass. Farm to School Institute Fall Retreat">
           <span class="news-cat">News</span>
@@ -295,10 +311,10 @@ footer a:hover{color:var(--gold)}
       </a>
 
       <!-- LOOP ITEM 6 -->
-      <a class="news-card" href="https://www.massfarmtoschool.org/announcement/northeast-food-for-schools-program-snapshot/">
+      <a class="news-card" data-cat="press-media" href="https://www.massfarmtoschool.org/announcement/northeast-food-for-schools-program-snapshot/">
         <div class="news-media">
           <img src="https://www.massfarmtoschool.org/wp-content/uploads/2023/11/apple-crate-640x480.png" alt="Northeast Food for Schools Program Snapshot">
-          <span class="news-cat">News</span>
+          <span class="news-cat">Press/Media</span>
         </div>
         <div class="news-body">
           <span class="news-date"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M8 2v4M16 2v4M3 10h18"></path></svg>October 8, 2024</span>
@@ -309,6 +325,7 @@ footer a:hover{color:var(--gold)}
       </a>
 
     </div>
+    <p class="news-empty" role="status" hidden>No posts in this category yet.</p>
     <!-- AJAX pagination: Elementor Pro Loop Grid "Load on Click". Loads the next page of the same query in place (no reload). -->
     <div class="load-more-wrap">
       <button id="loadMore" class="btn btn-outline btn-load" type="button" aria-controls="newsGrid">
@@ -460,6 +477,7 @@ NAV / CHROME
     label.textContent='Loading…';
     setTimeout(function(){
       grid.insertAdjacentHTML('beforeend',batch);
+      if(window.__applyNewsFilter)window.__applyNewsFilter();
       loads++;
       btn.classList.remove('is-loading');
       btn.removeAttribute('aria-busy');
@@ -467,6 +485,27 @@ NAV / CHROME
       else{label.textContent='Load more';}
     },700);
   });
+})();
+</script>
+
+<script>
+/* __MFTS_NEWS_FILTER_JS__ vanilla, self-contained (Elementor HTML widget). Category filter mapped to announcement-types terms; chip data-filter = term slug, card data-cat = post term. Production reads each post's real term(s). */
+(function(){
+  var grid=document.getElementById('newsGrid');
+  var chips=[].slice.call(document.querySelectorAll('.nf-chip'));
+  var empty=document.querySelector('.news-empty');
+  var loadWrap=document.querySelector('.load-more-wrap');
+  if(!grid||!chips.length)return;
+  var current='all';
+  function apply(){
+    var cards=[].slice.call(grid.querySelectorAll('.news-card')),shown=0;
+    cards.forEach(function(c){var ok=current==='all'||c.getAttribute('data-cat')===current;c.hidden=!ok;if(ok)shown++;});
+    if(empty)empty.hidden=shown!==0;
+    if(loadWrap)loadWrap.style.display=current==='all'?'':'none';
+  }
+  chips.forEach(function(chip){chip.addEventListener('click',function(){current=chip.getAttribute('data-filter');chips.forEach(function(c){var on=c===chip;c.classList.toggle('is-active',on);c.setAttribute('aria-pressed',on?'true':'false');});apply();});});
+  window.__applyNewsFilter=apply;
+  apply();
 })();
 </script>
 
