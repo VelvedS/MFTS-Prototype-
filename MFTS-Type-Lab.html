@@ -1,0 +1,300 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Type Lab — Massachusetts Farm to School</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Raleway:wght@400;500;600&amp;family=Zilla+Slab:wght@400;500;700&amp;family=Lato:ital,wght@0,400;0,700;1,400&amp;family=Petrona:ital,wght@0,400;0,500;0,700;1,400&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:var(--green-deep)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.eyebrow{font-family:'Raleway';font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome, verbatim from site) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline;color:#A8C663}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{color:var(--green-ink);position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);color:#fff;transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;color:var(--green-ink);transform:translateY(-2px)}
+.btn-ghost{border-color:rgba(255,255,255,.45);color:#fff;background:transparent}.btn-ghost:hover{background:#fff;color:var(--green-ink)}
+
+/* ===== NEUTRAL PAGE HEAD (control — site's current fonts) ===== */
+.tl-head{background:#fff;border-bottom:1px solid var(--line);padding:64px 0 46px}
+.tl-head .eyebrow{margin-bottom:18px;display:block}
+.tl-head h1{font-size:clamp(36px,4.6vw,60px);color:var(--green-ink);line-height:1.02}
+.tl-head h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+.tl-head p{font-size:17px;line-height:1.7;color:#444;margin-top:18px;max-width:720px}
+.tl-head .control-note{font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:26px;display:flex;align-items:center;gap:10px}
+.tl-head .control-note::before{content:'';width:22px;height:2px;background:var(--muted);opacity:.5}
+
+/* ===== STICKY JUMP + CONTROL BAR (neutral) ===== */
+.tl-bar{position:sticky;top:80px;z-index:40;background:rgba(235,245,244,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.tl-bar-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 0;flex-wrap:wrap}
+.tl-jump,.tl-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tl-label{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.tl-jump a{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--green-ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 16px;transition:.2s}
+.tl-jump a:hover{border-color:var(--accent);color:var(--accent)}
+.tl-seg{display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;gap:3px}
+.tl-seg button{font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--green-ink);background:transparent;border:0;border-radius:999px;padding:8px 15px;cursor:pointer;transition:.2s}
+.tl-seg button:hover{color:var(--accent)}
+.tl-seg button[aria-pressed="true"]{background:var(--green);color:#fff}
+.tl-toggle{display:inline-flex;align-items:center;gap:10px;font-family:'Raleway';font-weight:700;font-size:12px;letter-spacing:.04em;color:var(--green-ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 16px 8px 12px;cursor:pointer}
+.tl-toggle input{appearance:none;width:34px;height:19px;border-radius:999px;background:rgba(0,90,102,.2);position:relative;cursor:pointer;transition:.2s;flex:none}
+.tl-toggle input::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.2s}
+.tl-toggle input:checked{background:var(--accent)}
+.tl-toggle input:checked::after{transform:translateX(15px)}
+.tl-toggle input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+
+/* ===== SPECIMEN SHELL — each frame is the real Students & Families page ===== */
+.spec{padding:56px 0 0}
+.spec:last-of-type{padding-bottom:70px}
+.spec-frame{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 34px 66px -54px rgba(0,58,64,.55)}
+.spec-label{background:var(--green-ink);color:#fff;padding:15px 26px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-family:'Raleway',sans-serif}
+.spec-label .ltr{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:32px;line-height:.82;color:#A8C663;letter-spacing:.03em}
+.spec-label .pair{font-family:'Raleway',sans-serif;font-weight:800;font-size:13.5px;letter-spacing:.06em;text-transform:uppercase;color:#fff}
+.spec-label .specline{font-family:'Open Sans',sans-serif;font-weight:400;font-size:12px;letter-spacing:.02em;color:rgba(235,245,244,.72)}
+.spec-label .open{margin-left:auto;font-family:'Raleway',sans-serif;font-weight:800;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#A8C663;display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(168,198,99,.45);border-radius:999px;padding:8px 15px;transition:.2s}
+.spec-label .open:hover{background:#A8C663;color:var(--green-ink)}
+.spec-label .open svg{width:12px;height:12px}
+.spec-view{position:relative;background:var(--cream)}
+.spec-view iframe{display:block;width:100%;border:0;height:2400px}
+.spec-loading{position:absolute;inset:0;display:grid;place-items:center;font-family:'Raleway',sans-serif;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);background:var(--cream);transition:opacity .3s}
+.spec-view.ready .spec-loading{opacity:0;pointer-events:none}
+body[data-solo="a"] .spec:not(#pairing-a),body[data-solo="b"] .spec:not(#pairing-b),body[data-solo="c"] .spec:not(#pairing-c){display:none}
+
+/* ===== FOOTER (canonical site footer) ===== */
+footer.site{background:var(--green-ink);color:#b5c9b8;padding:70px 0 36px;border-top:1px solid rgba(255,255,255,.1)}
+footer.site .foot-bottom{display:flex;justify-content:space-between;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+footer.site .foot-bottom a{color:#6b8a78;text-decoration:underline}
+footer.site .foot-brand img{height:44px;margin-bottom:16px}
+footer.site .foot-brand p{font-size:14px;max-width:460px;color:#8da89a;line-height:1.6;margin-bottom:34px}
+
+@media (max-width:1024px){.nav-links{display:none}.wrap{padding:0 22px}}
+@media (max-width:600px){.spec{padding-top:38px}.spec-frame{border-radius:14px}.spec-label{padding:13px 20px;gap:12px}.spec-label .open{margin-left:0}}
+/* __MFTS_DROPDOWN_CSS__ */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<section class="tl-head" data-screen-label="Type Lab header">
+  <div class="wrap">
+    <h1>Font Pairings Review</h1>
+    <p>Each panel below is the full Students &amp; Families page, unchanged: same sections, images, copy, colors, spacing, and sizes. The only difference between the three is the typeface pairing.</p>
+    <div class="control-note">This header is the control: Raleway + Open Sans, our current fonts</div>
+  </div>
+</section>
+
+<nav class="tl-bar" aria-label="Specimen navigation">
+  <div class="wrap tl-bar-inner">
+    <div class="tl-jump">
+      <span class="tl-label">Jump to</span>
+      <a href="#pairing-a">A · Libre Baskerville</a>
+      <a href="#pairing-b">B · Zilla Slab</a>
+      <a href="#pairing-c">C · Petrona</a>
+    </div>
+    <div class="tl-controls">
+      <span class="tl-label">Show</span>
+      <div class="tl-seg" id="solo-seg" role="group" aria-label="Isolate one pairing">
+        <button type="button" data-solo="" aria-pressed="true">All</button>
+        <button type="button" data-solo="a" aria-pressed="false">A only</button>
+        <button type="button" data-solo="b" aria-pressed="false">B only</button>
+        <button type="button" data-solo="c" aria-pressed="false">C only</button>
+      </div>
+      <label class="tl-toggle"><input type="checkbox" id="swap-roles"><span>Swap heading / body roles</span></label>
+    </div>
+  </div>
+</nav>
+
+
+
+<section class="spec" id="pairing-a" data-screen-label="Pairing A — Libre Baskerville + Raleway">
+  <div class="wrap">
+    <div class="spec-frame">
+      <div class="spec-label">
+        <span class="ltr">A</span>
+        <span class="pair">Libre Baskerville + Raleway</span>
+        <span class="specline">Libre Baskerville 700 headings &middot; Raleway 400/600 body + UI &middot; numerals on display</span>
+        <a class="open" href="MFTS-Type-Lab-A.html" target="_blank" rel="noopener">Open full page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <div class="spec-view">
+        <iframe src="MFTS-Type-Lab-A.html" title="Students and Families page set in Libre Baskerville and Raleway" scrolling="no"></iframe>
+        <div class="spec-loading">Loading pairing A</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="spec" id="pairing-b" data-screen-label="Pairing B — Zilla Slab + Lato">
+  <div class="wrap">
+    <div class="spec-frame">
+      <div class="spec-label">
+        <span class="ltr">B</span>
+        <span class="pair">Zilla Slab + Lato</span>
+        <span class="specline">Zilla Slab 700 headings &middot; Lato 400/700 body + UI &middot; numerals on display</span>
+        <a class="open" href="MFTS-Type-Lab-B.html" target="_blank" rel="noopener">Open full page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <div class="spec-view">
+        <iframe src="MFTS-Type-Lab-B.html" title="Students and Families page set in Zilla Slab and Lato" scrolling="no"></iframe>
+        <div class="spec-loading">Loading pairing B</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="spec" id="pairing-c" data-screen-label="Pairing C — Petrona + Manrope">
+  <div class="wrap">
+    <div class="spec-frame">
+      <div class="spec-label">
+        <span class="ltr">C</span>
+        <span class="pair">Petrona + Manrope</span>
+        <span class="specline">Petrona 700 headings &middot; Manrope 400/700 body + UI &middot; numerals on display</span>
+        <a class="open" href="MFTS-Type-Lab-C.html" target="_blank" rel="noopener">Open full page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <div class="spec-view">
+        <iframe src="MFTS-Type-Lab-C.html" title="Students and Families page set in Petrona and Manrope" scrolling="no"></iframe>
+        <div class="spec-loading">Loading pairing C</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-brand">
+      <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+      <p>Type Lab is an internal review page. Each panel embeds a full copy of the Students &amp; Families page with only its font stacks changed. Not linked from the primary navigation, and carries a noindex tag.</p>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; 2026 Massachusetts Farm to School &middot; Internal type comparison</span>
+      <span><a href="MFTS-Students-Families.html">Back to the live Students &amp; Families page</a></span>
+    </div>
+  </div>
+</footer>
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+
+/* Type Lab: auto-size each embedded page, isolate one pairing, swap font roles */
+(function(){
+  var frames=[].slice.call(document.querySelectorAll(".spec-view iframe"));
+  window.addEventListener("message",function(e){
+    var d=e.data||{};if(d.type!=="tl-height"||!d.h)return;
+    frames.forEach(function(f){if(f.contentWindow===e.source){f.style.height=d.h+"px";f.parentNode.classList.add("ready");}});
+  });
+  function ping(){frames.forEach(function(f){try{f.contentWindow.postMessage({type:"tl-ping"},"*")}catch(err){}});}
+  window.addEventListener("resize",ping);
+  setTimeout(ping,1200);setTimeout(ping,3500);
+  var seg=document.getElementById("solo-seg");
+  seg.addEventListener("click",function(e){
+    var b=e.target.closest("button[data-solo]");if(!b)return;
+    [].forEach.call(seg.querySelectorAll("button"),function(x){x.setAttribute("aria-pressed",String(x===b));});
+    var v=b.getAttribute("data-solo");
+    if(v){document.body.setAttribute("data-solo",v);}else{document.body.removeAttribute("data-solo");}
+    setTimeout(ping,80);
+  });
+  document.getElementById("swap-roles").addEventListener("change",function(e){
+    frames.forEach(function(f){try{f.contentWindow.postMessage({type:"tl-swap",on:e.target.checked},"*")}catch(err){}});
+  });
+})();
+</script>
+</body></html>
