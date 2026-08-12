@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+WORDPRESS IMPLEMENTATION NOTES — ma-fresh-grant.html (MFTS Atlas, MA FRESH Grant)
+Concept: THE GRANT LEDGER. Nova v2 / Tidewater tokens, canonical chrome.
+==============================================================================
+EMBEDDING
+- Option A (fastest): Elementor Pro HTML widget. Paste everything from
+  <section class="hero"> through the closing Atlas <script> tag. Global chrome
+  (topbar/header/footer) comes from theme template parts, not the widget.
+- Option B (cleaner): register a shortcode [mfts_atlas map="maFresh"] whose
+  callback prints the markup + inline JS; drop it on a standard page. The eight
+  content sections then live as normal Elementor sections around it.
+LEAFLET ENQUEUE
+- wp_enqueue_style/script Leaflet 1.9.x from cdnjs (same URLs as below), footer
+  load, no jQuery dependency. Do NOT double-load if another map plugin exists.
+RESPONSIVE STRATEGY
+- Container driven: nothing inside .atlas-console assumes a page width, and the
+  eight sections are fluid to whatever column Elementor gives them. Map height
+  is clamp(420px, 60vh, 720px); the filter row and stat register wrap on their
+  own. Do not set a fixed width on the widget.
+LIVE GOOGLE SHEETS FETCH (this map's defining feature)
+- The map reads the client's MA FRESH Awards sheet at page load through the
+  gviz CSV endpoint. MFTS staff edit the sheet; the site follows.
+- LATENCY: Google caches that endpoint, so an edit appears on the site within
+  minutes, not instantly. It is not a live socket. Tell staff to expect a short
+  delay and to hard-refresh when checking their own edit.
+- FRAGILITY: parsing is by COLUMN NAME. Renaming, reordering, or inserting
+  award columns breaks the parse until SHEET_COLUMNS below is updated. Adding a
+  new fiscal year means adding one entry to AWARD_COLUMNS and one option to the
+  Grant Year dropdown. Keep a note on the sheet itself saying so.
+- SHARING: the sheet must stay "anyone with the link can view". If sharing is
+  tightened the fetch fails and the page falls back to the embedded ten-record
+  snapshot with a quiet "Showing cached data" notice.
+- PRIVACY: Project Summary, Address 1, City, State and Zip are parsed past but
+  never rendered. Client instruction is town names only. Do not surface them.
+AIRTABLE ALTERNATIVE PIPELINE (per Atlas architecture)
+- Airtable -> Air WP Sync plugin -> custom post type "atlas_poi" -> /wp-json
+  endpoint, consumed by the commented adapter beside the fetch. The Airtable
+  API must never be called directly from the browser. When the awards table
+  migrates into the master Airtable base, swap loadAwards() for that adapter
+  and everything downstream is unchanged.
+GRANTEE STORY ROTATION
+- Section 4 is designed to be swapped monthly. Suggested build: an ACF field
+  group "grantee_story" {photo, organization, blurb, article_link} on the page,
+  or an Elementor dynamic-field loop pointed at a "Grantee Story" CPT so staff
+  can queue stories ahead. Placeholders in this file are intentionally styled as
+  unfinished and must not ship as-is.
+BASEMAP
+- Prototype default: CARTO Positron raster. Production swap to a MapTiler
+  custom Tidewater style or self-hosted Protomaps PMTiles is a one-line change
+  at TILE_URL below.
+STATE
+- No localStorage, no sessionStorage. Filter and selection state live in memory.
+============================================================================ -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MA FRESH Grant — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme (canonical tokens, do not edit) */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#A8C663;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+  --console:#00434B;
+  /* MA FRESH marker encoding: K-12 = school, Early Care & Education = district */
+  --pin-school:#005A66; --pin-school-ink:#fff;
+  --pin-district:#88B03F; --pin-district-ink:#003A40;
+  --tile-tint:sepia(.1) hue-rotate(14deg) saturate(1.04);
+  --rule:rgba(0,90,102,.22);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--green-light)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+:focus-visible{outline:3px solid var(--bridge);outline-offset:2px;border-radius:4px}
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline;color:#A8C663}
+header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a:hover{color:inherit}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);color:#fff;transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+.nav-links .dropdown a.active{background:rgba(0,124,137,.12);color:var(--green-light)}
+/* ===== SECTION 1 — HERO ===== */
+.hero{background:var(--green-ink) url('assets/Springfield_KidGarden.jpeg') center 30%/cover no-repeat;color:#fff;padding:84px 0 0;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.82),rgba(0,58,64,.86)),radial-gradient(ellipse at 80% 6%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 10% 96%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:var(--gold)}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(42px,5.4vw,84px);color:#fff;line-height:1;letter-spacing:-.025em;max-width:15ch;margin:0 auto}
+.hero h1 .accent-italic{color:var(--gold);font-size:.94em}
+.hero .lede{font-family:'Open Sans',system-ui,sans-serif;font-weight:400;font-size:clamp(16px,1.4vw,18.5px);line-height:1.78;color:rgba(235,245,244,.9);max-width:74ch;margin:28px auto 0;text-wrap:pretty}
+.hero-register{position:relative;z-index:1;margin-top:56px;border-top:1px solid rgba(255,255,255,.2);display:flex;justify-content:center;flex-wrap:wrap}
+.hero-register .hr-item{padding:18px 42px;display:flex;flex-direction:column;gap:2px;border-left:1px solid rgba(255,255,255,.16)}
+.hero-register .hr-item:first-child{border-left:none}
+.hero-register .k{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(168,198,99,.85)}
+.hero-register .v{font-family:'Bebas Neue';font-size:24px;letter-spacing:.05em;color:#fff;line-height:1.1}
+/* ===== LEDGER ENTRY HEAD (structural motif: the ruled register) ===== */
+.entry-head{border-top:2px solid var(--rule);padding-top:20px;margin-bottom:38px}
+.entry-head h2{font-size:clamp(32px,4.2vw,56px);color:var(--green-ink);line-height:1.03;text-wrap:balance}
+.entry-head h2 .accent-italic{font-size:1.02em}
+.entry-head .sub{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:14px}
+.on-ink .entry-head{border-top-color:rgba(255,255,255,.28)}
+.on-ink .entry-head h2{color:#fff}
+.on-ink .entry-head h2 .accent-italic{color:var(--gold)}
+.on-ink .entry-head .sub{color:rgba(235,245,244,.6)}
+/* ===== SECTION 2 — WHAT THE PROGRAM FUNDS ===== */
+.funds{padding:88px 0 96px;background:#fff;border-top:1px solid var(--line)}
+.funds-body{display:block}
+.funds-body p{font-size:clamp(17px,1.5vw,19.5px);line-height:1.78;color:#26302f;max-width:64ch;text-wrap:pretty}
+.funds-aside{margin-top:clamp(38px,4vw,54px);border-top:2px solid var(--rule);border-bottom:1px solid var(--line);padding-top:0;display:grid;grid-template-columns:repeat(3,1fr)}
+.fact{display:flex;flex-direction:column;gap:4px;padding:22px 28px 24px 0;border-bottom:none;border-right:1px solid var(--line)}
+.fact:last-of-type{border-right:none;padding-right:0}
+.fact:not(:first-of-type){padding-left:28px}
+.fact .k{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
+.fact .v{font-family:'Bebas Neue';font-size:23px;letter-spacing:.04em;color:var(--green-ink);line-height:1.15}
+.fact .n{font-size:13px;color:var(--muted);line-height:1.5}
+.aside-note{grid-column:1/-1;font-size:11.5px;line-height:1.55;color:var(--muted);font-style:italic;padding-top:14px;border-top:1px solid var(--line)}
+/* ===== SECTION 3 — IMPACT (dark green-ink panel, teal glow) ===== */
+.impact{background:var(--green-ink);color:#fff;padding:96px 0 104px;position:relative;overflow:hidden}
+.impact::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 88% 8%,rgba(0,181,175,.2),transparent 55%),radial-gradient(ellipse at 8% 92%,rgba(69,192,190,.14),transparent 55%);pointer-events:none}
+.impact .wrap{position:relative;z-index:1}
+.impact .lede{font-size:clamp(16.5px,1.45vw,19px);line-height:1.78;color:rgba(235,245,244,.9);max-width:66ch;text-wrap:pretty}
+.stat-register{display:grid;grid-template-columns:repeat(3,1fr);margin-top:64px;border-top:2px solid rgba(255,255,255,.28)}
+.stat{padding:34px 34px 30px;border-left:1px solid rgba(255,255,255,.16);display:flex;flex-direction:column;gap:10px}
+.stat:first-child{border-left:none;padding-left:0}
+.stat b{font-family:'Bebas Neue';font-weight:400;font-size:clamp(58px,5.9vw,94px);line-height:.82;color:var(--gold);letter-spacing:.01em;display:block}
+.stat b .unit{display:block;font-size:.42em;letter-spacing:.05em;line-height:1;margin-top:.1em}
+.stat .lbl{font-family:'Raleway';font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#fff}
+.stat .foot{font-size:13px;color:rgba(181,201,184,.85);line-height:1.5}
+/* ===== SECTION 4 — GRANTEE STORY (unfinished placeholders) ===== */
+.story{padding:92px 0 100px;background:var(--cream)}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:stretch}
+.ph{border:1.5px dashed rgba(0,90,102,.34);border-radius:var(--radius);background:rgba(255,255,255,.5);position:relative}
+.ph-photo{aspect-ratio:4/3;display:grid;place-items:center;background-image:repeating-linear-gradient(135deg,rgba(0,90,102,.055) 0 10px,transparent 10px 20px)}
+.ph-tag{font-family:'Bebas Neue';font-size:16px;letter-spacing:.12em;color:rgba(0,90,102,.62);border:1px solid rgba(0,90,102,.28);border-radius:999px;padding:5px 16px;background:rgba(255,255,255,.8)}
+.ph-blurb{padding:34px 36px 32px;display:flex;flex-direction:column;gap:14px}
+.ph-blurb .ph-line{height:11px;border-radius:3px;background:rgba(0,90,102,.12)}
+.ph-blurb .ph-line.w80{width:80%}.ph-blurb .ph-line.w92{width:92%}.ph-blurb .ph-line.w64{width:64%}.ph-blurb .ph-line.w48{width:48%}
+.ph-label{font-family:'Open Sans';font-style:italic;font-size:14.5px;color:rgba(0,90,102,.72);line-height:1.6}
+.ph-label b{font-family:'Raleway';font-style:normal;font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,90,102,.62);display:block;margin-bottom:6px}
+.ph-rotate{display:inline-flex;align-items:center;gap:8px;margin-top:auto;font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+.ph-rotate svg{width:13px;height:13px}
+/* ===== SECTION 5 — MAP CONSOLE ===== */
+.atlas-shell{padding:88px 0 96px;background:#fff;border-top:1px solid var(--line)}
+.atlas-console{background:var(--console);border-radius:24px;padding:26px 26px 22px;color:#fff;position:relative;overflow:hidden;box-shadow:0 40px 80px -50px rgba(0,58,64,.55)}
+.atlas-console::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 92% 4%,rgba(0,181,175,.18),transparent 50%),radial-gradient(ellipse at 4% 100%,rgba(168,198,99,.12),transparent 45%);pointer-events:none}
+.atlas-console > *{position:relative;z-index:1}
+.console-masthead{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.12)}
+.console-id{display:flex;align-items:baseline;gap:14px}
+.console-id .sig{font-family:'Bebas Neue';font-size:30px;letter-spacing:.06em;color:var(--gold);line-height:1}
+.console-id .sub{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.console-count{display:flex;align-items:baseline;gap:9px;font-family:'Raleway';font-weight:700;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);opacity:0;transition:opacity .3s}
+.console-count.show{opacity:1}
+.console-count b{font-family:'Bebas Neue';font-weight:400;font-size:28px;letter-spacing:.04em;color:#fff;line-height:1}
+.filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:22px;position:relative;z-index:5}
+.filter-row .flbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#fff;margin-right:2px}
+.dd{position:relative;display:inline-flex}
+.dd-trigger{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.88);border-radius:999px;font-family:'Raleway';font-weight:700;font-size:12.5px;padding:10px 18px;cursor:pointer;transition:.18s}
+.dd-trigger:hover{border-color:var(--gold)}
+.dd-trigger[aria-expanded="true"],.dd-trigger.is-set{border-color:var(--gold);background:rgba(168,198,99,.14);color:#fff}
+.dd-trigger .dd-caret{width:12px;height:12px;opacity:.7;transition:transform .25s}
+.dd-trigger[aria-expanded="true"] .dd-caret{transform:rotate(180deg)}
+.dd-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:750;min-width:238px;max-height:290px;overflow-y:auto;background:var(--green-deep);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:8px;display:none;box-shadow:0 24px 50px -20px rgba(0,20,22,.6);scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.dd-pop.open{display:block}
+.dd-opt{display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:8px;color:rgba(255,255,255,.88);font-family:'Open Sans';font-size:13px;cursor:pointer}
+.dd-opt:hover{background:rgba(255,255,255,.08)}
+.dd-opt input{accent-color:var(--gold);width:15px;height:15px;flex:none;cursor:pointer}
+.filter-clear{background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;font-family:'Raleway';font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:7px 15px;cursor:pointer;transition:.2s;display:none}
+.filter-clear.show{display:inline-flex}
+.filter-clear:hover{border-color:var(--gold);color:var(--gold)}
+.map-frame{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:#dfe9e8}
+#atlasMap{height:clamp(420px,60vh,720px);width:100%;background:#dfe9e8}
+#atlasMap:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+#atlasMap .leaflet-tile-pane{filter:var(--tile-tint,none)}
+.map-hint{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,58,64,.55);backdrop-filter:blur(1px);z-index:800;opacity:0;pointer-events:none;transition:opacity .3s}
+.map-hint.show{opacity:1}
+.map-hint span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:14px;padding:14px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.25)}
+.map-loading{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,67,75,.72);z-index:820;transition:opacity .35s}
+.map-loading.done{opacity:0;pointer-events:none}
+.map-loading span{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#fff}
+.map-loading .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+.map-legend{position:absolute;left:12px;bottom:12px;z-index:650;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;padding:7px 16px;display:flex;gap:16px;align-items:center;box-shadow:0 10px 24px -12px rgba(0,58,64,.4);flex-wrap:wrap}
+.map-legend .litem{display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:700;font-size:11.5px;color:var(--green-ink)}
+.map-legend .litem svg{width:17px;height:17px}
+.map-empty{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,58,64,.45);z-index:640;padding:24px}
+.map-empty.show{display:grid}
+.map-empty span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:13.5px;padding:13px 24px;border-radius:999px;border:1px solid rgba(255,255,255,.25);text-align:center}
+.leaflet-container{font-family:'Open Sans',sans-serif}
+.leaflet-control-attribution{font-size:9.5px!important;background:rgba(255,255,255,.75)!important}
+.cache-note{display:none;align-items:center;gap:9px;margin-top:12px;font-size:12px;color:rgba(235,245,244,.72);font-style:italic}
+.cache-note.show{display:flex}
+.cache-note .dotc{width:7px;height:7px;border-radius:50%;background:var(--gold);flex:none}
+/* pins */
+.atlas-pin{background:none;border:none}
+.atlas-pin .pinbox{width:44px;height:44px;display:grid;place-items:center;cursor:pointer;position:relative}
+.atlas-pin .pinbox svg{width:28px;height:28px;filter:drop-shadow(0 2px 4px rgba(0,58,64,.4));transition:transform .18s}
+.atlas-pin.is-hot .pinbox svg,.atlas-pin .pinbox:hover svg{transform:scale(1.28)}
+.atlas-pin.is-selected .pinbox svg{transform:scale(1.42)}
+.atlas-pin.is-selected .pinbox::after{content:'';position:absolute;width:40px;height:40px;border-radius:50%;border:2.5px solid var(--green-ink);animation:pinring .35s ease}
+@keyframes pinring{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+/* table toggle + ledger table */
+.table-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:16px}
+.table-toggle{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;padding:11px 20px;cursor:pointer;transition:.2s}
+.table-toggle:hover{border-color:var(--gold);color:var(--gold)}
+.table-toggle[aria-expanded="true"]{background:var(--gold);border-color:var(--gold);color:var(--green-ink)}
+.table-toggle svg{width:13px;height:13px;transition:transform .25s}
+.table-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.table-hint{font-size:11.5px;color:rgba(255,255,255,.55);font-style:italic}
+.ledger-sheet{margin-top:16px;background:#fff;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.2)}
+.ledger-scroll{max-height:min(560px,70vh);overflow:auto}
+table.ledger{width:100%;border-collapse:collapse;font-size:14px;color:#22302f}
+table.ledger thead th{position:sticky;top:0;z-index:2;background:var(--cream);text-align:left;padding:0;border-bottom:2px solid var(--rule)}
+table.ledger thead th button{width:100%;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--green-ink);padding:15px 18px;text-align:left}
+table.ledger thead th button:hover{color:var(--accent)}
+table.ledger thead th .arr{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;opacity:0}
+table.ledger thead th[aria-sort="ascending"] .arr{opacity:1;border-bottom:5px solid var(--accent)}
+table.ledger thead th[aria-sort="descending"] .arr{opacity:1;border-top:5px solid var(--accent)}
+table.ledger tbody tr{border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s}
+table.ledger tbody tr:hover,table.ledger tbody tr.is-hot{background:rgba(0,124,137,.07)}
+table.ledger tbody tr.is-selected{background:rgba(168,198,99,.2)}
+table.ledger td{padding:14px 18px;vertical-align:top}
+table.ledger td.org{font-family:'Raleway';font-weight:700;font-size:14.5px;color:var(--green-ink);line-height:1.35}
+table.ledger td.org .nomap{display:block;font-family:'Open Sans';font-weight:400;font-style:italic;font-size:11.5px;color:var(--muted);margin-top:3px}
+.tchip{display:inline-block;font-family:'Raleway';font-weight:800;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.tchip.school{background:var(--pin-school);color:var(--pin-school-ink)}
+.tchip.district{background:var(--pin-district);color:var(--pin-district-ink)}
+.awardline{display:flex;align-items:baseline;gap:10px;white-space:nowrap}
+.awardline + .awardline{margin-top:5px}
+.awardline .pg{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);min-width:82px}
+.awardline .am{font-family:'Bebas Neue';font-size:19px;letter-spacing:.03em;color:var(--green-ink);line-height:1}
+table.ledger td.town{font-size:14px;color:#3a4544;white-space:nowrap}
+.ledger-empty{padding:56px 28px;text-align:center;display:none}
+.ledger-empty.show{display:block}
+.ledger-empty .leaf{width:32px;height:32px;margin:0 auto 14px}
+.ledger-empty h4{font-family:'Raleway';font-weight:900;font-size:18px;color:var(--green-ink);margin-bottom:8px}
+.ledger-empty p{font-size:14px;color:var(--muted);max-width:340px;margin:0 auto 18px}
+.ledger-empty button{background:var(--green-light);color:#fff;border:none;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;padding:11px 22px;cursor:pointer}
+.ledger-empty button:hover{background:var(--green-deep)}
+/* ===== POI DETAIL MODULE (uniform across all Atlas maps) ===== */
+.atlas-poi-scrim{position:fixed;inset:0;background:rgba(0,58,64,.5);backdrop-filter:blur(2px);z-index:1000;opacity:0;pointer-events:none;transition:opacity .25s}
+.atlas-poi-scrim.open{opacity:1;pointer-events:auto}
+.atlas-poi{position:fixed;top:0;right:0;bottom:0;width:min(430px,100vw);background:#fff;z-index:1001;transform:translateX(105%);transition:transform .32s cubic-bezier(.32,.72,.28,1);box-shadow:-30px 0 70px -30px rgba(0,58,64,.45);display:flex;flex-direction:column;border-radius:0}
+.atlas-poi.open{transform:translateX(0)}
+.atlas-poi-head{background:var(--green-ink);color:#fff;padding:26px 28px 22px;position:relative;flex:none}
+.atlas-poi-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 0%,rgba(0,181,175,.22),transparent 60%);pointer-events:none}
+.atlas-poi-close{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:grid;place-items:center;transition:.2s;z-index:2}
+.atlas-poi-close:hover{background:var(--gold);color:var(--green-ink);border-color:var(--gold)}
+.atlas-poi-close svg{width:15px;height:15px}
+.atlas-poi-head h3{font-family:'Raleway';font-weight:900;font-size:23px;color:#fff;position:relative;padding-right:40px;line-height:1.15}
+.atlas-poi-chips{display:flex;gap:7px;margin-bottom:14px;position:relative;flex-wrap:wrap}
+.poi-chip{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:999px}
+.poi-chip.type.school{background:var(--pin-school);color:var(--pin-school-ink)}
+.poi-chip.type.district{background:var(--pin-district);color:var(--pin-district-ink)}
+.atlas-poi-body{padding:26px 28px 34px;overflow-y:auto;flex:1}
+.poi-sec{margin-bottom:26px}
+.poi-sec:last-child{margin-bottom:0}
+.poi-sec .plbl{font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);display:block;padding-bottom:9px;border-bottom:2px solid var(--rule);margin-bottom:2px}
+.poi-award{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--line)}
+.poi-award .pa-prog{font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--green-ink)}
+.poi-award .pa-amt{font-family:'Bebas Neue';font-size:28px;letter-spacing:.03em;color:var(--green);line-height:1}
+.poi-town{font-family:'Bebas Neue';font-size:30px;letter-spacing:.05em;color:var(--green-ink);padding-top:14px;line-height:1}
+/* ===== SECTION 6 — PAST GRANTEES / REPORTS ===== */
+.reports{padding:88px 0 96px;background:var(--cream)}
+.reports-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:start}
+.reports-grid p{font-size:clamp(16px,1.4vw,18px);line-height:1.78;color:#26302f;max-width:58ch;text-wrap:pretty}
+.report-list{list-style:none;border-top:2px solid var(--rule)}
+.report-row{display:grid;grid-template-columns:88px 1fr auto;align-items:center;gap:18px;padding:20px 4px;border-bottom:1px solid var(--line);transition:background .2s,padding .2s}
+.report-row:hover{background:rgba(255,255,255,.7);padding-left:12px}
+.report-row .ry{font-family:'Bebas Neue';font-size:30px;letter-spacing:.05em;color:var(--green-ink);line-height:1}
+.report-row .rl{font-family:'Raleway';font-weight:700;font-size:14.5px;color:var(--green-ink)}
+.report-row:hover .rl{color:var(--accent)}
+.report-row .rmark{font-family:'Open Sans';font-style:italic;font-size:12px;color:var(--muted);white-space:nowrap}
+/* ===== SECTION 7 — APPLICATION PROCESS ===== */
+.apply{padding:88px 0 96px;background:#fff;border-top:1px solid var(--line)}
+.apply-grid{display:block}
+.apply-grid p{font-size:clamp(17px,1.5vw,19.5px);line-height:1.78;color:#26302f;max-width:62ch;text-wrap:pretty}
+.apply-side{margin-top:32px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.apply-side .note{font-family:'Open Sans';font-style:italic;font-size:11.5px;color:var(--muted)}
+/* ===== SECTION 8 — MAKE IT PERMANENT (dark closing band) ===== */
+.advocate{background:var(--green-ink);color:#fff;padding:100px 0 104px;position:relative;overflow:hidden}
+.advocate::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 82% 8%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 10% 94%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.advocate .wrap{position:relative;z-index:1}
+.advocate-grid{display:block}
+.advocate p{font-size:clamp(16px,1.4vw,18px);line-height:1.8;color:rgba(235,245,244,.9);max-width:62ch;text-wrap:pretty}
+.advocate-side{margin-top:32px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;color:var(--green-ink);transform:translateY(-2px)}
+.advocate-side .note{font-family:'Open Sans';font-style:italic;font-size:11.5px;color:rgba(235,245,244,.6)}
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+/* ===== RESPONSIVE ===== */
+@media (max-width:1100px){
+  .funds-body{gap:40px}
+  .funds-aside{grid-template-columns:1fr}
+  .fact{border-right:none;border-bottom:1px solid var(--line);padding:16px 0}
+  .fact:not(:first-of-type){padding-left:0}
+  .fact:last-of-type{padding-right:0}
+  .reports-grid{grid-template-columns:1fr;gap:36px}
+  .apply-grid,.advocate-grid{align-items:start}
+}
+@media (max-width:1024px){.nav-links{display:none}.foot-grid{grid-template-columns:1fr 1fr;gap:28px}}
+@media (max-width:860px){
+  .hero{padding-top:64px}
+  .hero-register .hr-item{padding:16px 26px}
+  .stat-register{grid-template-columns:1fr}
+  .stat{border-left:none;border-top:1px solid rgba(255,255,255,.16);padding:26px 0}
+  .stat:first-child{border-top:none}
+  .story-grid{grid-template-columns:1fr;gap:28px}
+}
+@media (max-width:760px){
+  #atlasMap{height:420px}
+  .atlas-console{padding:18px 14px;border-radius:18px}
+  .console-masthead{flex-direction:column;align-items:flex-start;gap:8px}
+  .map-legend{position:static;margin:10px 0 0;border-radius:14px;justify-content:flex-start}
+  .atlas-poi{top:auto;left:0;right:0;bottom:0;width:100%;max-height:84vh;transform:translateY(105%);border-radius:20px 20px 0 0}
+  .atlas-poi.open{transform:translateY(0)}
+  .report-row{grid-template-columns:70px 1fr;row-gap:4px}
+  .report-row .rmark{grid-column:2}
+  table.ledger td,table.ledger thead th button{padding-left:12px;padding-right:12px}
+}
+@media (max-width:600px){.foot-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="sourcing-local-food.html">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="ma-fresh-grant.html" class="active" aria-current="page">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- SECTION 1 — PAGE HERO (locked client copy, verbatim) -->
+<section class="hero" data-screen-label="MA FRESH Grant hero">
+  <div class="wrap">
+    <span class="hero-flag">MA FRESH Grant</span>
+    <h1>Funding Your Farm to School <span class="accent-italic">Program</span></h1>
+    <p class="lede">The Massachusetts FRESH (Farming Reinforces Education and Student Health) Grant helps K–12 schools and early education programs start or grow local food purchasing, food literacy education, and farm partnerships.</p>
+  </div>
+  <div class="hero-register">
+    <div class="hr-item"><span class="k">On record</span><span class="v">FY23 to FY26</span></div>
+    <div class="hr-item"><span class="k">Grants made</span><span class="v">113</span></div>
+    <div class="hr-item"><span class="k">Administered by</span><span class="v">DESE</span></div>
+  </div>
+</section>
+
+<!-- SECTION 2 — WHAT DOES THE GRANT PROGRAM FUND (locked client copy, verbatim) -->
+<section class="funds" data-screen-label="What the grant funds">
+  <div class="wrap">
+    <div class="entry-head">
+      <h2>What Does the Grant Program <span class="accent-italic">Fund</span></h2>
+      <span class="sub">Eligibility and scope</span>
+    </div>
+    <div class="funds-body">
+      <p>MA FRESH is a statewide, competitive grant administered by the Massachusetts Department of Elementary and Secondary Education (DESE). It supports schools running the National School Lunch Program (NSLP) and licensed early education and care programs running the Child and Adult Care Food Program (CACFP) that want to build up local food purchasing and food system education whether they're just getting started or expanding an established program.</p>
+      <!-- Ledger rail: every value below is lifted from the locked paragraph above it. Nothing here is new information. -->
+      <aside class="funds-aside">
+        <div class="fact"><span class="k">Grant type</span><span class="v">Statewide, competitive</span></div>
+        <div class="fact"><span class="k">Administered by</span><span class="v">DESE</span><span class="n">Massachusetts Department of Elementary and Secondary Education</span></div>
+        <div class="fact"><span class="k">Eligible meal programs</span><span class="v">NSLP &amp; CACFP</span><span class="n">Schools running the National School Lunch Program, and licensed early education and care programs running the Child and Adult Care Food Program</span></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 — IMPACT OF THE GRANT PROGRAM (locked client copy, verbatim) -->
+<section class="impact on-ink" data-screen-label="Impact of the grant program">
+  <div class="wrap">
+    <div class="entry-head">
+      <h2>Impact of the Grant <span class="accent-italic">Program</span></h2>
+      <span class="sub">Since 2023</span>
+    </div>
+    <p class="lede">Since launching in 2023, the MA FRESH grant has been driving local food sourcing and education across the Commonwealth.</p>
+    <div class="stat-register">
+      <div class="stat"><b>113</b><span class="lbl">grants made</span><span class="foot">Across four fiscal years, FY23 through FY26.</span></div>
+      <div class="stat"><b>$3.1<span class="unit">million</span></b><span class="lbl">allocated</span><span class="foot">Awarded to schools, districts, and early education programs.</span></div>
+      <div class="stat"><b>250,000+</b><span class="lbl">students impacted</span><span class="foot">In cafeterias, classrooms, gardens, and on farm field trips.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 — GRANTEE STORY
+     UNFINISHED BY DESIGN: client supplied the layout note (2 columns, photo + blurb,
+     possible link to article, rotate monthly) but no photo and no story copy.
+     Do not ship these placeholders. See WORDPRESS IMPLEMENTATION NOTES for the
+     suggested ACF group / dynamic field so staff can rotate this monthly. -->
+<section class="story" data-screen-label="Grantee story">
+  <div class="wrap">
+    <div class="entry-head">
+      <h2>Grantee <span class="accent-italic">Story</span></h2>
+      <span class="sub">Content pending from MFTS</span>
+    </div>
+    <div class="story-grid">
+      <div class="ph ph-photo" role="img" aria-label="Placeholder: grantee story photo not yet supplied">
+        <span class="ph-tag">[ Grantee photo ]</span>
+      </div>
+      <div class="ph ph-blurb">
+        <p class="ph-label"><b>[ Story blurb ]</b>Copy not yet supplied. Two to three short paragraphs on one grantee, with an optional link to the full article.</p>
+        <div class="ph-line w92"></div>
+        <div class="ph-line w80"></div>
+        <div class="ph-line w92"></div>
+        <div class="ph-line w64"></div>
+        <div class="ph-line w48"></div>
+        <p class="ph-label"><b>[ Article link ]</b>Destination not yet supplied.</p>
+        <span class="ph-rotate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v5h-5"></path></svg>Rotates monthly</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5 — MAP OF FRESH GRANT RECIPIENTS (locked heading) -->
+<section class="atlas-shell" data-screen-label="Map of FRESH grant recipients">
+  <div class="wrap">
+    <div class="entry-head">
+      <h2>Map of FRESH Grant <span class="accent-italic">Recipients</span></h2>
+      <span class="sub">Reads live from the MFTS awards sheet</span>
+    </div>
+    <div class="atlas-console">
+      <div class="console-masthead">
+        <div class="console-id"><span class="sig">The Grant Ledger</span><span class="sub">FY23 to FY26</span></div>
+        <div class="console-count" id="countWrap" aria-live="polite"><b id="countN">0</b><span id="countLbl">organizations shown</span></div>
+      </div>
+      <div class="filter-row">
+        <span class="flbl">Filter</span>
+        <div class="dd">
+          <button class="dd-trigger" type="button" id="yearTrigger" aria-haspopup="true" aria-expanded="false"><span id="yearTxt">Grant Year: All</span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="dd-pop" id="yearPop" role="radiogroup" aria-label="Filter by grant year">
+            <label class="dd-opt"><input type="radio" name="ddYear" value="all" checked=""><span>All years</span></label>
+            <label class="dd-opt"><input type="radio" name="ddYear" value="FY23"><span>FY23</span></label>
+            <label class="dd-opt"><input type="radio" name="ddYear" value="FY24"><span>FY24</span></label>
+            <label class="dd-opt"><input type="radio" name="ddYear" value="FY25"><span>FY25</span></label>
+            <label class="dd-opt"><input type="radio" name="ddYear" value="FY26"><span>FY26</span></label>
+          </div>
+        </div>
+        <div class="dd">
+          <button class="dd-trigger" type="button" id="progTrigger" aria-haspopup="true" aria-expanded="false"><span id="progTxt">Program: All</span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="dd-pop" id="progPop" role="radiogroup" aria-label="Filter by grant program">
+            <label class="dd-opt"><input type="radio" name="ddProg" value="all" checked=""><span>All programs</span></label>
+            <label class="dd-opt"><input type="radio" name="ddProg" value="FRESH"><span>FRESH</span></label>
+            <label class="dd-opt"><input type="radio" name="ddProg" value="CORP"><span>CORP</span></label>
+          </div>
+        </div>
+        <div class="dd">
+          <button class="dd-trigger" type="button" id="typeTrigger" aria-haspopup="true" aria-expanded="false"><span id="typeTxt">Type: All</span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="dd-pop" id="typePop" role="radiogroup" aria-label="Filter by organization type">
+            <label class="dd-opt"><input type="radio" name="ddType" value="all" checked=""><span>All types</span></label>
+            <label class="dd-opt"><input type="radio" name="ddType" value="K-12"><span>K-12</span></label>
+            <label class="dd-opt"><input type="radio" name="ddType" value="Early Care &amp; Education"><span>Early Care &amp; Education</span></label>
+          </div>
+        </div>
+        <button class="filter-clear" id="filterClear" type="button">Clear filters</button>
+      </div>
+      <div class="map-frame">
+        <div id="atlasMap" tabindex="0" role="application" aria-label="Map of MA FRESH grant recipients in Massachusetts. Pins sit at town centers. The table view below offers the same records as an accessible list."></div>
+        <div class="map-loading" id="mapLoading"><span><span class="dot"></span>Loading the grant register</span></div>
+        <div class="map-hint" id="mapHint" aria-hidden="true"><span id="mapHintTxt">Use ctrl + scroll to zoom the map</span></div>
+        <div class="map-empty" id="mapEmpty"><span>No grantees match the current filters</span></div>
+        <div class="map-legend">
+          <span class="litem"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#005A66" stroke="#fff" stroke-width="1.6"></circle><path d="M12 6.4l5 3.1v.9h-1.1v4.9h-7.8V10.4H7v-.9z" fill="#fff"></path><rect x="10.7" y="12.4" width="2.6" height="2.9" fill="#005A66"></rect></svg>K-12</span>
+          <span class="litem"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#88B03F" stroke="#fff" stroke-width="1.6"></circle><circle cx="12" cy="9.4" r="2.1" fill="#003A40"></circle><path d="M7.3 16.6c.7-2.3 2.5-3.5 4.7-3.5s4 1.2 4.7 3.5z" fill="#003A40"></path></svg>Early Care &amp; Education</span>
+        </div>
+      </div>
+      <p class="cache-note" id="cacheNote"><span class="dotc"></span><span>Showing cached data. The live awards sheet could not be reached just now, so this map shows a saved snapshot from July 2026.</span></p>
+      <div class="table-bar">
+        <button class="table-toggle" id="tableToggle" type="button" aria-expanded="false" aria-controls="ledgerSheet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+          <span id="tableToggleTxt">Show the full ledger</span>
+        </button>
+        <span class="table-hint">Every award, sortable. Select a row to open its record.</span>
+      </div>
+      <div class="ledger-sheet" id="ledgerSheet" hidden="">
+        <div class="ledger-scroll">
+          <table class="ledger">
+            <caption class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">MA FRESH grant recipients: organization, type, awards, and town</caption>
+            <thead><tr>
+              <th aria-sort="ascending" data-col="name"><button type="button" data-sort="name">Organization <span class="arr"></span></button></th>
+              <th data-col="type"><button type="button" data-sort="type">Type <span class="arr"></span></button></th>
+              <th data-col="awards"><button type="button" data-sort="awards">Awards <span class="arr"></span></button></th>
+              <th data-col="town"><button type="button" data-sort="town">Town <span class="arr"></span></button></th>
+            </tr></thead>
+            <tbody id="ledgerBody"></tbody>
+          </table>
+        </div>
+        <div class="ledger-empty" id="ledgerEmpty">
+          <svg class="leaf" viewBox="0 0 24 24" fill="#88B03F"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg>
+          <h4>No grantees match those filters</h4>
+          <p>Try opening the grant year back up, or switching the program back to all.</p>
+          <button id="ledgerReset" type="button">Clear filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6 — LEARN MORE ABOUT PAST GRANTEES (locked client copy, verbatim) -->
+<section class="reports" data-screen-label="Past grantees and reports">
+  <div class="wrap">
+    <div class="entry-head">
+      <h2>Learn more about past <span class="accent-italic">grantees</span></h2>
+      <span class="sub">Grant reports</span>
+    </div>
+    <div class="reports-grid">
+      <p>From building school gardens to taste testing local foods and taking farm field trips, FRESH grant funding has supported a wide range of activities in schools and early care programs throughout Massachusetts. Read more about grantee projects in each of the grant reports.</p>
+      <!-- PLACEHOLDER hrefs: no report URLs were supplied by the client. Replace all four before launch. -->
+      <ul class="report-list">
+        <li><a class="report-row" href="#"><span class="ry">FY23</span><span class="rl">Grant report</span><span class="rmark">[ link pending ]</span></a></li>
+        <li><a class="report-row" href="#"><span class="ry">FY24</span><span class="rl">Grant report</span><span class="rmark">[ link pending ]</span></a></li>
+        <li><a class="report-row" href="#"><span class="ry">FY25</span><span class="rl">Grant report</span><span class="rmark">[ link pending ]</span></a></li>
+        <li><a class="report-row" href="#"><span class="ry">FY25</span><span class="rl">CORPS grant report</span><span class="rmark">[ link pending ]</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7 — APPLICATION PROCESS (locked client copy, verbatim) -->
+<section class="apply" data-screen-label="Application process">
+  <div class="wrap">
+    <div class="entry-head">
+      <h2>Interested in Learning More about the <span class="accent-italic">Application Process?</span></h2>
+      <span class="sub">Opens in the spring</span>
+    </div>
+    <div class="apply-grid">
+      <p>The MA FRESH grant opportunity typically opens in the spring. Learn more about program eligibility, application requirements and technical support available for applicants.</p>
+      <div class="apply-side">
+        <!-- PLACEHOLDER href: the application-process destination was not supplied by the client. -->
+        <a class="btn btn-green" href="#">Learn more
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 8 — MAKE THE FRESH GRANT PERMANENT (locked client copy, verbatim) -->
+<section class="advocate on-ink" data-screen-label="Make the FRESH grant permanent">
+  <div class="wrap">
+    <div class="entry-head">
+      <h2>Make the FRESH Grant <span class="accent-italic">permanent</span></h2>
+      <span class="sub">Advocacy</span>
+    </div>
+    <div class="advocate-grid">
+      <p>Your voice can help ensure that Massachusetts students continue to benefit from the FRESH Grant program. The Massachusetts Food for Massachusetts Kids Coalition is advocating to make the MA FRESH Grant program permanent by codifying the program in state statute. Learn more and get involved with this campaign.</p>
+      <div class="advocate-side">
+        <!-- PLACEHOLDER href: link target is the MA Foods page, whose URL was not supplied by the client. -->
+        <a class="btn btn-bright" href="#">Go to MA Foods
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+        <span class="note">[ MA Foods page URL pending ]</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POI DETAIL MODULE (uniform markup across all Atlas maps; this map shows four things only) -->
+<div class="atlas-poi-scrim" id="poiScrim"></div>
+<aside class="atlas-poi" id="poiPanel" role="dialog" aria-modal="true" aria-labelledby="poiName" hidden="">
+  <div class="atlas-poi-head">
+    <button class="atlas-poi-close" id="poiClose" type="button" aria-label="Close details">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+    </button>
+    <div class="atlas-poi-chips" id="poiChips"></div>
+    <h3 id="poiName"></h3>
+  </div>
+  <div class="atlas-poi-body" id="poiBody"></div>
+</aside>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="sourcing-local-food.html">Source Local Food</a></li>
+          <li><a href="food-hub-listings.html">Food Hub Listings</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="About-Us.html">What is Farm to School?</a></li>
+          <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="MFTS-Events-v1-Calendar.html">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="ma-fresh-grant.html">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+<script>
+/* ============================================================================
+   MA FRESH AWARDS — LIVE DATA LAYER
+   Source of truth is the client's Google Sheet. MFTS staff edit the sheet; this
+   map follows. Nothing about the awards is hardcoded except the offline
+   snapshot at the bottom of this block.
+   ========================================================================== */
+const SHEET_CSV='https://docs.google.com/spreadsheets/d/1RdC7545XYx4TITS6_M6pplLEiJ_8S9WtXAYFrIHziTA/gviz/tq?tqx=out:csv&gid=0';
+/* Parsing is BY COLUMN NAME. Rename or reorder these in the sheet and the parse
+   breaks until this map is updated. Adding a fiscal year = one entry here plus
+   one option in the Grant Year dropdown. */
+const SHEET_COLUMNS={type:'Type',org:'Organization',location:'Location'};
+const AWARD_COLUMNS=[
+  {col:'FRESH FY23',program:'FRESH',fy:'FY23'},
+  {col:'FRESH FY24',program:'FRESH',fy:'FY24'},
+  {col:'FRESH FY25',program:'FRESH',fy:'FY25'},
+  {col:'FRESH FY26',program:'FRESH',fy:'FY26'},
+  {col:'CORP FY25',program:'CORP',fy:'FY25'},
+  {col:'CORP FY26',program:'CORP',fy:'FY26'}
+];
+/* ---------------------------------------------------------------------------
+   APPROXIMATE TOWN CENTROIDS — VERIFY PASS RECOMMENDED.
+   The sheet carries no coordinates and the client displays town names only, so
+   every pin sits at its town center by design, not at a street address. These
+   values are hand-entered approximations of town/village centers, accurate
+   enough for a statewide view and NOT accurate enough for navigation. Ask MFTS
+   staff (or a one-time geocode of the town names) to confirm before launch.
+   A town missing from this table is logged to the console and appears in the
+   table view only. Never guess a pin location at runtime.
+--------------------------------------------------------------------------- */
+const MA_TOWN_COORDS={
+  "Acton":[42.4851,-71.4328],"Andover":[42.6583,-71.1368],"Assonet":[41.7959,-71.0656],
+  "Attleboro":[41.9445,-71.2856],"Beverly":[42.5584,-70.8800],"Billerica":[42.5584,-71.2689],
+  "Boston":[42.3601,-71.0589],"Brighton":[42.3464,-71.1627],"Brockton":[42.0834,-71.0184],
+  "Cambridge":[42.3736,-71.1097],"Canton":[42.1584,-71.1448],"Chicopee":[42.1487,-72.6079],
+  "Danvers":[42.5751,-70.9300],"Dighton":[41.8145,-71.1273],"Dorchester":[42.3016,-71.0676],
+  "Eastham":[41.8301,-69.9740],"Easthampton":[42.2668,-72.6690],"Fall River":[41.7015,-71.1550],
+  "Fitchburg":[42.5834,-71.8023],"Framingham":[42.2793,-71.4162],"Gloucester":[42.6159,-70.6620],
+  "Greenfield":[42.5876,-72.5995],"Hanson":[42.0723,-70.8814],"Hatfield":[42.3723,-72.5981],
+  "Haverhill":[42.7762,-71.0773],"Holyoke":[42.2043,-72.6162],"Lancaster":[42.4551,-71.6737],
+  "Lawrence":[42.7070,-71.1631],"Lenox":[42.3565,-73.2846],"Leominster":[42.5251,-71.7598],
+  "Lexington":[42.4430,-71.2290],"Lowell":[42.6334,-71.3162],"Malden":[42.4251,-71.0662],
+  "Mashpee":[41.6490,-70.4780],"Mattapoisett":[41.6584,-70.8134],"Medway":[42.1418,-71.3967],
+  "Montague":[42.5348,-72.5326],"New Bedford":[41.6362,-70.9342],"North Adams":[42.7009,-73.1087],
+  "Northampton":[42.3251,-72.6412],"Orange":[42.5901,-72.3095],"Oxford":[42.1168,-71.8648],
+  "Peabody":[42.5279,-70.9287],"Provincetown":[42.0584,-70.1787],"Quincy":[42.2529,-71.0023],
+  "Revere":[42.4084,-71.0120],"Roxbury":[42.3251,-71.0955],"Salem":[42.5195,-70.8967],
+  "Somerville":[42.3876,-71.0995],"South Deerfield":[42.4751,-72.6084],"South Yarmouth":[41.6668,-70.1834],
+  "Springfield":[42.1015,-72.5898],"Taunton":[41.9001,-71.0898],"Townsend":[42.6668,-71.7051],
+  "Tyngsborough":[42.6779,-71.4245],"Walpole":[42.1418,-71.2495],"Waltham":[42.3765,-71.2356],
+  "Warwick":[42.6768,-72.3373],"Watertown":[42.3709,-71.1828],"Webster":[42.0501,-71.8801],
+  "Westfield":[42.1251,-72.7495],"Westford":[42.5793,-71.4376],"Worcester":[42.2626,-71.8023]
+};
+/* Offline snapshot: exact values from the client's July 23, 2026 data. Only
+   rendered if the live fetch fails, alongside the quiet cached-data notice. */
+const SNAPSHOT=[
+  {type:"Early Care & Education",org:"ABCD Head Start and Children's Service",town:"Boston",awards:[["FRESH","FY24",23437]]},
+  {type:"Early Care & Education",org:"Assonet Day Care",town:"Assonet",awards:[["FRESH","FY23",5250]]},
+  {type:"Early Care & Education",org:"Crispus Attucks Children's Center",town:"Dorchester",awards:[["CORP","FY25",17600],["CORP","FY26",33560]]},
+  {type:"Early Care & Education",org:"MetroWest YMCA",town:"Framingham",awards:[["FRESH","FY24",48927],["CORP","FY25",15023],["CORP","FY26",42817]]},
+  {type:"K-12",org:"Acton-Boxborough Regional School District",town:"Acton",awards:[["CORP","FY25",28961],["CORP","FY26",69911]]},
+  {type:"K-12",org:"Boston Public Schools",town:"Roxbury",awards:[["FRESH","FY23",12300],["FRESH","FY25",30000],["CORP","FY25",48316],["CORP","FY26",85500]]},
+  {type:"K-12",org:"Chicopee Public Schools",town:"Chicopee",awards:[["FRESH","FY25",1985],["FRESH","FY26",9858],["CORP","FY25",16620],["CORP","FY26",55825]]},
+  {type:"K-12",org:"Lenox Public Schools",town:"Lenox",awards:[["FRESH","FY24",11010]]},
+  {type:"K-12",org:"Provincetown Public Schools",town:"Provincetown",awards:[["FRESH","FY23",9740],["FRESH","FY25",8000]]},
+  {type:"K-12",org:"Nauset Regional School District",town:"Eastham",awards:[["CORP","FY25",17700],["CORP","FY26",55153]]}
+];
+/* ---------------------------------------------------------------------------
+AIRTABLE ALTERNATIVE PIPELINE (commented; swap for loadAwards()).
+The Airtable API must never be called directly from the browser. Supported
+route is Airtable -> Air WP Sync plugin -> custom post type "atlas_poi" ->
+/wp-json, consumed here. Everything downstream expects the same POI shape.
+
+// async function loadAwards(){
+//   const res=await fetch('/wp-json/wp/v2/atlas_poi?per_page=100&_fields=acf&atlas_tag=maFresh');
+//   const rows=await res.json();
+//   return rows.map(r=>({
+//     id:r.acf.slug, name:r.acf.organization,
+//     entityType:r.acf.type==='Early Care & Education'?'district':'school',
+//     displayType:(r.acf.type||'').trim(), programs:['maFresh'],
+//     town:r.acf.town, lat:null, lng:null,
+//     meta:{awards:(r.acf.awards||[]).map(a=>({program:a.program,fy:a.fy,amount:+a.amount}))}
+//   }));
+// }
+--------------------------------------------------------------------------- */
+</script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const state={year:'all',prog:'all',type:'all',sort:'name',dir:1,tableOpen:false,selectedId:null};
+let RECORDS=[],interacted=false;
+
+/* ===== CSV PARSER (quoted fields carry commas, doubled quotes, newlines) ===== */
+function parseCSV(text){
+  const rows=[];let row=[],cell='',q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else q=false; }
+      else cell+=c;
+    } else if(c==='"'){q=true;}
+    else if(c===','){row.push(cell);cell='';}
+    else if(c==='\r'){}
+    else if(c==='\n'){row.push(cell);rows.push(row);row=[];cell='';}
+    else cell+=c;
+  }
+  if(cell!==''||row.length){row.push(cell);rows.push(row);}
+  return rows;
+}
+function slug(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)}
+function money(n){return '$'+Math.round(n).toLocaleString('en-US')}
+/* Location column defensively cleaned: one row reads "North Adams MA 01247". */
+function cleanTown(v){
+  let t=String(v||'').trim();
+  const i=t.indexOf(' MA');
+  if(i>-1)t=t.slice(0,i);
+  return t.replace(/[,\s]+$/,'').trim();
+}
+function amount(v){
+  const s=String(v||'').replace(/[$,\s]/g,'');
+  if(!s)return null;
+  const n=parseFloat(s);
+  return isFinite(n)&&n>0?n:null;
+}
+function toRecord(type,org,town,awards){
+  const displayType=String(type||'').trim();
+  return {
+    id:slug(org),name:String(org).trim(),
+    entityType:displayType==='Early Care & Education'?'district':'school',
+    displayType,programs:['maFresh'],
+    town,lat:null,lng:null,
+    meta:{awards:awards}
+  };
+}
+function fromCSV(text){
+  const rows=parseCSV(text);
+  if(!rows.length)throw new Error('empty sheet');
+  const head=rows[0].map(h=>h.trim());
+  const ix=n=>head.indexOf(n);
+  const iType=ix(SHEET_COLUMNS.type),iOrg=ix(SHEET_COLUMNS.org),iLoc=ix(SHEET_COLUMNS.location);
+  if(iType<0||iOrg<0||iLoc<0)throw new Error('sheet columns renamed or reordered');
+  const awardIx=AWARD_COLUMNS.map(a=>({...a,i:ix(a.col)}));
+  const out=[];
+  for(let r=1;r<rows.length;r++){
+    const c=rows[r];
+    const org=(c[iOrg]||'').trim();
+    if(!org)continue; /* skip rows with no Organization */
+    const awards=[];
+    awardIx.forEach(a=>{
+      if(a.i<0)return;
+      const amt=amount(c[a.i]);
+      if(amt!=null)awards.push({program:a.program,fy:a.fy,amount:amt});
+    });
+    /* Project Summary, Address 1, City, State, Zip are deliberately not read. */
+    out.push(toRecord(c[iType],org,cleanTown(c[iLoc]),awards));
+  }
+  return out;
+}
+function fromSnapshot(){
+  return SNAPSHOT.map(s=>toRecord(s.type,s.org,s.town,s.awards.map(a=>({program:a[0],fy:a[1],amount:a[2]}))));
+}
+/* Attach town-center coordinates; nudge same-town pins apart so multi-grantee
+   towns (Boston, Worcester, Lowell) stay individually clickable. */
+function geolocate(list){
+  const missing=new Set(),byTown={};
+  list.forEach(r=>{
+    const c=MA_TOWN_COORDS[r.town];
+    if(!c){if(r.town)missing.add(r.town);return;}
+    (byTown[r.town]=byTown[r.town]||[]).push(r);
+  });
+  Object.keys(byTown).forEach(town=>{
+    const group=byTown[town],base=MA_TOWN_COORDS[town];
+    if(group.length===1){group[0].lat=base[0];group[0].lng=base[1];return;}
+    const R=0.0085+0.0022*Math.min(group.length,8);
+    group.forEach((r,k)=>{
+      const a=(2*Math.PI*k)/group.length;
+      r.lat=base[0]+R*Math.sin(a)*0.72;
+      r.lng=base[1]+R*Math.cos(a);
+    });
+  });
+  if(missing.size)console.warn('[MA FRESH map] No town-center coordinates for: '+[...missing].join(', ')+'. Those records appear in the table view only. Add them to MA_TOWN_COORDS.');
+  return list;
+}
+
+/* ===== MAP ===== */
+const TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'; /* production: swap to MapTiler Tidewater style or self-hosted Protomaps PMTiles (one-line change) */
+const map=L.map('atlasMap',{scrollWheelZoom:false,zoomControl:true,attributionControl:true}).setView([42.25,-71.8],8);
+L.tileLayer(TILE_URL,{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',maxZoom:18}).addTo(map);
+const markerLayer=L.layerGroup().addTo(map);
+let markers={};
+/* Inline-SVG divIcons, Atlas family encoding: circle + glyph, color = type.
+   school = K-12, district = Early Care & Education. 44px touch target. */
+const PIN={
+  school:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="var(--pin-school)" stroke="#fff" stroke-width="1.6"/><path d="M12 6.4l5 3.1v.9h-1.1v4.9h-7.8V10.4H7v-.9z" fill="#fff"/><rect x="10.7" y="12.4" width="2.6" height="2.9" fill="var(--pin-school)"/></svg>',
+  district:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="var(--pin-district)" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="9.4" r="2.1" fill="var(--pin-district-ink)"/><path d="M7.3 16.6c.7-2.3 2.5-3.5 4.7-3.5s4 1.2 4.7 3.5z" fill="var(--pin-district-ink)"/></svg>'
+};
+function pinIcon(r){return L.divIcon({className:'atlas-pin atlas-pin--'+r.entityType,html:'<span class="pinbox">'+PIN[r.entityType]+'</span>',iconSize:[44,44],iconAnchor:[22,22]});}
+/* scroll guards: never hijack page scroll */
+const mapEl=$('#atlasMap'),hint=$('#mapHint'),hintTxt=$('#mapHintTxt');
+const isMac=/Mac|iPhone|iPad/.test(navigator.platform||'');
+let hintT=null;
+function flashHint(msg){hintTxt.textContent=msg;hint.classList.add('show');clearTimeout(hintT);hintT=setTimeout(()=>hint.classList.remove('show'),1400);}
+mapEl.addEventListener('wheel',e=>{
+  if(e.ctrlKey||e.metaKey){e.preventDefault();hint.classList.remove('show');
+    const pt=map.mouseEventToContainerPoint(e);
+    map.setZoomAround(map.containerPointToLatLng(pt),map.getZoom()+(e.deltaY<0?1:-1));
+  }else{flashHint('Use '+(isMac?'\u2318':'ctrl')+' + scroll to zoom the map');}
+},{passive:false});
+if(matchMedia('(pointer:coarse)').matches){
+  map.dragging.disable();
+  mapEl.addEventListener('touchstart',e=>{if(e.touches.length>=2){map.dragging.enable();hint.classList.remove('show');}},{passive:true});
+  mapEl.addEventListener('touchmove',e=>{if(e.touches.length===1)flashHint('Use two fingers to move the map');},{passive:true});
+  mapEl.addEventListener('touchend',e=>{if(e.touches.length<2)map.dragging.disable();},{passive:true});
+}
+
+/* ===== FILTERS (three single-select dropdowns, radio-backed) ===== */
+function closeDD(){document.querySelectorAll('.dd-pop').forEach(p=>p.classList.remove('open'));document.querySelectorAll('.dd-trigger').forEach(t=>t.setAttribute('aria-expanded','false'));}
+function wireDD(triggerId,popId,txtId,label,key,labelFor){
+  const trigger=$(triggerId),pop=$(popId),txt=$(txtId);
+  trigger.addEventListener('click',()=>{
+    const open=!pop.classList.contains('open');closeDD();
+    pop.classList.toggle('open',open);trigger.setAttribute('aria-expanded',String(open));
+  });
+  pop.addEventListener('change',e=>{
+    if(e.target.type!=='radio')return;
+    state[key]=e.target.value;
+    txt.textContent=label+': '+(e.target.value==='all'?'All':labelFor(e.target.value));
+    trigger.classList.toggle('is-set',e.target.value!=='all');
+    closeDD();interacted=true;render();
+  });
+  return {reset(){pop.querySelectorAll('input').forEach((i,k)=>{i.checked=k===0;});state[key]='all';txt.textContent=label+': All';trigger.classList.remove('is-set');}};
+}
+const ddYear=wireDD('#yearTrigger','#yearPop','#yearTxt','Grant Year','year',v=>v);
+const ddProg=wireDD('#progTrigger','#progPop','#progTxt','Program','prog',v=>v);
+const ddType=wireDD('#typeTrigger','#typePop','#typeTxt','Type','type',v=>v==='K-12'?'K-12':'Early Care');
+document.addEventListener('click',e=>{if(!e.target.closest('.dd'))closeDD();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDD();});
+
+/* Filters combine: year AND program AND type, matched against award membership. */
+function matches(r){
+  if(state.type!=='all'&&r.displayType!==state.type)return false;
+  if(state.year==='all'&&state.prog==='all')return true;
+  return r.meta.awards.some(a=>(state.year==='all'||a.fy===state.year)&&(state.prog==='all'||a.program===state.prog));
+}
+function visibleAwards(r){
+  if(state.year==='all'&&state.prog==='all')return r.meta.awards;
+  return r.meta.awards.filter(a=>(state.year==='all'||a.fy===state.year)&&(state.prog==='all'||a.program===state.prog));
+}
+const FY_ORDER={FY23:0,FY24:1,FY25:2,FY26:3};
+function sortAwards(list){return list.slice().sort((a,b)=>(FY_ORDER[a.fy]-FY_ORDER[b.fy])||a.program.localeCompare(b.program));}
+
+/* ===== RENDER ===== */
+function awardHTML(list){
+  return sortAwards(list).map(a=>'<span class="awardline"><span class="pg">'+a.program+' '+a.fy+'</span><span class="am">'+money(a.amount)+'</span></span>').join('');
+}
+function renderMap(set){
+  markerLayer.clearLayers();markers={};
+  set.filter(r=>r.lat!=null).forEach(r=>{
+    const m=L.marker([r.lat,r.lng],{icon:pinIcon(r),keyboard:true,title:r.name,alt:r.name+', '+r.displayType+', '+r.town});
+    m.on('click',()=>openPoi(r.id,m.getElement()));
+    m.on('mouseover',()=>{const row=document.querySelector('tr[data-id="'+r.id+'"]');if(row)row.classList.add('is-hot');});
+    m.on('mouseout',()=>{const row=document.querySelector('tr[data-id="'+r.id+'"]');if(row)row.classList.remove('is-hot');});
+    m.addTo(markerLayer);markers[r.id]=m;
+  });
+  $('#mapEmpty').classList.toggle('show',set.length>0&&Object.keys(markers).length===0||set.length===0);
+  refreshSelected();
+}
+function sortSet(set){
+  const d=state.dir;
+  const key=r=>{
+    if(state.sort==='name')return r.name.toLowerCase();
+    if(state.sort==='type')return r.displayType.toLowerCase();
+    if(state.sort==='town')return (r.town||'zzz').toLowerCase();
+    return visibleAwards(r).reduce((s,a)=>s+a.amount,0);
+  };
+  return set.slice().sort((a,b)=>{
+    const ka=key(a),kb=key(b);
+    if(typeof ka==='number')return (ka-kb)*d;
+    return ka<kb?-1*d:ka>kb?1*d:0;
+  });
+}
+function renderTable(set){
+  const rows=sortSet(set).map(r=>
+    '<tr data-id="'+r.id+'" tabindex="0" role="button" aria-label="Open record for '+esc(r.name)+'">'+
+      '<td class="org">'+esc(r.name)+(r.lat==null?'<span class="nomap">Not shown on the map. Town center coordinates pending.</span>':'')+'</td>'+
+      '<td><span class="tchip '+r.entityType+'">'+esc(r.displayType)+'</span></td>'+
+      '<td>'+awardHTML(visibleAwards(r))+'</td>'+
+      '<td class="town">'+esc(r.town||'')+'</td>'+
+    '</tr>').join('');
+  $('#ledgerBody').innerHTML=rows;
+  $('#ledgerEmpty').classList.toggle('show',set.length===0);
+  document.querySelectorAll('table.ledger thead th').forEach(th=>{
+    const col=th.dataset.col;
+    if(col===state.sort)th.setAttribute('aria-sort',state.dir===1?'ascending':'descending');
+    else th.removeAttribute('aria-sort');
+  });
+  refreshSelected();
+}
+function renderCount(set){
+  const awards=set.reduce((s,r)=>s+visibleAwards(r).length,0);
+  $('#countN').textContent=set.length;
+  $('#countLbl').textContent=(set.length===1?'organization':'organizations')+' \u00B7 '+awards+(awards===1?' award':' awards');
+  $('#countWrap').classList.toggle('show',interacted||state.tableOpen);
+}
+function render(){
+  const set=RECORDS.filter(matches);
+  renderMap(set);renderTable(set);renderCount(set);
+  $('#filterClear').classList.toggle('show',state.year!=='all'||state.prog!=='all'||state.type!=='all');
+}
+function refreshSelected(){
+  Object.entries(markers).forEach(([id,m])=>{const el=m.getElement();if(el)el.classList.toggle('is-selected',id===state.selectedId);});
+  document.querySelectorAll('#ledgerBody tr').forEach(tr=>tr.classList.toggle('is-selected',tr.dataset.id===state.selectedId));
+}
+
+/* ===== POI DETAIL MODULE — exactly four things, per client instruction ===== */
+const poi=$('#poiPanel'),scrim=$('#poiScrim');let lastTrigger=null;
+function openPoi(id,trigger){
+  const r=RECORDS.find(x=>x.id===id);if(!r)return;
+  state.selectedId=id;refreshSelected();lastTrigger=trigger||document.activeElement;
+  $('#poiChips').innerHTML='<span class="poi-chip type '+r.entityType+'">'+esc(r.displayType)+'</span>';
+  $('#poiName').textContent=r.name;
+  const all=sortAwards(r.meta.awards);
+  $('#poiBody').innerHTML=
+    '<div class="poi-sec"><span class="plbl">Award'+(all.length>1?'s':'')+'</span>'+
+      all.map(a=>'<div class="poi-award"><span class="pa-prog">'+a.program+' '+a.fy+'</span><span class="pa-amt">'+money(a.amount)+'</span></div>').join('')+
+    '</div>'+
+    '<div class="poi-sec"><span class="plbl">Location</span><p class="poi-town">'+esc(r.town||'')+'</p></div>';
+  poi.hidden=false;scrim.classList.add('open');void poi.offsetWidth;poi.classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>$('#poiClose').focus(),80);
+}
+function closePoi(){
+  poi.classList.remove('open');scrim.classList.remove('open');
+  document.body.style.overflow='';
+  state.selectedId=null;refreshSelected();
+  setTimeout(()=>{poi.hidden=true;if(lastTrigger&&lastTrigger.focus)lastTrigger.focus();},320);
+}
+$('#poiClose').addEventListener('click',closePoi);
+scrim.addEventListener('click',closePoi);
+document.addEventListener('keydown',e=>{
+  if(poi.hidden)return;
+  if(e.key==='Escape'){closePoi();return;}
+  if(e.key==='Tab'){
+    const f=poi.querySelectorAll('button,a[href]');if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
+
+/* ===== TABLE CONTROLS ===== */
+$('#ledgerBody').addEventListener('click',e=>{const tr=e.target.closest('tr');if(tr)openPoi(tr.dataset.id,tr);});
+$('#ledgerBody').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  const tr=e.target.closest('tr');if(!tr)return;
+  e.preventDefault();openPoi(tr.dataset.id,tr);
+});
+document.querySelectorAll('table.ledger thead button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const col=b.dataset.sort;
+    if(state.sort===col)state.dir*=-1;else{state.sort=col;state.dir=1;}
+    render();
+  });
+});
+const toggle=$('#tableToggle'),sheet=$('#ledgerSheet');
+toggle.addEventListener('click',()=>{
+  state.tableOpen=!state.tableOpen;
+  sheet.hidden=!state.tableOpen;
+  toggle.setAttribute('aria-expanded',String(state.tableOpen));
+  $('#tableToggleTxt').textContent=state.tableOpen?'Hide the full ledger':'Show the full ledger';
+  renderCount(RECORDS.filter(matches));
+});
+function clearFilters(){ddYear.reset();ddProg.reset();ddType.reset();interacted=true;render();}
+$('#filterClear').addEventListener('click',clearFilters);
+$('#ledgerReset').addEventListener('click',clearFilters);
+
+/* ===== BOOT: live sheet first, embedded snapshot as fallback ===== */
+function fitAll(){
+  const pts=RECORDS.filter(r=>r.lat!=null).map(r=>[r.lat,r.lng]);
+  if(pts.length)map.fitBounds(L.latLngBounds(pts),{padding:[40,40]});
+}
+async function loadAwards(){
+  const res=await fetch(SHEET_CSV,{cache:'no-store'});
+  if(!res.ok)throw new Error('sheet fetch failed: '+res.status);
+  return fromCSV(await res.text());
+}
+(async function boot(){
+  let cached=false;
+  try{
+    RECORDS=await loadAwards();
+    if(!RECORDS.length)throw new Error('sheet returned no rows');
+  }catch(err){
+    console.warn('[MA FRESH map] Live sheet unavailable, using the embedded snapshot.',err);
+    RECORDS=fromSnapshot();cached=true;
+  }
+  geolocate(RECORDS);
+  render();fitAll();
+  $('#mapLoading').classList.add('done');
+  if(cached)$('#cacheNote').classList.add('show');
+})();
+})();
+</script>
+</body></html>

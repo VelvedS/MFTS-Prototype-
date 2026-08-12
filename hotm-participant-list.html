@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+WORDPRESS IMPLEMENTATION NOTES — hotm-participant-list.html
+(MFTS Atlas, map 5: Harvest of the Month Participant List)
+Concept: THE HARVEST CALENDAR. Nova v2 / Tidewater tokens, canonical chrome.
+==============================================================================
+EMBEDDING
+- Option A (fastest): Elementor Pro HTML widget. Paste everything from
+  <section class="hero"> through the final </script>. Global chrome (topbar,
+  header, footer) comes from the theme template parts header.php / footer.php,
+  not from the widget.
+- Option B (cleaner): register a shortcode [mfts_atlas map="hotm"] whose
+  callback prints the markup plus the inline JS, then drop the shortcode on a
+  standard page. Preferred if the map will appear on more than one page.
+LEAFLET ENQUEUE
+- wp_enqueue_style / wp_enqueue_script Leaflet 1.9.x from cdnjs (same URLs as
+  below), loaded in the footer, no jQuery dependency. Do NOT double load if
+  another map plugin already registers Leaflet.
+RESPONSIVE STRATEGY
+- The page is fluid to its container. WordPress / Elementor owns the outer
+  container width; nothing here assumes a viewport width. Map height is
+  clamp(420px, 60vh, 720px). No horizontal scroll at any width.
+LIVE GOOGLE SHEETS FETCH (this map is live wired)
+- Source: the HOTM Participants sheet, read at page load through the gviz CSV
+  endpoint (SHEET_CSV_URL below). Staff edits appear on the site within a few
+  minutes; Google caches that endpoint, so it is not instant.
+- The sheet must stay link viewable ("Anyone with the link can view"). If it is
+  set back to restricted, the fetch fails and the page falls back to the small
+  embedded snapshot with a "Showing cached data" notice.
+- Parsing is by COLUMN HEADER NAME, not position, so columns can be reordered
+  safely. Renaming a column breaks that column until the parser is updated.
+  The header row must stay row 1 of the first tab (gid=0).
+- ADDING A NEW SEASON, e.g. 2026-27: add the column to the sheet, then add the
+  string "2026-27" to the SEASONS array below. One line, nothing else.
+- Address, City, State and Zip are read past but never displayed and never used
+  for pins, per client instruction.
+COORDINATES
+- The sheet carries no lat/lng and the client displays Location (town) only, so
+  every pin sits at a town center by design, not at a street address. The
+  MA_TOWN_COORDS table below is APPROXIMATE and wants a staff verify pass.
+- No runtime geocoding. A Location with no lookup match is logged to the console
+  and appears in the table view only, never at a guessed pin.
+AIRTABLE ALTERNATIVE PIPELINE
+- The rest of the Atlas reads Airtable -> Air WP Sync plugin -> custom post type
+  "atlas_poi" -> /wp-json endpoint. If HOTM participants move into the master
+  Airtable Locations table (tagged hotm), swap loadParticipants() for the
+  commented WordPress REST adapter below the fallback data. Everything
+  downstream consumes the same POI shape. The Airtable API must never be called
+  directly from the browser.
+BASEMAP
+- Prototype default: CARTO Positron raster. Production swap to a MapTiler custom
+  Tidewater style or self hosted Protomaps PMTiles is a one line change at
+  TILE_URL below.
+INTRO COPY
+- The intro paragraph is an INTENTIONAL PLACEHOLDER and is marked as such on
+  screen. Do not ship publicly until the client supplies the copy. Replace the
+  bracketed text and remove the .draft-tag element.
+============================================================================ -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Harvest of the Month Participant List — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme (canonical tokens, do not edit) */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#A8C663;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+  --ink-line:rgba(168,198,99,.22);
+  --console:#00434B;
+  --pin-nutrition:#007C89; --pin-educator:#88B03F;
+  --tile-tint:sepia(.1) hue-rotate(14deg) saturate(1.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--green-light)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+:focus-visible{outline:3px solid var(--bridge);outline-offset:2px;border-radius:4px}
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline;color:#A8C663}
+header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a:hover{color:inherit}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links > li > a.active{color:var(--green-light)}
+.nav-links > li > a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px;transition:transform .25s}
+.btn:hover svg{transform:translateX(3px)}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);color:#fff;transform:translateY(-2px)}
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+.nav-links .dropdown a.active{background:rgba(0,124,137,.12);color:var(--green-light)}
+/* ===== PAGE HEADER (shared dark hero pattern) ===== */
+.hero{background:var(--green-ink) url('assets/FruitMarket_Pears-NoAtt.jpg') center/cover no-repeat;color:#fff;padding:78px 0 84px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.82),rgba(0,58,64,.82)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 8% 94%,rgba(168,198,99,.14),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:var(--gold)}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(38px,5vw,74px);color:#fff;line-height:1;letter-spacing:-.025em;text-wrap:balance}
+.hero h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--gold);font-size:.94em}
+.intro-draft{margin:26px auto 0;max-width:660px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.draft-tag{display:inline-block;white-space:nowrap;font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(235,245,244,.72);border:1px dashed rgba(235,245,244,.42);border-radius:999px;padding:6px 15px}
+.intro-draft p{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:clamp(15.5px,1.5vw,19px);line-height:1.6;color:rgba(235,245,244,.6);text-wrap:pretty}
+/* ===== ATLAS CONSOLE ===== */
+.atlas-shell{padding:56px 0 96px}
+.atlas-console{background:var(--console);border-radius:24px;padding:26px 26px 22px;color:#fff;position:relative;overflow:hidden;box-shadow:0 40px 80px -50px rgba(0,58,64,.55)}
+.atlas-console::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 92% 4%,rgba(0,181,175,.2),transparent 50%),radial-gradient(ellipse at 4% 100%,rgba(168,198,99,.13),transparent 45%);pointer-events:none}
+.atlas-console > *{position:relative;z-index:1}
+.console-masthead{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.12)}
+.console-id{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.console-id .sig{font-family:'Bebas Neue';font-size:30px;letter-spacing:.06em;color:var(--gold);line-height:1}
+.console-id .sub{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.console-count{display:none;align-items:baseline;gap:9px;font-family:'Raleway';font-weight:700;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.console-count.show{display:flex}
+.console-count b{font-family:'Bebas Neue';font-weight:400;font-size:28px;letter-spacing:.04em;color:#fff;line-height:1}
+.console-state{font-family:'Raleway';font-weight:700;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:9px}
+.console-state .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+.console-state.is-cached .dot{background:var(--sand);animation:none}
+/* filter row: three dropdowns, calm */
+.filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px;position:relative;z-index:5}
+.filter-row .flbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#fff;margin-right:2px}
+.dd{position:relative;display:inline-flex}
+.dd-trigger{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.88);border-radius:999px;font-family:'Raleway';font-weight:700;font-size:12.5px;padding:10px 18px;cursor:pointer;transition:.18s;max-width:340px}
+.dd-trigger span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd-trigger:hover{border-color:var(--gold)}
+.dd-trigger[aria-expanded="true"],.dd-trigger.is-set{border-color:var(--gold);background:rgba(168,198,99,.14);color:#fff}
+.dd-trigger .dd-caret{width:12px;height:12px;flex:none;opacity:.7;transition:transform .25s}
+.dd-trigger[aria-expanded="true"] .dd-caret{transform:rotate(180deg)}
+.dd-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:750;min-width:250px;max-width:min(90vw,380px);max-height:300px;overflow-y:auto;background:var(--green-deep);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:8px;display:none;box-shadow:0 24px 50px -20px rgba(0,20,22,.6);scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.dd-pop.open{display:block}
+.dd-opt{display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:8px;color:rgba(255,255,255,.88);font-family:'Open Sans';font-size:13px;line-height:1.35;cursor:pointer;width:100%;text-align:left;background:none;border:none}
+.dd-opt:hover{background:rgba(255,255,255,.08);color:#fff}
+.dd-opt .tick{width:14px;height:14px;flex:none;opacity:0;color:var(--gold)}
+.dd-opt[aria-selected="true"]{background:rgba(168,198,99,.15);color:#fff}
+.dd-opt[aria-selected="true"] .tick{opacity:1}
+.filter-clear{background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;font-family:'Raleway';font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:7px 15px;cursor:pointer;transition:.2s;display:none}
+.filter-clear.show{display:inline-flex}
+.filter-clear:hover{border-color:var(--gold);color:var(--gold)}
+/* map stage */
+.map-frame{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:#dfe9e8}
+#atlasMap{height:clamp(420px,60vh,720px);width:100%;background:#dfe9e8}
+#atlasMap:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+#atlasMap .leaflet-tile-pane{filter:var(--tile-tint,none)}
+.map-hint{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,58,64,.55);backdrop-filter:blur(1px);z-index:800;opacity:0;pointer-events:none;transition:opacity .3s}
+.map-hint.show{opacity:1}
+.map-hint span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:14px;padding:14px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.25)}
+.map-veil{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,58,64,.42);z-index:830;transition:opacity .35s}
+.map-veil[hidden]{display:none}
+.map-veil.fade{opacity:0}
+.map-veil span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:13.5px;letter-spacing:.04em;padding:13px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.25);display:inline-flex;align-items:center;gap:11px}
+.map-veil .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 1.2s ease-in-out infinite}
+.map-empty{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,58,64,.45);z-index:640}
+.map-empty.show{display:grid}
+.map-empty span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:13.5px;padding:13px 24px;border-radius:999px;border:1px solid rgba(255,255,255,.25)}
+.map-legend{position:absolute;left:12px;bottom:12px;z-index:650;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;padding:7px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;box-shadow:0 10px 24px -12px rgba(0,58,64,.4);max-width:calc(100% - 24px)}
+.map-legend .litem{display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:700;font-size:11.5px;color:var(--green-ink)}
+.map-legend .litem svg{width:17px;height:17px;flex:none}
+.leaflet-container{font-family:'Open Sans',sans-serif}
+.leaflet-control-attribution{font-size:9.5px!important;background:rgba(255,255,255,.75)!important}
+/* pins */
+.atlas-pin{background:none;border:none}
+.atlas-pin .pinbox{width:44px;height:44px;display:grid;place-items:center;cursor:pointer;position:relative}
+.atlas-pin .pinbox svg{width:27px;height:27px;filter:drop-shadow(0 2px 4px rgba(0,58,64,.4));transition:transform .18s}
+.atlas-pin.is-hot .pinbox svg,.atlas-pin .pinbox:hover svg{transform:scale(1.26)}
+.atlas-pin.is-selected .pinbox svg{transform:scale(1.44)}
+.atlas-pin.is-selected .pinbox::after{content:'';position:absolute;width:40px;height:40px;border-radius:50%;border:2.5px solid var(--green-ink);animation:pinring .35s ease}
+@keyframes pinring{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.atlas-cluster{background:none;border:none}
+.atlas-cluster .cbox{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--pin-nutrition);border:2.5px solid #fff;color:#fff;font-family:'Bebas Neue';font-size:19px;letter-spacing:.04em;line-height:1;box-shadow:0 4px 14px -4px rgba(0,58,64,.6);cursor:pointer;transition:transform .18s}
+.atlas-cluster .cbox:hover{transform:scale(1.09)}
+.atlas-cluster .cbox.is-educator{background:var(--pin-educator);color:var(--green-ink)}
+.atlas-cluster .cbox.is-mixed{background:linear-gradient(135deg,var(--pin-nutrition) 0 50%,var(--pin-educator) 50% 100%)}
+/* ===== SEASON CHIPS — the Harvest Calendar =====
+   Consecutive seasons join into one continuous ribbon (.run); a break in the
+   ribbon IS the break in participation. Runs wrap before chips do. */
+.seasons{display:flex;flex-wrap:wrap;gap:7px 13px;align-items:center}
+.run{display:flex;flex-wrap:wrap;gap:2px}
+.season{font-family:'Bebas Neue';font-size:15px;letter-spacing:.055em;line-height:1;color:var(--green-ink);background:rgba(0,124,137,.1);border:1px solid rgba(0,124,137,.3);border-radius:3px;padding:7px 9px 5px;white-space:nowrap}
+.run .season:first-child{border-top-left-radius:8px;border-bottom-left-radius:8px}
+.run .season:last-child{border-top-right-radius:8px;border-bottom-right-radius:8px}
+.season.is-current{background:var(--gold);border-color:#93b452;color:var(--green-ink)}
+.seasons.mini{gap:6px 11px}
+.seasons.mini .season{font-size:13px;padding:5px 7px 3px}
+/* ===== POI DETAIL MODULE (uniform across all Atlas maps) ===== */
+.atlas-poi-scrim{position:fixed;inset:0;background:rgba(0,58,64,.5);backdrop-filter:blur(2px);z-index:1000;opacity:0;pointer-events:none;transition:opacity .25s}
+.atlas-poi-scrim.open{opacity:1;pointer-events:auto}
+.atlas-poi{position:fixed;top:0;right:0;bottom:0;width:min(430px,100vw);background:#fff;z-index:1001;transform:translateX(105%);transition:transform .32s cubic-bezier(.32,.72,.28,1);box-shadow:-30px 0 70px -30px rgba(0,58,64,.45);display:flex;flex-direction:column;border-radius:0}
+.atlas-poi.open{transform:translateX(0)}
+.atlas-poi-head{background:var(--green-ink);color:#fff;padding:26px 28px 22px;position:relative;flex:none}
+.atlas-poi-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 0%,rgba(0,181,175,.24),transparent 60%);pointer-events:none}
+.atlas-poi-close{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:grid;place-items:center;transition:.2s;z-index:2}
+.atlas-poi-close:hover{background:var(--gold);color:var(--green-ink);border-color:var(--gold)}
+.atlas-poi-close svg{width:15px;height:15px}
+.atlas-poi-head h3{font-family:'Raleway';font-weight:900;font-size:23px;color:#fff;position:relative;padding-right:40px;line-height:1.15;text-wrap:pretty}
+.atlas-poi-chips{display:flex;gap:7px;margin-top:13px;position:relative;flex-wrap:wrap}
+.poi-chip{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:5px 11px;border-radius:999px}
+.poi-chip.program{background:var(--pin-nutrition);color:#fff}
+.poi-chip.program.is-educator{background:var(--pin-educator);color:var(--green-ink)}
+.poi-chip.type{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.atlas-poi-body{padding:24px 28px 34px;overflow-y:auto;flex:1}
+.poi-sec{margin-bottom:20px}
+.poi-sec:last-child{margin-bottom:0}
+.poi-sec .plbl{font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:8px}
+.poi-line{font-size:15px;color:#2c3736;line-height:1.55}
+.poi-sec.calendar{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:16px 17px 17px}
+.poi-sec.calendar .plbl{color:var(--green)}
+.poi-count{display:inline-flex;align-items:baseline;gap:9px}
+.poi-count b{font-family:'Bebas Neue';font-weight:400;font-size:32px;letter-spacing:.03em;color:var(--green);line-height:1}
+.poi-count span{font-size:14px;color:#2c3736}
+/* ===== TABLE VIEW ===== */
+.table-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:20px}
+.table-toggle{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;padding:11px 22px;cursor:pointer;transition:.2s}
+.table-toggle:hover{border-color:var(--gold);color:var(--gold)}
+.table-toggle svg{width:13px;height:13px;transition:transform .25s}
+.table-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.table-note{font-family:'Raleway';font-weight:600;font-size:11.5px;letter-spacing:.04em;color:rgba(255,255,255,.55)}
+.table-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);margin-top:22px;overflow:hidden}
+.table-panel[hidden]{display:none}
+.table-scroll{overflow-x:auto}
+table.atlas-table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:1090px}
+table.atlas-table th{text-align:left;font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--green-ink);background:var(--cream);border-bottom:2px solid rgba(0,90,102,.2);padding:0;position:sticky;top:0;z-index:2}
+table.atlas-table th button{width:100%;display:flex;align-items:center;gap:7px;background:none;border:none;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;padding:14px 16px;cursor:pointer;text-align:left}
+table.atlas-table th button:hover{color:var(--green-light)}
+table.atlas-table th .arrow{opacity:0;font-size:9px;transition:.2s}
+table.atlas-table th[aria-sort] .arrow{opacity:1;color:var(--bridge)}
+table.atlas-table td{padding:13px 16px;font-size:14px;line-height:1.5;color:#2c3736;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:break-word}
+table.atlas-table tbody tr{cursor:pointer;transition:background .18s}
+table.atlas-table tbody tr:hover,table.atlas-table tbody tr:focus-within{background:var(--cream)}
+table.atlas-table tbody tr.is-selected{background:rgba(168,198,99,.16)}
+table.atlas-table td.org{font-family:'Raleway';font-weight:700;color:var(--green-ink)}
+table.atlas-table td.org button{background:none;border:none;font:inherit;color:inherit;padding:0;text-align:left;cursor:pointer}
+table.atlas-table td.org button:hover{color:var(--green-light)}
+.tprog{display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:700;font-size:12.5px;white-space:nowrap}
+.tprog .swatch{width:10px;height:10px;flex:none;border-radius:2px;background:var(--pin-nutrition);transform:rotate(45deg)}
+.tprog.is-educator .swatch{background:var(--pin-educator);border-radius:50%;transform:none}
+.tdash{color:rgba(0,90,102,.35)}
+.tnopin{display:inline-flex;align-items:center;gap:6px;font-family:'Raleway';font-weight:700;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px dashed rgba(0,90,102,.32);border-radius:999px;padding:3px 9px;margin-top:6px}
+.table-empty{padding:60px 28px;text-align:center;display:none}
+.table-empty.show{display:block}
+.table-empty svg{width:34px;height:34px;margin:0 auto 14px}
+.table-empty h4{font-family:'Raleway';font-weight:900;font-size:18px;color:var(--green-ink);margin-bottom:8px}
+.table-empty p{font-size:14px;color:#666;max-width:340px;margin:0 auto 18px}
+.table-empty button{background:var(--green-light);color:#fff;border:none;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;padding:11px 22px;cursor:pointer}
+.table-empty button:hover{background:var(--green-deep)}
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){.nav-links{display:none}.foot-grid{grid-template-columns:1fr 1fr;gap:28px}}
+@media (max-width:760px){
+  .wrap{padding:0 20px}
+  .atlas-shell{padding:36px 0 64px}
+  .atlas-console{padding:18px 15px;border-radius:18px}
+  .console-masthead{flex-direction:column;align-items:flex-start;gap:10px}
+  #atlasMap{height:max(420px,52vh)}
+  .dd,.dd-trigger{width:100%}
+  .dd-trigger{justify-content:space-between}
+  .dd-pop{left:0;right:0;min-width:0;max-width:100%}
+  .map-legend{position:static;margin:10px 0 0;border-radius:14px;justify-content:center}
+  .atlas-poi{top:auto;left:0;right:0;bottom:0;width:100%;max-height:86vh;transform:translateY(105%);border-radius:20px 20px 0 0}
+  .atlas-poi.open{transform:translateY(0)}
+  .table-bar{flex-direction:column;align-items:stretch}
+  .table-toggle{justify-content:center}
+  .foot-grid{grid-template-columns:1fr}
+  .foot-bottom{flex-direction:column;gap:8px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="producers-distributors.html">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="donate.html">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html" class="active">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="ma-fresh-grant.html">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="donate.html">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- PAGE HEADER. Intro paragraph is an INTENTIONAL PLACEHOLDER awaiting client copy. -->
+<section class="hero" data-screen-label="HOTM participant list header">
+  <div class="wrap">
+    <span class="hero-flag">Harvest of the Month</span>
+    <h1>Harvest of the Month <em>Participant List</em></h1>
+  </div>
+</section>
+
+<!-- ATLAS MAP 5 — HARVEST CALENDAR -->
+<section class="atlas-shell" data-screen-label="Participant map console">
+  <div class="wrap">
+    <div class="atlas-console">
+      <div class="console-masthead">
+        <div class="console-id">
+          <span class="sig">Participant Map</span>
+          <span class="sub" id="dataState">Loading the participant sheet</span>
+        </div>
+        <div class="console-count" id="countWrap" aria-live="polite"><b id="countNum">0</b><span id="countLbl">participants shown</span></div>
+      </div>
+      <div class="filter-row">
+        <span class="flbl">Filter</span>
+        <div class="dd">
+          <button class="dd-trigger" id="progTrigger" type="button" aria-haspopup="listbox" aria-expanded="false"><span id="progTxt">Program: All</span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="dd-pop" id="progPop" role="listbox" aria-label="Filter by program"></div>
+        </div>
+        <div class="dd">
+          <button class="dd-trigger" id="typeTrigger" type="button" aria-haspopup="listbox" aria-expanded="false"><span id="typeTxt">Type: All</span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="dd-pop" id="typePop" role="listbox" aria-label="Filter by organization type"></div>
+        </div>
+        <div class="dd">
+          <button class="dd-trigger" id="seasonTrigger" type="button" aria-haspopup="listbox" aria-expanded="false"><span id="seasonTxt">Season: All</span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <div class="dd-pop" id="seasonPop" role="listbox" aria-label="Filter by season"></div>
+        </div>
+        <button class="filter-clear" id="filterClear" type="button">Clear filters</button>
+      </div>
+      <div class="map-frame">
+        <div id="atlasMap" tabindex="0" role="application" aria-label="Map of Harvest of the Month participants across Massachusetts. Pins sit at town centers. The table view below offers the same records as an accessible list."></div>
+        <div class="map-hint" id="mapHint" aria-hidden="true"><span id="mapHintTxt">Use ctrl + scroll to zoom the map</span></div>
+        <div class="map-veil" id="mapVeil"><span><i class="dot"></i>Loading participants</span></div>
+        <div class="map-empty" id="mapEmpty"><span>No participants match the current filters</span></div>
+        <div class="map-legend">
+          <span class="litem"><svg viewBox="0 0 24 24"><path d="M12 1.8l8.9 5.1v10.2L12 22.2l-8.9-5.1V6.9z" fill="#007C89" stroke="#fff" stroke-width="1.6"></path><circle cx="12" cy="12" r="2.6" fill="#fff"></circle></svg>Harvest of the Month: School Nutrition</span>
+          <span class="litem"><svg viewBox="0 0 24 24"><path d="M12 1.9L22.1 12 12 22.1 1.9 12z" fill="#88B03F" stroke="#fff" stroke-width="1.6"></path><circle cx="12" cy="12" r="2.6" fill="#003A40"></circle></svg>Harvest of the Month: Educator</span>
+        </div>
+      </div>
+      <div class="table-bar">
+        <button class="table-toggle" id="tableToggle" type="button" aria-expanded="false" aria-controls="tablePanel">Show table view <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+        <span class="table-note">Every participant, sortable, and readable without the map</span>
+      </div>
+    </div>
+
+    <div class="table-panel" id="tablePanel" hidden>
+      <div class="table-scroll">
+        <table class="atlas-table">
+          <colgroup><col style="width:232px"><col style="width:134px"><col style="width:160px"><col style="width:186px"><col style="width:118px"><col style="width:260px"></colgroup>
+          <thead>
+            <tr>
+              <th scope="col" data-key="name"><button type="button">Organization <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="program"><button type="button">Program <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="orgType"><button type="button">Type <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="district"><button type="button">District <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="town"><button type="button">Location <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="seasons"><button type="button">Seasons <span class="arrow">&#9650;</span></button></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="table-empty" id="tableEmpty">
+        <svg viewBox="0 0 24 24" fill="#88B03F"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg>
+        <h4>No participants match those filters</h4>
+        <p>Try opening one filter back up, or start again from all participants.</p>
+        <button id="tableEmptyReset" type="button">Clear filters</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POI DETAIL MODULE (uniform markup across all Atlas maps) -->
+<div class="atlas-poi-scrim" id="poiScrim"></div>
+<aside class="atlas-poi" id="poiPanel" role="dialog" aria-modal="true" aria-labelledby="poiName" hidden>
+  <div class="atlas-poi-head">
+    <button class="atlas-poi-close" id="poiClose" type="button" aria-label="Close details">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+    </button>
+    <h3 id="poiName"></h3>
+    <div class="atlas-poi-chips" id="poiChips"></div>
+  </div>
+  <div class="atlas-poi-body" id="poiBody"></div>
+</aside>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="sourcing-local-food.html">Source Local Food</a></li>
+          <li><a href="food-hub-listings.html">Food Hub Listings</a></li>
+          <li><a href="producers-distributors.html">Sell To Schools</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="About-Us.html">What is Farm to School?</a></li>
+          <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="MFTS-Events-v1-Calendar.html">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="ma-fresh-grant.html">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+<script>
+/* ===========================================================================
+   MFTS ATLAS — HOTM PARTICIPANT LIST. Data layer.
+   =========================================================================== */
+/* Live source. gviz CSV export of the HOTM Participants sheet, first tab.
+   Google caches this endpoint, so staff edits surface within a few minutes. */
+const SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/1yT_NKv_ObqKkmUkuM_EqMF5A4STympMWhcUoQVceCL4/gviz/tq?tqx=out:csv&gid=0';
+/* ADD A NEW SEASON HERE. Add the sheet column, then add the label to this list. */
+const SEASONS=['2013-14','2014-15','2015-16','2016-17','2017-18','2018-19','2019-20','2020-21','2021-22','2022-23','2023-24','2024-25','2025-26'];
+const CURRENT_SEASON=SEASONS[SEASONS.length-1];
+/* Known source variants for Location. Left side is matched case insensitively
+   after trimming. Source typos stay VISIBLE in displayed copy; this map only
+   resolves them to a pin. */
+const LOCATION_ALIASES={'chicopee':'Chicopee','tyngsboro':'Tyngsborough','s. hamilton':'South Hamilton','no. easton':'North Easton','gardener':'Gardner','attelboro':'Attleboro','worcerster':'Worcester','harthorne':'Hathorne','middleboro':'Middleborough','n. dartmouth':'North Dartmouth','no. andover':'North Andover','e. falmouth':'East Falmouth','so. hadley':'South Hadley','mt. hermon':'Mount Hermon','n. adams':'North Adams','w. springfield':'West Springfield'};
+/* ---------------------------------------------------------------------------
+   MA_TOWN_COORDS — APPROXIMATE TOWN CENTROIDS, VERIFY PASS RECOMMENDED.
+   The sheet has no lat/lng and the client displays Location (town) only, so
+   every pin sits at a town center by design, never at a street address.
+   Covers all Massachusetts municipalities plus the village and neighborhood
+   names that appear as Location values in the sheet (Dorchester, Jamaica
+   Plain, Hyde Park, Roslindale, Chestnut Hill, Feeding Hills, Florence,
+   Indian Orchard, Hyannis, Turners Falls, Shelburne Falls, Whitinsville,
+   Vineyard Haven, Oak Bluffs, Devens, Prides Crossing, Mount Hermon, and the
+   Berkshire town named Florida, among others). Values are eyeballed town
+   centers good to roughly a quarter mile; MFTS staff should run a verification
+   pass before launch. Never geocoded at runtime.
+--------------------------------------------------------------------------- */
+const MA_TOWN_COORDS={
+'Abington':[42.1046,-70.9453],'Acton':[42.4851,-71.4328],'Acushnet':[41.6862,-70.9075],'Adams':[42.6231,-73.1179],'Agawam':[42.0695,-72.6148],'Alford':[42.2451,-73.4162],'Amesbury':[42.8584,-70.9300],'Amherst':[42.3732,-72.5199],'Andover':[42.6583,-71.1368],'Aquinnah':[41.3487,-70.8353],'Arlington':[42.4154,-71.1565],'Ashburnham':[42.6376,-71.9073],'Ashby':[42.6787,-71.8181],'Ashfield':[42.5262,-72.7898],'Ashland':[42.2612,-71.4634],'Athol':[42.5959,-72.2262],'Attleboro':[41.9445,-71.2856],'Auburn':[42.1951,-71.8356],'Avon':[42.1251,-71.0430],'Ayer':[42.5598,-71.5895],
+'Barnstable':[41.7003,-70.3002],'Barre':[42.4231,-72.1042],'Becket':[42.3312,-73.0837],'Bedford':[42.4906,-71.2761],'Belchertown':[42.2770,-72.4009],'Bellingham':[42.0870,-71.4745],'Belmont':[42.3959,-71.1786],'Berkley':[41.8459,-71.0834],'Berlin':[42.3812,-71.6370],'Bernardston':[42.6717,-72.5476],'Beverly':[42.5584,-70.8800],'Billerica':[42.5584,-71.2689],'Blackstone':[42.0176,-71.5412],'Blandford':[42.1834,-72.9370],'Bolton':[42.4334,-71.6078],'Boston':[42.3601,-71.0589],'Bourne':[41.7412,-70.5990],'Boxborough':[42.4917,-71.5184],'Boxford':[42.6612,-70.9995],'Boylston':[42.3459,-71.7034],'Braintree':[42.2079,-71.0023],'Brewster':[41.7601,-70.0819],'Bridgewater':[41.9904,-70.9750],'Brimfield':[42.1223,-72.2000],'Brockton':[42.0834,-71.0184],'Brookfield':[42.2101,-72.1023],'Brookline':[42.3318,-71.1212],'Buckland':[42.5801,-72.7900],'Burlington':[42.5048,-71.1956],
+'Cambridge':[42.3736,-71.1097],'Canton':[42.1584,-71.1450],'Carlisle':[42.5301,-71.3500],'Carver':[41.8834,-70.7600],'Charlemont':[42.6300,-72.8700],'Charlton':[42.1300,-71.9700],'Chatham':[41.6821,-69.9598],'Chelmsford':[42.5998,-71.3673],'Chelsea':[42.3917,-71.0329],'Cheshire':[42.5623,-73.1600],'Chester':[42.2800,-72.9900],'Chesterfield':[42.3900,-72.8300],'Chicopee':[42.1487,-72.6079],'Chilmark':[41.3500,-70.7400],'Clarksburg':[42.7800,-73.1100],'Clinton':[42.4167,-71.6828],'Cohasset':[42.2418,-70.8034],'Colrain':[42.6700,-72.7000],'Concord':[42.4604,-71.3489],'Conway':[42.5100,-72.7000],'Cummington':[42.4600,-72.9000],
+'Dalton':[42.4734,-73.1600],'Danvers':[42.5751,-70.9300],'Dartmouth':[41.6362,-70.9998],'Dedham':[42.2436,-71.1662],'Deerfield':[42.5434,-72.6000],'Dennis':[41.7350,-70.1900],'Dighton':[41.8100,-71.1600],'Douglas':[42.0500,-71.7500],'Dover':[42.2400,-71.2800],'Dracut':[42.6700,-71.3000],'Dudley':[42.0400,-71.9300],'Dunstable':[42.6800,-71.4800],'Duxbury':[42.0400,-70.6700],
+'East Bridgewater':[42.0334,-70.9600],'East Brookfield':[42.2200,-72.0500],'East Longmeadow':[42.0600,-72.5100],'Eastham':[41.8300,-69.9700],'Easthampton':[42.2668,-72.6700],'Easton':[42.0200,-71.1300],'Edgartown':[41.3890,-70.5100],'Egremont':[42.1700,-73.4200],'Erving':[42.6000,-72.4000],'Essex':[42.6300,-70.7800],'Everett':[42.4084,-71.0537],
+'Fairhaven':[41.6376,-70.9034],'Fall River':[41.7015,-71.1550],'Falmouth':[41.5515,-70.6148],'Fitchburg':[42.5834,-71.8023],'Florida':[42.6800,-73.0300],'Foxborough':[42.0654,-71.2478],'Framingham':[42.2793,-71.4162],'Franklin':[42.0834,-71.3967],'Freetown':[41.7700,-71.0300],
+'Gardner':[42.5751,-71.9979],'Georgetown':[42.7251,-70.9834],'Gill':[42.6400,-72.5000],'Gloucester':[42.6159,-70.6620],'Goshen':[42.4400,-72.8000],'Gosnold':[41.4300,-70.9300],'Grafton':[42.2100,-71.6800],'Granby':[42.2600,-72.5200],'Granville':[42.0600,-72.8600],'Great Barrington':[42.1959,-73.3620],'Greenfield':[42.5876,-72.5995],'Groton':[42.6117,-71.5700],'Groveland':[42.7562,-71.0300],
+'Hadley':[42.3418,-72.5900],'Halifax':[41.9900,-70.8600],'Hamilton':[42.6300,-70.8600],'Hampden':[42.0600,-72.4100],'Hancock':[42.5500,-73.3000],'Hanover':[42.1153,-70.8700],'Hanson':[42.0700,-70.8700],'Hardwick':[42.3500,-72.2000],'Harvard':[42.5001,-71.5800],'Harwich':[41.6862,-70.0759],'Hatfield':[42.3717,-72.5980],'Haverhill':[42.7762,-71.0773],'Hawley':[42.5800,-72.8800],'Heath':[42.6900,-72.8300],'Hingham':[42.2418,-70.8900],'Hinsdale':[42.4400,-73.1200],'Holbrook':[42.1550,-71.0080],'Holden':[42.3517,-71.8600],'Holland':[42.0600,-72.1600],'Holliston':[42.2001,-71.4200],'Holyoke':[42.2043,-72.6162],'Hopedale':[42.1300,-71.5400],'Hopkinton':[42.2287,-71.5223],'Hubbardston':[42.4700,-72.0000],'Hudson':[42.3917,-71.5662],'Hull':[42.3000,-70.9000],'Huntington':[42.2400,-72.8800],
+'Ipswich':[42.6792,-70.8412],'Kingston':[41.9960,-70.7240],
+'Lakeville':[41.8450,-70.9510],'Lancaster':[42.4560,-71.6730],'Lanesborough':[42.5230,-73.2290],'Lawrence':[42.7070,-71.1631],'Lee':[42.3040,-73.2480],'Leicester':[42.2460,-71.9090],'Lenox':[42.3560,-73.2840],'Leominster':[42.5251,-71.7598],'Leverett':[42.4570,-72.5010],'Lexington':[42.4430,-71.2290],'Leyden':[42.6990,-72.5990],'Lincoln':[42.4260,-71.3030],'Littleton':[42.5360,-71.4880],'Longmeadow':[42.0500,-72.5830],'Lowell':[42.6334,-71.3162],'Ludlow':[42.1640,-72.4760],'Lunenburg':[42.5940,-71.7230],'Lynn':[42.4668,-70.9495],'Lynnfield':[42.5390,-71.0480],
+'Malden':[42.4251,-71.0662],'Manchester':[42.5780,-70.7690],'Mansfield':[42.0330,-71.2190],'Marblehead':[42.5000,-70.8580],'Marion':[41.7000,-70.7620],'Marlborough':[42.3460,-71.5520],'Marshfield':[42.0920,-70.7060],'Mashpee':[41.6490,-70.4830],'Mattapoisett':[41.6580,-70.8120],'Maynard':[42.4340,-71.4490],'Medfield':[42.1870,-71.3060],'Medford':[42.4184,-71.1062],'Medway':[42.1410,-71.3970],'Melrose':[42.4584,-71.0662],'Mendon':[42.1010,-71.5520],'Merrimac':[42.8280,-71.0000],'Methuen':[42.7262,-71.1909],'Middleborough':[41.8940,-70.9110],'Middlefield':[42.3520,-72.9640],'Middleton':[42.5950,-71.0160],'Milford':[42.1400,-71.5160],'Millbury':[42.1940,-71.7600],'Millis':[42.1670,-71.3570],'Millville':[42.0260,-71.5810],'Milton':[42.2500,-71.0660],'Monroe':[42.7300,-72.9800],'Monson':[42.1040,-72.3180],'Montague':[42.5400,-72.5350],'Monterey':[42.1830,-73.2200],'Montgomery':[42.2070,-72.8160],'Mount Washington':[42.0860,-73.4620],
+'Nahant':[42.4260,-70.9190],'Nantucket':[41.2830,-70.0990],'Natick':[42.2830,-71.3490],'Needham':[42.2830,-71.2330],'New Ashford':[42.5960,-73.2260],'New Bedford':[41.6362,-70.9342],'New Braintree':[42.3190,-72.1350],'New Marlborough':[42.1160,-73.2220],'New Salem':[42.5020,-72.3310],'Newbury':[42.7950,-70.8580],'Newburyport':[42.8120,-70.8770],'Newton':[42.3370,-71.2092],'Norfolk':[42.1190,-71.3250],'North Adams':[42.7010,-73.1090],'North Andover':[42.6990,-71.1350],'North Attleborough':[41.9750,-71.3300],'North Attleboro':[41.9750,-71.3300],'North Brookfield':[42.2640,-72.0810],'North Reading':[42.5750,-71.0790],'Northampton':[42.3251,-72.6412],'Northborough':[42.3190,-71.6410],'Northbridge':[42.1450,-71.6500],'Northfield':[42.6960,-72.4540],'Norton':[41.9660,-71.1870],'Norwell':[42.1610,-70.7930],'Norwood':[42.1940,-71.1990],
+'Oak Bluffs':[41.4550,-70.5620],'Oakham':[42.3480,-72.0450],'Orange':[42.5900,-72.3100],'Orleans':[41.7900,-69.9890],'Otis':[42.1880,-73.0830],'Oxford':[42.1170,-71.8640],
+'Palmer':[42.1590,-72.3290],'Paxton':[42.3110,-71.9280],'Peabody':[42.5280,-70.9290],'Pelham':[42.3930,-72.4100],'Pembroke':[42.0550,-70.8080],'Pepperell':[42.6660,-71.5890],'Peru':[42.4230,-73.0420],'Petersham':[42.4870,-72.1890],'Phillipston':[42.5480,-72.1320],'Pittsfield':[42.4500,-73.2450],'Plainfield':[42.5160,-72.9200],'Plainville':[42.0060,-71.3330],'Plymouth':[41.9580,-70.6670],'Plympton':[41.9540,-70.8090],'Princeton':[42.4460,-71.8770],'Provincetown':[42.0580,-70.1790],'Quincy':[42.2530,-71.0020],
+'Randolph':[42.1630,-71.0410],'Raynham':[41.9490,-71.0550],'Reading':[42.5250,-71.0960],'Rehoboth':[41.8440,-71.2500],'Revere':[42.4080,-71.0120],'Richmond':[42.3770,-73.3610],'Rochester':[41.7390,-70.8220],'Rockland':[42.1310,-70.9160],'Rockport':[42.6560,-70.6200],'Rowe':[42.7000,-72.9130],'Rowley':[42.7160,-70.8830],'Royalston':[42.6800,-72.1880],'Russell':[42.1630,-72.8420],'Rutland':[42.3700,-71.9480],
+'Salem':[42.5190,-70.8960],'Salisbury':[42.8420,-70.8610],'Sandisfield':[42.1110,-73.1170],'Sandwich':[41.7590,-70.4940],'Saugus':[42.4630,-71.0100],'Savoy':[42.5770,-73.0210],'Scituate':[42.1960,-70.7260],'Seekonk':[41.8070,-71.3390],'Sharon':[42.1240,-71.1780],'Sheffield':[42.1130,-73.3540],'Shelburne':[42.5940,-72.7400],'Sherborn':[42.2390,-71.3710],'Shirley':[42.5430,-71.6490],'Shrewsbury':[42.2960,-71.7130],'Shutesbury':[42.4560,-72.4080],'Somerset':[41.7690,-71.1440],'Somerville':[42.3876,-71.0995],'South Hadley':[42.2580,-72.5750],'Southampton':[42.2290,-72.7350],'Southborough':[42.3050,-71.5250],'Southbridge':[42.0750,-72.0330],'Southwick':[42.0540,-72.7700],'Spencer':[42.2420,-71.9920],'Springfield':[42.1015,-72.5898],'Sterling':[42.4380,-71.7600],'Stockbridge':[42.2870,-73.3220],'Stoneham':[42.4800,-71.1000],'Stoughton':[42.1250,-71.1020],'Stow':[42.4370,-71.5050],'Sturbridge':[42.1060,-72.0790],'Sudbury':[42.3830,-71.4160],'Sunderland':[42.4660,-72.5770],'Sutton':[42.1500,-71.7630],'Swampscott':[42.4710,-70.9180],'Swansea':[41.7470,-71.1900],
+'Taunton':[41.9000,-71.0900],'Templeton':[42.5560,-72.0660],'Tewksbury':[42.6100,-71.2340],'Tisbury':[41.4550,-70.6110],'Tolland':[42.0780,-72.9680],'Topsfield':[42.6380,-70.9490],'Townsend':[42.6670,-71.7050],'Truro':[41.9960,-70.0490],'Tyngsborough':[42.6790,-71.4240],'Tyringham':[42.2450,-73.1990],
+'Upton':[42.1740,-71.6020],'Uxbridge':[42.0770,-71.6300],
+'Wakefield':[42.5060,-71.0730],'Wales':[42.0660,-72.2190],'Walpole':[42.1420,-71.2490],'Waltham':[42.3760,-71.2360],'Ware':[42.2610,-72.2390],'Wareham':[41.7610,-70.7190],'Warren':[42.2130,-72.1920],'Warwick':[42.6780,-72.3390],'Washington':[42.3860,-73.1160],'Watertown':[42.3710,-71.1830],'Wayland':[42.3620,-71.3610],'Webster':[42.0500,-71.8800],'Wellesley':[42.2970,-71.2930],'Wellfleet':[41.9370,-70.0330],'Wendell':[42.5520,-72.4000],'Wenham':[42.6010,-70.8880],'West Boylston':[42.3660,-71.7860],'West Bridgewater':[42.0190,-71.0070],'West Brookfield':[42.2350,-72.1420],'West Newbury':[42.7950,-70.9870],'West Springfield':[42.1070,-72.6200],'West Stockbridge':[42.3480,-73.3770],'West Tisbury':[41.3810,-70.6740],'Westborough':[42.2690,-71.6160],'Westfield':[42.1250,-72.7500],'Westford':[42.5790,-71.4370],'Westhampton':[42.3030,-72.7890],'Westminster':[42.5450,-71.9110],'Weston':[42.3660,-71.3030],'Westport':[41.6210,-71.0980],'Westwood':[42.2140,-71.2240],'Weymouth':[42.2200,-70.9400],'Whately':[42.4370,-72.6340],'Whitman':[42.0810,-70.9360],'Wilbraham':[42.1240,-72.4310],'Williamsburg':[42.3940,-72.7300],'Williamstown':[42.7110,-73.2030],'Wilmington':[42.5460,-71.1730],'Winchendon':[42.6860,-72.0430],'Winchester':[42.4520,-71.1370],'Windsor':[42.5180,-73.0450],'Winthrop':[42.3750,-70.9830],'Woburn':[42.4790,-71.1520],'Worcester':[42.2626,-71.8023],'Worthington':[42.3850,-72.9300],'Wrentham':[42.0670,-71.3280],'Yarmouth':[41.7060,-70.2290],
+/* Villages, neighborhoods and named places that appear as Location values */
+'Dorchester':[42.3016,-71.0676],'Jamaica Plain':[42.3098,-71.1200],'Hyde Park':[42.2556,-71.1250],'Roslindale':[42.2870,-71.1250],'Chestnut Hill':[42.3250,-71.1650],'Allston':[42.3550,-71.1320],'Brighton':[42.3500,-71.1560],'Roxbury':[42.3150,-71.0900],'Mattapan':[42.2760,-71.0920],'Charlestown':[42.3780,-71.0620],'South Boston':[42.3340,-71.0490],'East Boston':[42.3750,-71.0390],'West Roxbury':[42.2790,-71.1620],
+'Feeding Hills':[42.0700,-72.6800],'Florence':[42.3220,-72.6800],'Leeds':[42.3450,-72.7050],'Indian Orchard':[42.1573,-72.5050],'Hyannis':[41.6520,-70.2830],'Centerville':[41.6520,-70.3480],'Osterville':[41.6280,-70.3860],'Marstons Mills':[41.6600,-70.4160],'West Barnstable':[41.7000,-70.3760],'Cotuit':[41.6180,-70.4370],
+'Turners Falls':[42.6011,-72.5560],'Shelburne Falls':[42.6035,-72.7392],'Whitinsville':[42.1120,-71.6650],'Vineyard Haven':[41.4543,-70.6042],'Devens':[42.5401,-71.6100],'Prides Crossing':[42.5580,-70.8300],'Mount Hermon':[42.6070,-72.4790],'Hathorne':[42.5850,-70.9500],'Baldwinville':[42.6070,-72.0760],'Housatonic':[42.2540,-73.3670],'Buzzards Bay':[41.7450,-70.6180],'Monument Beach':[41.7150,-70.6160],'Pocasset':[41.6870,-70.6180],'Sagamore':[41.7710,-70.5320],
+'North Chelmsford':[42.6340,-71.3900],'North Quincy':[42.2830,-71.0250],'East Sandwich':[41.7300,-70.4530],'Byfield':[42.7580,-70.9330],'North Dartmouth':[41.6350,-71.0180],'South Dartmouth':[41.5830,-70.9560],'South Deerfield':[42.4770,-72.6070],'East Falmouth':[41.5764,-70.5500],'North Falmouth':[41.6440,-70.6220],'Woods Hole':[41.5250,-70.6640],'East Freetown':[41.7700,-70.9500],'Assonet':[41.7960,-71.0640],'North Dighton':[41.8620,-71.1400],'North Easton':[42.0620,-71.0950],'South Easton':[42.0180,-71.1020],'South Hamilton':[42.6229,-70.8578],'South Yarmouth':[41.6684,-70.1934],'West Yarmouth':[41.6480,-70.2400],'South Dennis':[41.6900,-70.1580],'South Chatham':[41.6800,-70.0130],'North Grafton':[42.2290,-71.6900],'South Grafton':[42.1780,-71.6870],'Fiskdale':[42.1150,-72.1150],'Jefferson':[42.3830,-71.8720],'Raynham Center':[41.9270,-71.0500],'South Weymouth':[42.1740,-70.9490],'North Weymouth':[42.2530,-70.9420],'East Weymouth':[42.2160,-70.9250],'Waverley':[42.3870,-71.1830],'Nonantum':[42.3630,-71.1930],'Newton Centre':[42.3290,-71.1930],'Newtonville':[42.3510,-71.2070],'West Newton':[42.3500,-71.2260],'Auburndale':[42.3460,-71.2470],'Waban':[42.3260,-71.2310],'Newton Highlands':[42.3220,-71.2070],'Newton Upper Falls':[42.3130,-71.2170],'Wollaston':[42.2660,-71.0210],'Ocean Bluff':[42.0870,-70.6730],'Green Harbor':[42.0700,-70.6540],'Humarock':[42.1370,-70.6970],'Onset':[41.7420,-70.6580],'Teaticket':[41.5680,-70.5920],'Menemsha':[41.3550,-70.7660],'Siasconset':[41.2650,-69.9620],'Buckland Center':[42.5801,-72.7900],'Bondsville':[42.2050,-72.3450],'Three Rivers':[42.1810,-72.3630],'Thorndike':[42.1930,-72.3400],'Gilbertville':[42.3210,-72.1970],'Athol Center':[42.5959,-72.2262],'Millers Falls':[42.5850,-72.4930],'Lake Pleasant':[42.5720,-72.5210],'Northfield Farms':[42.6500,-72.4700],'Bernardston Center':[42.6717,-72.5476],'Sheffield Center':[42.1130,-73.3540],'Ashley Falls':[42.0640,-73.3410],'South Lee':[42.2900,-73.2830],'Glendale':[42.2790,-73.3510],'Interlaken':[42.3170,-73.3320],'Lenox Dale':[42.3350,-73.2570],'Cheshire Center':[42.5623,-73.1600],'Berkshire':[42.4900,-73.2160],'Cummington Center':[42.4600,-72.9000],'Haydenville':[42.3760,-72.7000],'Chesterfield Center':[42.3900,-72.8300],'Amherst Center':[42.3732,-72.5199],'North Amherst':[42.4030,-72.5300],'South Amherst':[42.3450,-72.5170],'Belchertown Center':[42.2770,-72.4009]
+};
+/* ---------------------------------------------------------------------------
+   FALLBACK SNAPSHOT. Nine records copied verbatim from the live sheet, shown
+   only when the fetch fails, alongside a quiet "Showing cached data" notice.
+   This is NOT the data source: the live sheet above is.
+--------------------------------------------------------------------------- */
+const FALLBACK_ROWS=[
+{program:'Harvest of the Month: School Nutrition',orgType:'Public School District',name:'Acton-Boxborough Regional School District',district:'',town:'Acton',seasons:['2013-14','2016-17','2023-24','2024-25','2025-26'],classrooms:''},
+{program:'Harvest of the Month: School Nutrition',orgType:'Public School District',name:'Acushnet Public Schools',district:'',town:'Acushnet',seasons:['2014-15','2015-16','2016-17','2017-18','2018-19','2025-26'],classrooms:''},
+{program:'Harvest of the Month: School Nutrition',orgType:'Public School District',name:'Agawam Public Schools',district:'',town:'Feeding Hills',seasons:['2015-16','2016-17','2024-25','2025-26'],classrooms:''},
+{program:'Harvest of the Month: Educator',orgType:'K-12 Public School Classroom',name:'Aborn Elementary School',district:'Lynn Public Schools',town:'Lynn',seasons:[],classrooms:'1'},
+{program:'Harvest of the Month: Educator',orgType:'K-12 Public School Classroom',name:'Algonquin Regional High School',district:'Northborough Southborough Regional School District',town:'Northborough',seasons:[],classrooms:'1'},
+{program:'Harvest of the Month: School Nutrition',orgType:'University',name:"Assumption College",district:'',town:'Worcester',seasons:['2013-14'],classrooms:''},
+{program:'Harvest of the Month: School Nutrition',orgType:'Early Care & Education',name:'Child Care of the Berkshires',district:'',town:'North Adams',seasons:['2019-20','2020-21'],classrooms:''},
+{program:'Harvest of the Month: School Nutrition',orgType:'Independent School',name:'Apple Orchard School',district:'',town:'Brookline',seasons:['2019-20','2020-21'],classrooms:''},
+{program:'Harvest of the Month: Educator',orgType:'Non-Profit',name:'Backyard Growers',district:'Gloucester',town:'Gloucester',seasons:[],classrooms:'1'}
+];
+/* ---------------------------------------------------------------------------
+ALTERNATIVE BACKEND — Airtable pipeline (commented out).
+The rest of the Atlas reads Airtable -> Air WP Sync plugin -> custom post type
+"atlas_poi" -> /wp-json. The Airtable API must never be called from the browser.
+If HOTM participants migrate into the master Airtable Locations table tagged
+hotm, replace loadParticipants() with this adapter; everything downstream
+consumes the same POI shape.
+
+// async function loadParticipants(){
+//   const res=await fetch('/wp-json/wp/v2/atlas_poi?per_page=100&_fields=acf&atlas_tag=hotm');
+//   const rows=await res.json();
+//   return rows.map((r,i)=>toRecord({
+//     Program:r.acf.program, Type:r.acf.org_type,
+//     'Organization Name':r.acf.name, 'School District':r.acf.district,
+//     Location:r.acf.town, seasons:(r.acf.seasons||'').split('|'),
+//     '# of Classrooms Implementing Program':r.acf.classrooms
+//   },i));
+// }
+--------------------------------------------------------------------------- */
+</script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const EDUCATOR='Harvest of the Month: Educator';
+
+/* ===== CSV PARSER. Small state machine: quoted fields may hold commas,
+   escaped quotes ("") and newlines. ===== */
+function parseCSV(text){
+  const rows=[];let row=[],val='',q=false;
+  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){val+='"';i++;} else q=false; }
+      else val+=c;
+    }else{
+      if(c==='"')q=true;
+      else if(c===','){row.push(val);val='';}
+      else if(c==='\n'){row.push(val);rows.push(row);row=[];val='';}
+      else val+=c;
+    }
+  }
+  if(val!==''||row.length){row.push(val);rows.push(row);}
+  return rows;
+}
+const T=s=>String(s==null?'':s).trim();
+
+/* ===== SHEET ROW -> ATLAS POI CONTRACT ===== */
+const missingTowns=new Set();
+function resolveTown(town){
+  if(!town)return null;
+  const key=town.trim();
+  const alias=LOCATION_ALIASES[key.toLowerCase()];
+  const candidate=alias||key;
+  if(MA_TOWN_COORDS[candidate])return MA_TOWN_COORDS[candidate];
+  const title=candidate.toLowerCase().replace(/\b[a-z]/g,m=>m.toUpperCase());
+  if(MA_TOWN_COORDS[title])return MA_TOWN_COORDS[title];
+  missingTowns.add(key);
+  return null;
+}
+function toRecord(f,i){
+  const town=T(f.town);
+  const pt=resolveTown(town);
+  return {
+    id:'hotm-'+i,
+    name:T(f.name),
+    entityType:'school',          /* markers encode Program, not entityType, on this map */
+    programs:['hotm'],
+    program:T(f.program),
+    orgType:T(f.orgType),
+    district:T(f.district),
+    town:town,
+    lat:pt?pt[0]:null,
+    lng:pt?pt[1]:null,
+    meta:{seasons:f.seasons||[],classrooms:T(f.classrooms)}
+  };
+}
+function rowsToRecords(rows){
+  const head=rows[0].map(h=>T(h));
+  const idx=n=>head.indexOf(n);
+  const iProgram=idx('Program'),iType=idx('Type'),iName=idx('Organization Name'),
+        iDistrict=idx('School District'),iLocation=idx('Location'),
+        iClass=head.findIndex(h=>/^#\s*of\s*Classrooms/i.test(h));
+  const seasonIdx=SEASONS.map(s=>idx(s));
+  const out=[];
+  for(let r=1;r<rows.length;r++){
+    const c=rows[r];
+    if(!c||!T(c[iName]))continue;              /* skip rows with no Organization Name */
+    const seasons=[];
+    SEASONS.forEach((s,k)=>{const j=seasonIdx[k];if(j>-1&&T(c[j])!=='')seasons.push(s);});
+    out.push(toRecord({
+      program:c[iProgram],orgType:c[iType],name:c[iName],district:c[iDistrict],
+      town:c[iLocation],seasons:seasons,classrooms:iClass>-1?c[iClass]:''
+    },out.length));
+  }
+  return out;
+}
+
+/* ===== STATE ===== */
+let DATA=[],selectedId=null,lastTrigger=null,countArmed=false;
+const state={program:'',orgType:'',season:''};
+const sort={key:'name',dir:1};
+
+/* ===== MAP ===== */
+const TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'; /* production: swap to MapTiler Tidewater style or self hosted Protomaps PMTiles (one line change) */
+const map=L.map('atlasMap',{scrollWheelZoom:false,zoomControl:true,attributionControl:true}).setView([42.15,-71.75],8);
+L.tileLayer(TILE_URL,{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',maxZoom:18}).addTo(map);
+const markerLayer=L.layerGroup().addTo(map);
+let markers={};
+
+const PIN_NUTRITION='<svg viewBox="0 0 24 24"><path d="M12 1.8l8.9 5.1v10.2L12 22.2l-8.9-5.1V6.9z" fill="#007C89" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" fill="#fff"/></svg>';
+const PIN_EDUCATOR='<svg viewBox="0 0 24 24"><path d="M12 1.9L22.1 12 12 22.1 1.9 12z" fill="#88B03F" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" fill="#003A40"/></svg>';
+function pinIcon(rec){
+  const ed=rec.program===EDUCATOR;
+  return L.divIcon({className:'atlas-pin atlas-pin--'+(ed?'educator':'nutrition'),html:'<span class="pinbox">'+(ed?PIN_EDUCATOR:PIN_NUTRITION)+'</span>',iconSize:[44,44],iconAnchor:[22,22]});
+}
+function clusterIcon(n,kind){
+  return L.divIcon({className:'atlas-cluster',html:'<span class="cbox '+kind+'">'+n+'</span>',iconSize:[46,46],iconAnchor:[23,23]});
+}
+/* Same-town collisions: pins share a town centroid, so fan them out on a small
+   ring. Purely cosmetic, the underlying record still means "this town". */
+function withOffsets(list){
+  const byTown={};
+  list.forEach(r=>{if(r.lat==null)return;(byTown[r.town.toLowerCase()]=byTown[r.town.toLowerCase()]||[]).push(r);});
+  const out=[];
+  Object.keys(byTown).forEach(t=>{
+    const g=byTown[t];
+    g.forEach((r,i)=>{
+      if(i===0){out.push({rec:r,lat:r.lat,lng:r.lng});return;}
+      const ring=Math.floor((i-1)/8),step=(i-1)%8;
+      const rad=0.0052+ring*0.0038,ang=step*(Math.PI/4)+ring*0.4;
+      out.push({rec:r,lat:r.lat+rad*Math.sin(ang),lng:r.lng+rad*Math.cos(ang)/Math.cos(r.lat*Math.PI/180)});
+    });
+  });
+  return out;
+}
+/* Brand styled clustering. No Leaflet default cluster styling anywhere. */
+function renderMap(){
+  markerLayer.clearLayers();markers={};
+  const pts=withOffsets(currentSet());
+  $('#mapEmpty').classList.toggle('show',pts.length===0&&DATA.length>0);
+  if(!pts.length)return;
+  const z=map.getZoom(),cluster=z<10,cell=88,slack=18,buckets={};
+  pts.forEach(p=>{
+    if(!cluster){buckets['s'+p.rec.id]=[p];return;}
+    const q=map.project([p.lat,p.lng],z),k=Math.floor(q.x/cell)+':'+Math.floor(q.y/cell);
+    (buckets[k]=buckets[k]||[]).push(p);
+  });
+  Object.keys(buckets).forEach(k=>{
+    const g=buckets[k];
+    if(g.length===1){
+      const p=g[0],r=p.rec;
+      const m=L.marker([p.lat,p.lng],{icon:pinIcon(r),keyboard:true,title:r.name,alt:r.name+', '+r.program+', '+r.town});
+      m.on('click',()=>openPoi(r.id,m.getElement()));
+      m.addTo(markerLayer);markers[r.id]=m;
+    }else{
+      /* Badge sits at the members' mean, nudged back toward its grid cell so
+         two neighbouring badges can never collide. */
+      let sx=0,sy=0,ed=0;
+      g.forEach(p=>{const q=map.project([p.lat,p.lng],z);sx+=q.x;sy+=q.y;if(p.rec.program===EDUCATOR)ed++;});
+      const gx=parseInt(k.split(':')[0],10),gy=parseInt(k.split(':')[1],10);
+      const cx=(gx+0.5)*cell,cy=(gy+0.5)*cell;
+      const clamp=(v,c)=>Math.max(c-slack,Math.min(c+slack,v));
+      const at=map.unproject([clamp(sx/g.length,cx),clamp(sy/g.length,cy)],z);
+      const kind=ed===g.length?'is-educator':(ed===0?'':'is-mixed');
+      const c=L.marker(at,{icon:clusterIcon(g.length,kind),keyboard:true,title:g.length+' participants. Zoom in to open them.'});
+      c.on('click',()=>map.setView(at,Math.min(map.getZoom()+2,13),{animate:true}));
+      c.addTo(markerLayer);
+    }
+  });
+  refreshSelected();
+}
+map.on('zoomend',()=>{if(DATA.length)renderMap();});
+function refreshSelected(){
+  Object.keys(markers).forEach(id=>{const el=markers[id].getElement();if(el)el.classList.toggle('is-selected',id===selectedId);});
+}
+/* scroll guards: never hijack page scroll */
+const mapEl=$('#atlasMap'),hint=$('#mapHint'),hintTxt=$('#mapHintTxt');
+const isMac=/Mac|iPhone|iPad/.test(navigator.platform||'');
+let hintT=null;
+function flashHint(msg){hintTxt.textContent=msg;hint.classList.add('show');clearTimeout(hintT);hintT=setTimeout(()=>hint.classList.remove('show'),1400);}
+mapEl.addEventListener('wheel',e=>{
+  if(e.ctrlKey||e.metaKey){e.preventDefault();hint.classList.remove('show');
+    const pt=map.mouseEventToContainerPoint(e);
+    map.setZoomAround(map.containerPointToLatLng(pt),map.getZoom()+(e.deltaY<0?1:-1));
+  }else{flashHint('Use '+(isMac?'\u2318':'ctrl')+' + scroll to zoom the map');}
+},{passive:false});
+if(matchMedia('(pointer:coarse)').matches){
+  map.dragging.disable();
+  mapEl.addEventListener('touchstart',e=>{if(e.touches.length>=2){map.dragging.enable();hint.classList.remove('show');}},{passive:true});
+  mapEl.addEventListener('touchmove',e=>{if(e.touches.length===1)flashHint('Use two fingers to move the map');},{passive:true});
+  mapEl.addEventListener('touchend',e=>{if(e.touches.length<2)map.dragging.disable();},{passive:true});
+}
+
+/* ===== SEASON CHIPS — the Harvest Calendar ===== */
+function seasonChips(seasons,mini){
+  if(!seasons||!seasons.length)return '';
+  const runs=[];
+  seasons.forEach(s=>{
+    const last=runs[runs.length-1];
+    if(last&&SEASONS.indexOf(s)===SEASONS.indexOf(last[last.length-1])+1)last.push(s);
+    else runs.push([s]);
+  });
+  return '<div class="seasons'+(mini?' mini':'')+'">'+runs.map(run=>'<span class="run">'+
+    run.map(s=>'<span class="season'+(s===CURRENT_SEASON?' is-current':'')+'">'+s+'</span>').join('')+
+  '</span>').join('')+'</div>';
+}
+
+/* ===== FILTERS ===== */
+function matches(r){
+  if(state.program&&r.program!==state.program)return false;
+  if(state.orgType&&r.orgType!==state.orgType)return false;
+  if(state.season&&r.meta.seasons.indexOf(state.season)<0)return false;
+  return true;
+}
+function currentSet(){return DATA.filter(matches);}
+function buildDropdown(popSel,trigSel,txtSel,label,options,key){
+  const pop=$(popSel),trig=$(trigSel),txt=$(txtSel);
+  pop.innerHTML='';
+  [['',  'All']].concat(options.map(o=>[o,o])).forEach(([val,lbl])=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='dd-opt';b.setAttribute('role','option');
+    b.setAttribute('aria-selected',String(state[key]===val));b.dataset.val=val;
+    b.innerHTML='<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg><span>'+esc(lbl)+'</span>';
+    pop.appendChild(b);
+  });
+  function sync(){
+    const v=state[key];
+    txt.textContent=label+': '+(v||'All');
+    trig.classList.toggle('is-set',!!v);
+    pop.querySelectorAll('.dd-opt').forEach(o=>o.setAttribute('aria-selected',String(o.dataset.val===v)));
+  }
+  trig.onclick=()=>{
+    const open=!pop.classList.contains('open');
+    closePops();
+    pop.classList.toggle('open',open);trig.setAttribute('aria-expanded',String(open));
+    if(open){const sel=pop.querySelector('[aria-selected="true"]')||pop.firstChild;if(sel)sel.focus();}
+  };
+  pop.onclick=e=>{
+    const b=e.target.closest('.dd-opt');if(!b)return;
+    state[key]=b.dataset.val;countArmed=true;sync();closePops();trig.focus();renderAll();
+  };
+  pop.onkeydown=e=>{
+    const opts=[].slice.call(pop.querySelectorAll('.dd-opt'));
+    const i=opts.indexOf(document.activeElement);
+    if(e.key==='ArrowDown'){e.preventDefault();(opts[i+1]||opts[0]).focus();}
+    if(e.key==='ArrowUp'){e.preventDefault();(opts[i-1]||opts[opts.length-1]).focus();}
+  };
+  sync();
+  return {sync,reset(){state[key]='';sync();}};
+}
+function closePops(){
+  document.querySelectorAll('.dd-pop').forEach(p=>p.classList.remove('open'));
+  document.querySelectorAll('.dd-trigger').forEach(t=>t.setAttribute('aria-expanded','false'));
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.dd'))closePops();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.dd-pop.open')){closePops();}});
+let ddProgram,ddType,ddSeason;
+function clearFilters(){state.program='';state.orgType='';state.season='';ddProgram.sync();ddType.sync();ddSeason.sync();renderAll();}
+$('#filterClear').addEventListener('click',clearFilters);
+$('#tableEmptyReset').addEventListener('click',clearFilters);
+
+/* ===== TABLE ===== */
+const tablePanel=$('#tablePanel'),tableToggle=$('#tableToggle');
+let tableOpen=false;
+tableToggle.addEventListener('click',()=>{
+  tableOpen=!tableOpen;
+  tablePanel.hidden=!tableOpen;
+  tableToggle.setAttribute('aria-expanded',String(tableOpen));
+  tableToggle.childNodes[0].nodeValue=tableOpen?'Hide table view ':'Show table view ';
+  updateCount();
+});
+document.querySelectorAll('.atlas-table th button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const th=b.closest('th'),k=th.dataset.key;
+    if(sort.key===k)sort.dir*=-1;else{sort.key=k;sort.dir=1;}
+    document.querySelectorAll('.atlas-table th').forEach(x=>x.removeAttribute('aria-sort'));
+    th.setAttribute('aria-sort',sort.dir>0?'ascending':'descending');
+    th.querySelector('.arrow').innerHTML=sort.dir>0?'&#9650;':'&#9660;';
+    renderTable();
+  });
+});
+function sortedSet(){
+  const set=currentSet().slice();
+  const k=sort.key;
+  set.sort((a,b)=>{
+    let x,y;
+    if(k==='seasons'){x=a.meta.seasons.length;y=b.meta.seasons.length;return (x-y)*sort.dir||a.name.localeCompare(b.name);}
+    x=(a[k]||'').toLowerCase();y=(b[k]||'').toLowerCase();
+    if(x===y)return a.name.localeCompare(b.name);
+    if(!x)return 1;if(!y)return -1;
+    return (x<y?-1:1)*sort.dir;
+  });
+  return set;
+}
+function renderTable(){
+  const set=sortedSet(),body=$('#tableBody');
+  body.innerHTML=set.map(r=>{
+    const ed=r.program===EDUCATOR;
+    return '<tr data-id="'+r.id+'"'+(r.id===selectedId?' class="is-selected"':'')+'>'+
+      '<td class="org"><button type="button">'+esc(r.name)+'</button>'+(r.lat==null?'<span class="tnopin">No map pin</span>':'')+'</td>'+
+      '<td><span class="tprog'+(ed?' is-educator':'')+'"><i class="swatch"></i>'+esc(r.program.replace('Harvest of the Month: ',''))+'</span></td>'+
+      '<td>'+esc(r.orgType)+'</td>'+
+      '<td>'+(r.district?esc(r.district):'<span class="tdash">&mdash;</span>')+'</td>'+
+      '<td>'+esc(r.town)+'</td>'+
+      '<td>'+(r.meta.seasons.length?seasonChips(r.meta.seasons,true):'<span class="tdash">&mdash;</span>')+'</td>'+
+    '</tr>';
+  }).join('');
+  $('#tableEmpty').classList.toggle('show',set.length===0);
+}
+$('#tableBody').addEventListener('click',e=>{
+  const tr=e.target.closest('tr');if(!tr)return;
+  openPoi(tr.dataset.id,e.target.closest('button')||tr);
+});
+
+/* ===== COUNT (appears with the table and after any filter interaction) ===== */
+function updateCount(){
+  const n=currentSet().length;
+  $('#countNum').textContent=n;
+  $('#countLbl').textContent=n===1?'participant shown':'participants shown';
+  $('#countWrap').classList.toggle('show',(tableOpen||countArmed)&&DATA.length>0);
+  $('#filterClear').classList.toggle('show',!!(state.program||state.orgType||state.season));
+}
+function renderAll(){renderMap();renderTable();updateCount();}
+
+/* ===== POI DETAIL MODULE ===== */
+const poi=$('#poiPanel'),scrim=$('#poiScrim');
+function openPoi(id,trigger){
+  const r=DATA.find(x=>x.id===id);if(!r)return;
+  selectedId=id;refreshSelected();lastTrigger=trigger||document.activeElement;
+  document.querySelectorAll('#tableBody tr').forEach(t=>t.classList.toggle('is-selected',t.dataset.id===id));
+  const ed=r.program===EDUCATOR;
+  $('#poiName').textContent=r.name;
+  $('#poiChips').innerHTML='<span class="poi-chip program'+(ed?' is-educator':'')+'">'+esc(r.program)+'</span><span class="poi-chip type">'+esc(r.orgType)+'</span>';
+  $('#poiBody').innerHTML=
+    (r.district?'<div class="poi-sec"><span class="plbl">School district</span><p class="poi-line">'+esc(r.district)+'</p></div>':'')+
+    '<div class="poi-sec"><span class="plbl">Location</span><p class="poi-line">'+esc(r.town)+'</p></div>'+
+    (r.meta.seasons.length?'<div class="poi-sec calendar"><span class="plbl">Years participated</span>'+seasonChips(r.meta.seasons)+'</div>':'')+
+    (r.meta.classrooms?'<div class="poi-sec"><span class="plbl">Classrooms implementing the program</span><span class="poi-count"><b>'+esc(r.meta.classrooms)+'</b><span>'+(r.meta.classrooms==='1'?'classroom':'classrooms')+'</span></span></div>':'');
+  poi.hidden=false;scrim.classList.add('open');void poi.offsetWidth;poi.classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>$('#poiClose').focus(),80);
+}
+function closePoi(){
+  poi.classList.remove('open');scrim.classList.remove('open');
+  document.body.style.overflow='';
+  selectedId=null;refreshSelected();
+  document.querySelectorAll('#tableBody tr').forEach(t=>t.classList.remove('is-selected'));
+  setTimeout(()=>{poi.hidden=true;if(lastTrigger&&lastTrigger.focus)lastTrigger.focus();},320);
+}
+$('#poiClose').addEventListener('click',closePoi);
+scrim.addEventListener('click',closePoi);
+document.addEventListener('keydown',e=>{
+  if(poi.hidden)return;
+  if(e.key==='Escape'){closePoi();return;}
+  if(e.key==='Tab'){
+    const f=poi.querySelectorAll('button,a[href]');if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
+
+/* ===== BOOT ===== */
+function finish(records,cached){
+  DATA=records;
+  const types=[...new Set(DATA.map(r=>r.orgType).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const programs=[...new Set(DATA.map(r=>r.program).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  ddProgram=buildDropdown('#progPop','#progTrigger','#progTxt','Program',programs,'program');
+  ddType=buildDropdown('#typePop','#typeTrigger','#typeTxt','Type',types,'orgType');
+  ddSeason=buildDropdown('#seasonPop','#seasonTrigger','#seasonTxt','Season',SEASONS,'season');
+  const st=$('#dataState');
+  if(cached){st.textContent='Showing cached data';st.parentElement.classList.add('is-cached');}
+  else st.textContent=DATA.length+' participants statewide';
+  const veil=$('#mapVeil');veil.classList.add('fade');setTimeout(()=>{veil.hidden=true;},400);
+  renderAll();
+  const pts=DATA.filter(r=>r.lat!=null).map(r=>[r.lat,r.lng]);
+  if(pts.length)map.fitBounds(L.latLngBounds(pts),{padding:[34,34]});
+  if(missingTowns.size){
+    console.warn('[MFTS Atlas] No town centroid for these Location values, so these records appear in the table view only and get no pin. Add them to MA_TOWN_COORDS or LOCATION_ALIASES:',[...missingTowns]);
+  }
+}
+async function loadParticipants(){
+  const res=await fetch(SHEET_CSV_URL,{cache:'no-store'});
+  if(!res.ok)throw new Error('Sheet responded '+res.status);
+  const rows=parseCSV(await res.text());
+  if(!rows.length||rows[0].indexOf('Organization Name')<0)throw new Error('Unexpected sheet shape');
+  return rowsToRecords(rows);
+}
+loadParticipants()
+  .then(recs=>{if(!recs.length)throw new Error('No rows');finish(recs,false);})
+  .catch(err=>{
+    console.warn('[MFTS Atlas] Live sheet fetch failed, falling back to the embedded snapshot.',err);
+    finish(FALLBACK_ROWS.map((f,i)=>toRecord(f,i)),true);
+  });
+})();
+</script>
+</body></html>

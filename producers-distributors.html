@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+WORDPRESS IMPLEMENTATION NOTES — producers-distributors.html
+(Producers & Distributors, source doc title "Farmer/Producer/Distributor")
+Concept: THE WHOLESALE HANDSHAKE. Nova v2 / Tidewater tokens, canonical chrome.
+==============================================================================
+ELEMENTOR PRO COMPATIBILITY
+- Each numbered block below is one top level <section> with a single .wrap
+  container inside, which maps 1:1 onto Elementor Section > Container > Widget.
+  No section measures another, nothing is position:fixed, and no layout depends
+  on sibling order, so sections can be reordered, duplicated, or hidden in the
+  editor without side effects.
+- Recommended build:
+    Section 1 (.hero) ............ Elementor Section. Background image plus
+                                   overlay in the Style tab. Heading widget,
+                                   Text Editor widget. The jump strip
+                                   (.hero-index) is a Nav or Icon List widget
+                                   with anchor links to the section IDs below.
+    Section 2 (.market) .......... Heading + Text, then ONE 3 column Inner
+                                   Container. Best as an ACF repeater
+                                   "market_case" {kicker, title, body} so the
+                                   client can edit the three market cases
+                                   without touching layout. Do not let the
+                                   editor split these into three separate
+                                   sections, the shared slab and its dividers
+                                   are the design.
+    Section 3 (.voice) ........... PLACEHOLDER SECTION, see below.
+    Section 4 (.resources) ....... ACF repeater "producer_resource"
+                                   {title, body, button_label, button_url}.
+                                   Rows are a CSS grid, add or remove rows
+                                   freely, the index numerals are content, not
+                                   generated, so renumber if a row is removed.
+    Section 5 (.fit) ............. ACF repeater "fit_question" {question}.
+                                   Static two column list, no form controls.
+    Section 6 (.support) ......... Dark Section. Heading + Text, plus an ACF
+                                   repeater "support_item" {text}.
+- Fastest alternative: one Elementor Pro HTML widget holding everything from
+  <section class="hero"> through </section> of the support section. Global
+  chrome (topbar, header, footer) comes from theme template parts header.php
+  and footer.php, not from the widget.
+- Tokens, fonts, .btn, .accent-italic, the leaf glyph and the footer all come
+  from the shared MFTS Nova v2 (Tidewater) theme stylesheet.
+RESOURCE BUTTON TARGETS (all three are placeholders pending confirmation)
+- Every button carries href="#" and an HTML comment naming its intended target.
+  Search the file for PLACEHOLDER HREF to find all three.
+    1. "Submit your Farm Form" -> the existing business submission form already
+       linked from the Sourcing Local Food page as "List Your Business Here"
+       (currently https://forms.gle/BwusMQRxwUtNrNe78). Confirm with the client
+       that producers should land on the same form. If it stays a Google Form,
+       add target="_blank" rel="noopener".
+    2. "Harvest of the Month" -> the site's Harvest of the Month page
+       (prototype file MFTS-HOTM.html, production permalink /harvest-of-the-month/).
+    3. "Food Hub Listings page" -> the new Local Food Hub Listings page built in
+       this project (prototype file food-hub-listings.html). Internal link, no
+       target attribute needed.
+SECTION 5 QUESTION LIST
+- This is a read only list of questions, not a form. There are no checkboxes,
+  no inputs, no scoring, no localStorage, and no submission. Items are plain
+  divs, so nothing is focusable and nothing is posted anywhere.
+- If the client later wants an interactive self assessment or lead capture, that
+  is a new form on a new page, not an edit to this list.
+SECTION 3 IMAGE AND QUOTE REPLACEMENT (client supplied)
+- Section 3 is INTENTIONALLY UNFINISHED and is marked as such on screen. The
+  client owes a farmer quote, an attribution line, and a photo.
+- To finish it: delete the .ph-frame placeholder and drop the photo in as an
+  <img> with object-fit: cover, portrait crop, roughly 1200px on the short
+  edge. Replace the three bracketed placeholder lines with the quote text, the
+  farmer name, and the farm name plus town. Then remove the .draft-tag element
+  and the .voice.is-draft class from the section.
+- Do not ship this page publicly with the placeholders visible. Either the
+  client supplies the quote or the whole section is removed. Never write a
+  stand-in quote.
+============================================================================ -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Producers &amp; Distributors — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme (canonical tokens, do not edit) */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#A8C663;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+  --ink-line:rgba(168,198,99,.22);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--green-light)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+:focus-visible{outline:3px solid var(--bridge);outline-offset:3px;border-radius:4px}
+section[id]{scroll-margin-top:92px}
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline;color:#A8C663}
+header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a:hover{color:inherit}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links > li > a.active{color:var(--green-light)}
+.nav-links > li > a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px;transition:transform .25s}
+.btn:hover svg{transform:translateX(3px)}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);color:#fff;transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+.nav-links .dropdown a.active{background:rgba(0,124,137,.12);color:var(--green-light)}
+/* ===== SECTION 1 — PAGE HERO (established page-header pattern) ===== */
+.hero{position:relative;overflow:hidden;color:#fff;background:var(--green-ink) url('assets/pexels-nc-farm-bureau-mark-18900457.jpg') center 62%/cover no-repeat;padding:clamp(72px,8vw,104px) 0 0}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(96deg,rgba(0,58,64,.94) 0 46%,rgba(0,58,64,.84) 72%,rgba(0,58,64,.7) 100%),radial-gradient(ellipse at 88% 8%,rgba(0,181,175,.24),transparent 55%),radial-gradient(ellipse at 5% 94%,rgba(69,192,190,.15),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:24px}
+.hero-flag svg{width:17px;height:17px;flex:none}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(40px,5.4vw,82px);color:#fff;line-height:1;letter-spacing:-.025em;max-width:26ch;text-wrap:balance}
+.hero h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--gold);font-size:.94em}
+.hero .lede{font-size:clamp(16px,1.35vw,18.5px);line-height:1.72;color:rgba(235,245,244,.9);max-width:66ch;margin-top:28px;text-wrap:pretty}
+.hero-index{position:relative;z-index:1;margin-top:clamp(44px,5vw,64px);display:flex;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.2)}
+.hero-index a{flex:1 1 168px;padding:18px 22px 22px;display:flex;flex-direction:column;gap:7px;border-right:1px solid rgba(255,255,255,.13);transition:background .2s;color:#fff}
+.hero-index a:last-child{border-right:none}
+.hero-index a:hover{background:rgba(168,198,99,.16);color:#fff}
+.hero-index .n{font-family:'Bebas Neue';font-size:15px;letter-spacing:.16em;color:var(--gold);line-height:1}
+.hero-index .t{font-family:'Raleway';font-weight:800;font-size:13.5px;letter-spacing:.01em;line-height:1.25}
+/* ===== SHARED SECTION HEAD (leaf glyph) ===== */
+.section-head{margin-bottom:clamp(38px,4.2vw,54px);max-width:940px}
+.section-head h2{font-size:clamp(32px,4.2vw,56px);color:var(--green-ink);line-height:1.04;display:flex;align-items:flex-start;gap:14px;text-wrap:balance}
+.section-head h2::before{content:'';flex-shrink:0;width:28px;height:28px;margin-top:.18em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.section-head h2 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent);font-size:.96em}
+.section-head p{font-size:clamp(15.5px,1.3vw,17.5px);line-height:1.75;color:#2c3736;margin-top:18px;max-width:70ch;padding-left:42px;text-wrap:pretty}
+.on-ink .section-head h2{color:#fff}
+.on-ink .section-head h2::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23A8C663'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>")}
+.on-ink .section-head h2 em{color:var(--gold)}
+/* ===== SECTION 2 — WHY SELL TO SCHOOLS (market case slab) ===== */
+.market{background:#fff;padding:clamp(80px,8.5vw,116px) 0;border-top:1px solid var(--line)}
+.case-slab{display:grid;grid-template-columns:repeat(3,1fr);background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.case{position:relative;padding:clamp(32px,3.2vw,46px) clamp(28px,2.8vw,42px) clamp(36px,3.6vw,50px);border-left:1px solid var(--line);transition:background .3s}
+.case:first-child{border-left:none}
+.case::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.case:hover{background:#fff}
+.case:hover::before{transform:scaleX(1)}
+.case .kicker{font-family:'Bebas Neue';font-size:clamp(30px,3.1vw,46px);line-height:.9;letter-spacing:.03em;color:var(--green);display:block;margin-bottom:20px}
+.case:nth-child(2) .kicker{color:var(--bridge)}
+.case:nth-child(3) .kicker{color:var(--highlight)}
+.case h3{font-family:'Raleway';font-weight:900;font-size:clamp(20px,1.75vw,24px);color:var(--green-ink);line-height:1.18;margin-bottom:14px;padding-top:18px;border-top:2px solid rgba(0,90,102,.2)}
+.case p{font-size:15.5px;line-height:1.72;color:#2c3736;text-wrap:pretty}
+/* ===== SECTION 3 — FARMER VOICE (intentionally unfinished) ===== */
+.voice{background:var(--cream);padding:clamp(80px,8.5vw,116px) 0}
+.voice-frame{background:rgba(255,255,255,.55);border:2px dashed rgba(0,90,102,.3);border-radius:24px;padding:clamp(28px,3.2vw,44px);display:grid;grid-template-columns:.72fr 1.28fr;gap:clamp(28px,3.5vw,52px);align-items:center}
+.draft-tag{display:inline-block;white-space:nowrap;font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border:1px solid rgba(0,90,102,.28);border-radius:999px;padding:7px 15px;margin-bottom:22px}
+.ph-frame{aspect-ratio:4/5;border:2px dashed rgba(0,90,102,.3);border-radius:var(--radius);display:grid;place-items:center;text-align:center;padding:24px;background-image:repeating-linear-gradient(135deg,rgba(0,90,102,.055) 0 10px,transparent 10px 20px)}
+.ph-frame span{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;letter-spacing:.02em;color:var(--muted);opacity:.8;line-height:1.6}
+.voice-quote .mark{font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:76px;line-height:.6;color:rgba(0,90,102,.22);display:block;margin-bottom:18px}
+.ph-line{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:clamp(20px,2.1vw,29px);line-height:1.45;color:var(--muted);opacity:.72;text-wrap:pretty}
+.ph-line + .ph-line{margin-top:12px}
+.ph-attr{margin-top:26px;padding-top:20px;border-top:1px dashed rgba(0,90,102,.28);display:flex;flex-direction:column;gap:7px}
+.ph-attr span{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--muted);opacity:.8}
+.voice-note{margin-top:22px;font-size:13.5px;font-style:italic;color:var(--muted);opacity:.8}
+/* ===== SECTION 4 — KEY RESOURCES (directory rows) ===== */
+.resources{background:#fff;padding:clamp(80px,8.5vw,116px) 0;border-top:1px solid var(--line)}
+.res-list{border-top:2px solid rgba(0,90,102,.22)}
+.res-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(22px,3vw,48px);align-items:start;padding:clamp(30px,3.4vw,46px) clamp(8px,1.4vw,20px);border-bottom:1px solid var(--line);transition:background .3s}
+.res-row:hover{background:var(--cream)}
+.res-row .idx{font-family:'Bebas Neue';font-size:clamp(34px,3.4vw,52px);line-height:.85;letter-spacing:.04em;color:var(--accent);transition:color .3s}
+.res-row:hover .idx{color:var(--bridge)}
+.res-row h3{font-family:'Raleway';font-weight:900;font-size:clamp(21px,1.9vw,27px);color:var(--green-ink);line-height:1.18;margin-bottom:14px;text-wrap:balance}
+.res-row p{font-size:15.5px;line-height:1.75;color:#2c3736;max-width:62ch;text-wrap:pretty}
+.res-row .act{padding-top:6px}
+/* ===== SECTION 5 — FIT CHECKLIST ===== */
+.fit{background:var(--cream);padding:clamp(80px,8.5vw,116px) 0}
+.fit-list{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(28px,3.4vw,56px);border-top:2px solid rgba(0,90,102,.22)}
+.fit-item{position:relative;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start;padding:22px 6px 22px 2px;border-bottom:1px solid var(--line);transition:background .25s}
+.fit-item:hover{background:rgba(255,255,255,.7)}
+.fit-item .q{font-family:'Bebas Neue';font-size:24px;line-height:1.12;letter-spacing:.05em;color:var(--accent);min-width:26px}
+.fit-item .t{font-family:'Raleway';font-weight:600;font-size:16px;line-height:1.5;color:var(--green-ink);text-wrap:pretty}
+/* ===== SECTION 6 — SUPPORT (dark ink panel, teal glow) ===== */
+.support{position:relative;overflow:hidden;background:var(--green-ink);color:#fff;padding:clamp(80px,9vw,120px) 0}
+.support::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 88% 6%,rgba(0,181,175,.22),transparent 54%),radial-gradient(ellipse at 6% 92%,rgba(69,192,190,.15),transparent 55%),radial-gradient(ellipse at 50% 118%,rgba(168,198,99,.1),transparent 52%)}
+.support .wrap{position:relative;z-index:1}
+.support-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(38px,5vw,80px);align-items:start}
+.support h2{font-size:clamp(32px,4vw,54px);color:#fff;line-height:1.04;max-width:16ch;text-wrap:balance}
+.support h2 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--gold);font-size:.95em}
+.support p{font-size:clamp(15.5px,1.3vw,17.5px);line-height:1.78;color:rgba(235,245,244,.82);margin-top:26px;max-width:56ch;text-wrap:pretty}
+.support-list{border-top:1px solid var(--ink-line);padding-top:4px}
+.sup-item{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start;padding:22px 4px;border-bottom:1px solid var(--ink-line);transition:padding-left .3s}
+.sup-item:hover{padding-left:12px}
+.sup-item svg{width:17px;height:17px;flex:none;color:var(--gold);margin-top:3px}
+.sup-item span{font-family:'Raleway';font-weight:700;font-size:clamp(15.5px,1.3vw,17px);line-height:1.5;color:#fff;text-wrap:pretty}
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+/* ===== MOTION ===== */
+.rv{opacity:0;transform:translateY(20px);transition:opacity .75s cubic-bezier(.22,.61,.36,1),transform .75s cubic-bezier(.22,.61,.36,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .nav-links{display:none}
+  .case-slab{grid-template-columns:1fr}
+  .case{border-left:none;border-top:1px solid var(--line)}
+  .case:first-child{border-top:none}
+  .voice-frame{grid-template-columns:1fr;gap:30px}
+  .ph-frame{aspect-ratio:16/10;max-width:420px}
+  .res-row{grid-template-columns:auto 1fr;gap:20px}
+  .res-row .act{grid-column:2;padding-top:20px}
+  .fit-list{grid-template-columns:1fr}
+  .support-grid{grid-template-columns:1fr;gap:44px}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:640px){
+  .wrap{padding:0 22px}
+  .section-head h2{gap:11px}
+  .section-head h2::before{width:21px;height:21px}
+  .section-head p{padding-left:0}
+  .hero h1{max-width:16ch}
+  .hero-index a{flex:1 1 100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.13)}
+  .res-row{grid-template-columns:1fr;gap:14px}
+  .res-row .act{grid-column:1}
+  .foot-grid{grid-template-columns:1fr}
+  .foot-bottom{flex-direction:column;gap:8px}
+}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="producers-distributors.html" class="active" aria-current="page">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="donate.html">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="ma-fresh-grant.html">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="donate.html">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- SECTION 1 — HERO (locked client copy, verbatim) -->
+<section class="hero" data-screen-label="Producers hero">
+  <div class="wrap">
+    <span class="hero-flag rv"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg>Producers &amp; Distributors</span>
+    <h1 class="rv">Your harvest belongs on a <em>lunch tray</em></h1>
+    <p class="lede rv">From kale to cranberries to fresh-caught seafood, Massachusetts schools want to buy what you grow, raise, and catch. Whether you sell direct, through a distributor, or through a food hub, these tools can help you decide if school sales are right for your farm or food business — and get you started.</p>
+  </div>
+  <div class="wrap">
+    <nav class="hero-index" aria-label="On this page">
+      <a href="#why-sell"><span class="n">01</span><span class="t">Why sell to schools</span></a>
+      <a href="#resources"><span class="n">02</span><span class="t">Key resources</span></a>
+      <a href="#fit"><span class="n">03</span><span class="t">Is it a fit</span></a>
+      <a href="#support"><span class="n">04</span><span class="t">Get help</span></a>
+    </nav>
+  </div>
+</section>
+
+<!-- SECTION 2 — WHY SELL TO SCHOOLS (locked client copy, verbatim) -->
+<section class="market" id="why-sell" data-screen-label="Why sell to schools">
+  <div class="wrap">
+    <div class="section-head rv">
+      <h2><span>A steady market that invests in your <em>community</em></span></h2>
+      <p>Farm to school opens the door to an institutional market worth billions of dollars — and keeps federal school meal dollars circulating in the local economy.</p>
+    </div>
+    <div class="case-slab rv">
+      <div class="case">
+        <span class="kicker">Long-term</span>
+        <h3>Reliable relationships</h3>
+        <p>Many institutional buyers want to build long-term purchasing relationships with local farms — a dependable channel alongside your retail, CSA, or wholesale sales.</p>
+      </div>
+      <div class="case">
+        <span class="kicker">Local $$</span>
+        <h3>Money stays home</h3>
+        <p>Buying from local producers creates jobs, strengthens the local economy, and helps keep Massachusetts land in farming.</p>
+      </div>
+      <div class="case">
+        <span class="kicker">New buyers</span>
+        <h3>Funding for local food</h3>
+        <p>Programs like N.E. Food for Schools have given MA districts millions in dedicated funds to purchase from Northeast farmers, fishers, and producers — with a priority on reaching historically underserved farmers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 — FARMER VOICE. INTENTIONALLY UNFINISHED. Client owes a quote, an attribution, and a photo. Never write a stand-in quote. See notes at top of file. -->
+<section class="voice is-draft" data-screen-label="Farmer pull quote placeholder">
+  <div class="wrap">
+    <div class="voice-frame rv">
+      <div class="ph-frame"><span>[ farmer photo<br>to come ]</span></div>
+      <div class="voice-quote">
+        <span class="draft-tag">Awaiting client material</span>
+        <span class="mark" aria-hidden="true">&ldquo;</span>
+        <p class="ph-line">[ Pull quote from a Massachusetts farmer or fisher who sells to schools ]</p>
+        <p class="ph-line">[ Two or three sentences, in their own words ]</p>
+        <div class="ph-attr">
+          <span>[ name ]</span>
+          <span>[ farm or business, town ]</span>
+        </div>
+        <p class="voice-note">Placeholder only. This section stays hidden until the client supplies the quote and photo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 — KEY RESOURCES (locked client copy, verbatim) -->
+<section class="resources" id="resources" data-screen-label="Key resources for producers">
+  <div class="wrap">
+    <div class="section-head rv">
+      <h2><span>Key resources for <em>producers</em></span></h2>
+      <p>Mass. Farm to School offers free tools to connect you with school buyers across the Commonwealth.</p>
+    </div>
+    <div class="res-list">
+      <div class="res-row rv">
+        <span class="idx">01</span>
+        <div>
+          <h3>Add Your Business to Our Local Food Directory</h3>
+          <p>The Local Food Directory (and its statewide map) is where food service directors go to find farmers and vendors interested in selling locally grown products to institutions. Listing your farm or fishing business is free — buyers can filter by product, from vegetables and orchard fruit to dairy, meat, eggs, seafood, honey, maple, and value-added products.</p>
+        </div>
+        <div class="act">
+          <!-- PLACEHOLDER HREF: no URL supplied. Likely target is the existing business submission form linked from the Sourcing Local Food page as "List Your Business Here" (currently https://forms.gle/BwusMQRxwUtNrNe78). Pending client confirmation. -->
+          <a class="btn btn-green" href="#">Submit your Farm Form
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+      <div class="res-row rv">
+        <span class="idx">02</span>
+        <div>
+          <h3>Explore the Harvest of the Month Program</h3>
+          <p>Harvest of the Month is a statewide framework for local food procurement, promotion, and education that highlights a different locally grown crop every month of the school year. When schools feature the month's crop, they need local producers to supply it — a predictable, seasonal demand signal you can plan around.</p>
+        </div>
+        <div class="act">
+          <!-- PLACEHOLDER HREF: no URL supplied. Likely target is the site's Harvest of the Month page (prototype file MFTS-HOTM.html). Pending client confirmation. -->
+          <a class="btn btn-outline" href="#">Harvest of the Month
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+      <div class="res-row rv">
+        <span class="idx">03</span>
+        <div>
+          <h3>Sell through an aggregator</h3>
+          <p>Not set up for direct school deliveries, invoicing, or light processing? Massachusetts food hubs aggregate products from many farms and handle the logistics of selling to schools and other institutions — a great fit for smaller farms or those new to wholesale.</p>
+        </div>
+        <div class="act">
+          <!-- PLACEHOLDER HREF: no URL supplied. Intended target is the new Local Food Hub Listings page built in this project (prototype file food-hub-listings.html). Pending client confirmation. -->
+          <a class="btn btn-outline" href="#">Food Hub Listings page
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5 — DOES IT MAKE SENSE (locked client copy, verbatim; checkboxes are visual only, nothing is scored or saved) -->
+<section class="fit" id="fit" data-screen-label="Fit checklist">
+  <div class="wrap">
+    <div class="section-head rv">
+      <h2><span>Is selling to schools right for <em>your business?</em></span></h2>
+      <p>You don't need to answer yes to everything, but these questions, drawn from Mass. Farm to School's producer guidance can help you gauge whether the institutional market is a good fit today or a goal to grow toward.</p>
+    </div>
+    <div class="fit-list">
+      <div class="fit-item rv"><span class="q">01</span><span class="t">Do you already wholesale, or sell to distributors, stores, or other farmers?</span></div>
+      <div class="fit-item rv"><span class="q">02</span><span class="t">Can you communicate regularly with schools and track orders?</span></div>
+      <div class="fit-item rv"><span class="q">03</span><span class="t">Do you have the capacity to deliver, or arrange for deliveries?</span></div>
+      <div class="fit-item rv"><span class="q">04</span><span class="t">Do you have a diversified product list, or the ability to source from other local growers?</span></div>
+      <div class="fit-item rv"><span class="q">05</span><span class="t">Does the school calendar fit with your harvest or fishing season?</span></div>
+      <div class="fit-item rv"><span class="q">06</span><span class="t">Are you prepared to meet potential insurance or food safety requirements?</span></div>
+      <div class="fit-item rv"><span class="q">07</span><span class="t">Can you provide light processing for schools with limited kitchen equipment?</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6 — SUPPORT (locked client copy, verbatim) -->
+<section class="support on-ink" id="support" data-screen-label="Support and technical assistance">
+  <div class="wrap">
+    <div class="support-grid">
+      <div>
+        <h2 class="rv">You don't have to figure this out <em>alone</em></h2>
+        <p class="rv">Mass. Farm to School staff offer free individual technical assistance to help farms and fishing businesses explore the school market, from responding to requests for quotes to connecting with the right buyers. They also host &quot;Selling to Schools 101&quot; webinars and workshops throughout the year.</p>
+      </div>
+      <div class="support-list rv">
+        <div class="sup-item"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg><span>Free workshops, advice, and tools</span></div>
+        <div class="sup-item"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg><span>Help responding to school requests for quotes</span></div>
+        <div class="sup-item"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg><span>Priority support for historically underserved farmers, including women and BIPOC farmers</span></div>
+        <div class="sup-item"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg><span>Webinar archive with past producer trainings</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="sourcing-local-food.html">Source Local Food</a></li>
+          <li><a href="food-hub-listings.html">Food Hub Listings</a></li>
+          <li><a href="producers-distributors.html">Sell To Schools</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="About-Us.html">What is Farm to School?</a></li>
+          <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="MFTS-Events-v1-Calendar.html">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="ma-fresh-grant.html">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+/* Scroll reveal */
+(function(){
+  var nodes=[].slice.call(document.querySelectorAll(".rv"));
+  if(!("IntersectionObserver" in window)||window.matchMedia("(prefers-reduced-motion: reduce)").matches){nodes.forEach(function(n){n.classList.add("in");});return;}
+  nodes.forEach(function(n,i){n.style.transitionDelay=(Math.min(i%4,3)*70)+"ms";});
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});
+  },{rootMargin:"0px 0px -8% 0px",threshold:.06});
+  nodes.forEach(function(n){io.observe(n);});
+})();
+</script>
+</body></html>

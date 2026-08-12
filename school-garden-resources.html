@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+WORDPRESS IMPLEMENTATION NOTES — school-garden-resources.html (MFTS Atlas)
+Concept: FIELD NOTEBOOK. Nova v2 / Tidewater tokens, canonical chrome.
+==============================================================================
+EMBEDDING
+- Option A (fastest): Elementor Pro HTML widget. Paste everything from
+  <section class="hero"> through the closing Atlas <script> tag. Global chrome
+  (topbar/header/footer) comes from theme template parts, not the widget.
+- Option B (cleaner): register a shortcode [mfts_atlas map="gardens"] whose
+  callback prints the map markup + inline JS, then build sections 3 to 6 as
+  ordinary Elementor containers around it. Preferred, because the resource
+  sections then become editable content instead of a wall of HTML.
+NAVIGATION
+- Menu link targets below are prototype filenames for client review. Production
+  menus are managed in WordPress and use permalinks. This page belongs under the
+  "Get Involved" group next to Educators; WordPress adds .current-menu-item
+  there, which maps to .active in this prototype.
+LEAFLET ENQUEUE
+- wp_enqueue_style/script Leaflet 1.9.x from cdnjs (same URLs as below), footer
+  load, no jQuery dependency. Do NOT double-load if another map plugin is
+  already registering Leaflet.
+RESPONSIVE STRATEGY
+- Container driven: nothing inside .atlas-console assumes a page width, and the
+  resource sections are fluid to whatever column Elementor gives them. Map
+  height is clamp(420px, 60vh, 720px). Do not set a fixed width on the widget.
+LIVE GOOGLE SHEET (this map is live-wired)
+- Source of truth: the client's School Gardens Google Sheet, read at page load
+  through the gviz CSV endpoint. Staff edit the sheet, the map follows. Edits
+  appear within a few minutes, not instantly, because Google caches that
+  endpoint.
+- The sheet must stay link-viewable ("Anyone with the link can view"). Setting
+  it back to restricted breaks the fetch and the page falls back to the small
+  embedded snapshot with a visible cached-data notice.
+- Parsing is BY COLUMN NAME. The sheet's coordinate columns are ordered
+  LONGITUDE THEN LATITUDE. Renaming or reordering columns, especially those two,
+  breaks parsing until SHEET_COLUMNS in the data layer below is updated.
+- Rows with no School Name are skipped. Rows with unparseable coordinates are
+  skipped and listed in a console warning; nothing is ever geocoded at runtime.
+- Rows with an empty School District render with the school name only. No
+  district is ever inferred.
+PIPELINE (alternative backend, per the Atlas architecture)
+- Airtable -> Air WP Sync plugin -> custom post type "atlas_poi" -> /wp-json
+  endpoint consumed by the commented adapter in the data layer. The Airtable API
+  must never be called directly from the browser. Everything downstream expects
+  the same POI shape, so swapping backends is a one-function change.
+BASEMAP
+- Prototype default: CARTO Positron raster tiles. Production swap to a MapTiler
+  custom Tidewater style or self-hosted Protomaps PMTiles is a one-line change
+  at TILE_URL.
+STATE
+- No localStorage, no sessionStorage. Filter and selection state live in memory.
+============================================================================ -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>School Garden Resources — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800;900&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Bebas+Neue&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme (canonical tokens, do not edit) */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#A8C663;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+  --console:#00434B;
+  /* single-type map: every pin is a school garden */
+  --pin-garden:#005A66; --pin-garden-ink:#fff;
+  --tile-tint:sepia(.1) hue-rotate(14deg) saturate(1.04);
+  --rule:rgba(0,90,102,.22);
+  --ruled:repeating-linear-gradient(rgba(0,58,64,.055) 0 1px,transparent 1px 34px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',system-ui,sans-serif;color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--green-light)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:'Raleway',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--accent)}
+:focus-visible{outline:3px solid var(--bridge);outline-offset:2px;border-radius:4px}
+section[id]{scroll-margin-top:92px}
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:'Raleway';font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline;color:#A8C663}
+header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:'Raleway';font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a:hover{color:inherit}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Raleway';font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);color:#fff;transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;color:var(--green-ink);transform:translateY(-2px)}
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:'Raleway',sans-serif;font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+.nav-links .dropdown a.active{background:rgba(0,124,137,.12);color:var(--green-light)}
+/* ===== SECTION 1 — HERO (field notebook cover) ===== */
+.hero{background:var(--green-ink) url('assets/KidsinGarden-BackyardGrowers.jpeg') center 34%/cover no-repeat;color:#fff;padding:76px 0 0;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.84),rgba(0,58,64,.88)),radial-gradient(ellipse at 84% 6%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 8% 96%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:24px}
+.hero-flag svg{width:17px;height:17px;flex:none}
+.hero h1{font-family:'Raleway';font-weight:900;font-size:clamp(42px,5.6vw,84px);color:#fff;line-height:1;letter-spacing:-.025em;max-width:16ch}
+.hero h1 .accent-italic{color:var(--gold);font-size:.95em}
+.hero .lede{font-family:'Open Sans',sans-serif;font-weight:400;font-size:clamp(16px,1.35vw,18.5px);line-height:1.7;color:rgba(235,245,244,.9);max-width:62ch;margin-top:26px;text-wrap:pretty}
+.hero-index{position:relative;z-index:1;margin-top:52px;display:flex;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.2)}
+.hero-index a{flex:1 1 168px;padding:18px 22px 22px;display:flex;flex-direction:column;gap:7px;border-right:1px solid rgba(255,255,255,.13);transition:background .2s;color:#fff}
+.hero-index a:last-child{border-right:none}
+.hero-index a:hover{background:rgba(168,198,99,.16);color:#fff}
+.hero-index .n{font-family:'Bebas Neue';font-size:15px;letter-spacing:.16em;color:var(--gold);line-height:1}
+.hero-index .t{font-family:'Raleway';font-weight:800;font-size:13.5px;letter-spacing:.01em;line-height:1.25}
+/* ===== SHARED SECTION HEAD (ruled notebook entry) ===== */
+.nb-head{border-top:2px solid var(--rule);padding-top:18px;margin-bottom:42px;max-width:940px}
+.nb-head .mark{display:flex;align-items:center;gap:10px;margin-bottom:15px;color:var(--bridge)}
+.nb-head .mark svg{width:16px;height:16px;flex:none}
+.nb-head .mark span{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.nb-head h2{font-size:clamp(32px,4.2vw,54px);color:var(--green-ink);line-height:1.03;text-wrap:balance}
+.nb-head p{font-family:'Open Sans',sans-serif;font-weight:400;font-size:clamp(15.5px,1.3vw,17.5px);line-height:1.72;color:#2c3736;margin-top:18px;max-width:66ch;text-wrap:pretty}
+.nb-head p a{color:var(--accent);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.nb-head p a:hover{color:var(--green-deep)}
+.on-ink .nb-head{border-top-color:rgba(168,198,99,.42)}
+.on-ink .nb-head h2{color:#fff}
+.on-ink .nb-head h2 .accent-italic{color:var(--gold)}
+.on-ink .nb-head p{color:rgba(235,245,244,.86)}
+.on-ink .nb-head .mark{color:var(--gold)}
+.on-ink .nb-head .mark span{color:var(--gold)}
+/* ===== SECTION 2 — MAP CONSOLE ===== */
+.atlas-shell{padding:88px 0 96px;background:#fff;border-top:1px solid var(--line)}
+.atlas-console{background:var(--console);border-radius:24px;padding:26px 26px 22px;color:#fff;position:relative;overflow:hidden;box-shadow:0 40px 80px -50px rgba(0,58,64,.55)}
+.atlas-console::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 92% 4%,rgba(0,181,175,.18),transparent 50%),radial-gradient(ellipse at 4% 100%,rgba(168,198,99,.12),transparent 52%);pointer-events:none}
+.atlas-console > *{position:relative;z-index:1}
+.console-masthead{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.12)}
+.console-id{display:flex;align-items:baseline;gap:14px}
+.console-id .sig{font-family:'Bebas Neue';font-size:30px;letter-spacing:.06em;color:var(--gold);line-height:1}
+.console-id .sub{font-family:'Raleway';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.console-count{display:flex;align-items:baseline;gap:9px;font-family:'Raleway';font-weight:700;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);opacity:0;transition:opacity .3s}
+.console-count.show{opacity:1}
+.console-count b{font-family:'Bebas Neue';font-weight:400;font-size:28px;letter-spacing:.04em;color:#fff;line-height:1}
+.filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:22px;position:relative;z-index:5}
+.filter-row .flbl{font-family:'Raleway';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#fff;margin-right:2px}
+.dd{position:relative;display:inline-flex}
+.dd-trigger{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.88);border-radius:999px;font-family:'Raleway';font-weight:700;font-size:12.5px;padding:10px 18px;cursor:pointer;transition:.18s;max-width:min(74vw,420px)}
+.dd-trigger:hover{border-color:var(--gold)}
+.dd-trigger[aria-expanded="true"],.dd-trigger.is-set{border-color:var(--gold);background:rgba(168,198,99,.14);color:#fff}
+.dd-trigger > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd-trigger .dd-caret{width:12px;height:12px;opacity:.7;transition:transform .25s;flex:none}
+.dd-trigger[aria-expanded="true"] .dd-caret{transform:rotate(180deg)}
+.dd-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:750;min-width:290px;max-width:min(86vw,420px);max-height:320px;overflow-y:auto;background:var(--green-deep);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:8px;display:none;box-shadow:0 24px 50px -20px rgba(0,20,22,.6);scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.dd-pop.open{display:block}
+.dd-opt{display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:8px;color:rgba(255,255,255,.88);font-family:'Open Sans';font-size:13px;cursor:pointer;line-height:1.35}
+.dd-opt:hover{background:rgba(255,255,255,.08)}
+.dd-opt input{accent-color:var(--gold);width:15px;height:15px;flex:none;cursor:pointer}
+.filter-clear{background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;font-family:'Raleway';font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:7px 15px;cursor:pointer;transition:.2s;display:none}
+.filter-clear.show{display:inline-flex}
+.filter-clear:hover{border-color:var(--gold);color:var(--gold)}
+.map-frame{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:#dfe9e8}
+#atlasMap{height:clamp(420px,60vh,720px);width:100%;background:#dfe9e8}
+#atlasMap:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+#atlasMap .leaflet-tile-pane{filter:var(--tile-tint,none)}
+.map-hint{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,58,64,.55);backdrop-filter:blur(1px);z-index:800;opacity:0;pointer-events:none;transition:opacity .3s}
+.map-hint.show{opacity:1}
+.map-hint span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:14px;padding:14px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.25)}
+.map-loading{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,67,75,.72);z-index:820;transition:opacity .35s}
+.map-loading.done{opacity:0;pointer-events:none}
+.map-loading span{display:inline-flex;align-items:center;gap:12px;font-family:'Raleway';font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#fff}
+.map-loading .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+.map-legend{position:absolute;left:12px;bottom:12px;z-index:650;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;padding:7px 16px;display:flex;gap:16px;align-items:center;box-shadow:0 10px 24px -12px rgba(0,58,64,.4);flex-wrap:wrap}
+.map-legend .litem{display:inline-flex;align-items:center;gap:7px;font-family:'Raleway';font-weight:700;font-size:11.5px;color:var(--green-ink)}
+.map-legend .litem svg{width:17px;height:17px}
+.map-empty{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,58,64,.45);z-index:640;padding:24px}
+.map-empty.show{display:grid}
+.map-empty span{background:var(--green-ink);color:#fff;font-family:'Raleway';font-weight:700;font-size:13.5px;padding:13px 24px;border-radius:999px;border:1px solid rgba(255,255,255,.25);text-align:center}
+.leaflet-container{font-family:'Open Sans',sans-serif}
+.leaflet-control-attribution{font-size:9.5px!important;background:rgba(255,255,255,.75)!important}
+.cache-note{display:none;align-items:center;gap:9px;margin-top:12px;font-size:12px;color:rgba(235,245,244,.72);font-style:italic}
+.cache-note.show{display:flex}
+.cache-note .dotc{width:7px;height:7px;border-radius:50%;background:var(--gold);flex:none}
+/* pins: Atlas family divIcon, one garden type */
+.atlas-pin{background:none;border:none}
+.atlas-pin .pinbox{width:44px;height:44px;display:grid;place-items:center;cursor:pointer;position:relative}
+.atlas-pin .pinbox svg{width:28px;height:28px;filter:drop-shadow(0 2px 4px rgba(0,58,64,.4));transition:transform .18s}
+.atlas-pin.is-hot .pinbox svg,.atlas-pin .pinbox:hover svg{transform:scale(1.28)}
+.atlas-pin.is-selected .pinbox svg{transform:scale(1.42)}
+.atlas-pin.is-selected .pinbox::after{content:'';position:absolute;width:40px;height:40px;border-radius:50%;border:2.5px solid var(--green-ink);animation:pinring .35s ease}
+@keyframes pinring{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+/* table toggle + garden register table */
+.table-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:16px}
+.table-toggle{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;padding:11px 20px;cursor:pointer;transition:.2s}
+.table-toggle:hover{border-color:var(--gold);color:var(--gold)}
+.table-toggle[aria-expanded="true"]{background:var(--gold);border-color:var(--gold);color:var(--green-ink)}
+.table-toggle svg{width:13px;height:13px;transition:transform .25s}
+.table-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.table-hint{font-size:11.5px;color:rgba(255,255,255,.55);font-style:italic}
+.ledger-sheet{margin-top:16px;background:#fff;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.2)}
+.ledger-scroll{max-height:min(560px,70vh);overflow:auto}
+table.ledger{width:100%;border-collapse:collapse;font-size:14px;color:#22302f}
+table.ledger thead th{position:sticky;top:0;z-index:2;background:var(--cream);text-align:left;padding:0;border-bottom:2px solid var(--rule)}
+table.ledger thead th button{width:100%;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--green-ink);padding:15px 18px;text-align:left}
+table.ledger thead th button:hover{color:var(--accent)}
+table.ledger thead th .arr{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;opacity:0}
+table.ledger thead th[aria-sort="ascending"] .arr{opacity:1;border-bottom:5px solid var(--accent)}
+table.ledger thead th[aria-sort="descending"] .arr{opacity:1;border-top:5px solid var(--accent)}
+table.ledger tbody tr{border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s}
+table.ledger tbody tr:hover,table.ledger tbody tr.is-hot{background:rgba(0,124,137,.07)}
+table.ledger tbody tr.is-selected{background:rgba(168,198,99,.2)}
+table.ledger td{padding:14px 18px;vertical-align:top}
+table.ledger td.org{font-family:'Raleway';font-weight:700;font-size:14.5px;color:var(--green-ink);line-height:1.35}
+table.ledger td.dist{font-size:14px;color:#3a4544;line-height:1.45}
+table.ledger td.dist .nodist{font-style:italic;font-size:12.5px;color:var(--muted)}
+.ledger-empty{padding:56px 28px;text-align:center;display:none}
+.ledger-empty.show{display:block}
+.ledger-empty .leaf{width:32px;height:32px;margin:0 auto 14px;color:var(--bridge)}
+.ledger-empty h4{font-family:'Raleway';font-weight:900;font-size:18px;color:var(--green-ink);margin-bottom:8px}
+.ledger-empty p{font-size:14px;color:var(--muted);max-width:340px;margin:0 auto 18px}
+.ledger-empty button{background:var(--green-light);color:#fff;border:none;border-radius:999px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;padding:11px 22px;cursor:pointer}
+.ledger-empty button:hover{background:var(--green-deep)}
+/* ===== POI DETAIL MODULE (uniform across all Atlas maps) ===== */
+.atlas-poi-scrim{position:fixed;inset:0;background:rgba(0,58,64,.5);backdrop-filter:blur(2px);z-index:1000;opacity:0;pointer-events:none;transition:opacity .25s}
+.atlas-poi-scrim.open{opacity:1;pointer-events:auto}
+.atlas-poi{position:fixed;top:0;right:0;bottom:0;width:min(430px,100vw);background:#fff;z-index:1001;transform:translateX(105%);transition:transform .32s cubic-bezier(.32,.72,.28,1);box-shadow:-30px 0 70px -30px rgba(0,58,64,.45);display:flex;flex-direction:column;border-radius:0}
+.atlas-poi.open{transform:translateX(0)}
+.atlas-poi-head{background:var(--green-ink);color:#fff;padding:26px 28px 30px;position:relative;flex:none;overflow:hidden}
+.atlas-poi-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 0%,rgba(0,181,175,.22),transparent 60%);pointer-events:none}
+.atlas-poi-head .wm{position:absolute;right:-18px;bottom:-30px;width:132px;height:132px;color:var(--gold);opacity:.13;pointer-events:none}
+.atlas-poi-close{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:grid;place-items:center;transition:.2s;z-index:2}
+.atlas-poi-close:hover{background:var(--gold);color:var(--green-ink);border-color:var(--gold)}
+.atlas-poi-close svg{width:15px;height:15px}
+.atlas-poi-head h3{font-family:'Raleway';font-weight:900;font-size:23px;color:#fff;position:relative;padding-right:40px;line-height:1.15}
+.atlas-poi-chips{display:flex;gap:7px;margin-bottom:14px;position:relative;flex-wrap:wrap}
+.poi-chip{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:999px}
+.poi-chip.type.garden{background:var(--pin-garden);color:var(--pin-garden-ink);border:1px solid rgba(255,255,255,.28)}
+.atlas-poi-body{padding:26px 28px 34px;overflow-y:auto;flex:1}
+.poi-sec .plbl{font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);display:block;padding-bottom:9px;border-bottom:2px solid var(--rule);margin-bottom:2px}
+.poi-district{font-family:'Bebas Neue';font-size:27px;letter-spacing:.04em;color:var(--green-ink);padding-top:14px;line-height:1.06}
+/* ===== SECTION 3 — GETTING STARTED (specimen plate) ===== */
+.getting{padding:88px 0 96px;background:var(--cream)}
+.plate{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative;box-shadow:0 34px 66px -50px rgba(0,58,64,.5)}
+.plate::before{content:'';position:absolute;top:0;bottom:0;left:80px;width:1.5px;background:rgba(136,176,63,.55);pointer-events:none}
+.spec{display:grid;grid-template-columns:80px 1fr 42px;align-items:start;column-gap:26px;padding:28px 30px 28px 0;border-bottom:1px solid var(--line);transition:background .2s;color:inherit}
+.spec:last-child{border-bottom:none}
+.spec:hover{background:rgba(0,124,137,.045);color:inherit}
+.spec .idx{font-family:'Bebas Neue';font-size:27px;letter-spacing:.05em;color:var(--accent);text-align:center;line-height:1;padding-top:3px}
+.spec h3{font-family:'Raleway';font-weight:900;font-size:clamp(18px,1.75vw,23px);color:var(--green-ink);line-height:1.25;letter-spacing:-.01em;text-wrap:pretty}
+.spec:hover h3{color:var(--accent)}
+.spec p{font-size:14.5px;line-height:1.7;color:#3d4746;margin-top:10px;max-width:64ch;text-wrap:pretty}
+.spec .src{display:block;font-family:'Open Sans',sans-serif;font-style:italic;font-size:12.5px;color:var(--muted);margin-top:10px}
+.spec .go{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--accent);transition:.22s;margin-top:2px}
+.spec .go svg{width:16px;height:16px}
+.spec:hover .go{background:var(--accent);border-color:var(--accent);color:#fff;transform:translateX(3px)}
+/* ===== SECTION 4 — WEBINAR RECORDINGS (dark archive panel) ===== */
+.webinars{background:var(--green-ink);color:#fff;padding:96px 0 104px;position:relative;overflow:hidden}
+.webinars::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 86% 8%,rgba(0,181,175,.2),transparent 55%),radial-gradient(ellipse at 8% 94%,rgba(69,192,190,.14),transparent 55%);pointer-events:none}
+.webinars .wrap{position:relative;z-index:1}
+.arc-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.arc{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:30px 32px 28px;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:.25s;color:#fff}
+.arc:hover{border-color:var(--gold);background:rgba(168,198,99,.08);transform:translateY(-4px);color:#fff}
+.arc .wm{position:absolute;right:-26px;bottom:-34px;width:150px;height:150px;color:var(--gold);opacity:.09;pointer-events:none}
+.arc .tag{font-family:'Raleway';font-weight:800;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.18);margin-bottom:20px;position:relative}
+.arc h3{font-family:'Raleway';font-weight:900;font-size:clamp(19px,1.8vw,25px);color:#fff;line-height:1.22;position:relative;text-wrap:pretty}
+.arc p{font-size:14.5px;line-height:1.72;color:rgba(235,245,244,.82);margin-top:14px;flex:1;position:relative;max-width:46ch}
+.arc .open{margin-top:24px;display:inline-flex;align-items:center;gap:9px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--gold);position:relative}
+.arc .open svg{width:15px;height:15px;transition:transform .22s}
+.arc:hover .open svg{transform:translateX(4px)}
+/* ===== SECTION 5 — GARDEN ACTIVITIES & LESSONS (pressed plate) ===== */
+.activities{padding:88px 0 96px;background:#fff;border-top:1px solid var(--line)}
+.act-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.act-grid .nb-head{margin-bottom:0}
+.act-plate{display:block;background:var(--sand);background-image:var(--ruled);border:1px solid rgba(0,90,102,.16);border-radius:20px;padding:38px 38px 34px;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;color:inherit}
+.act-plate:hover{transform:translateY(-4px);box-shadow:0 34px 60px -40px rgba(0,58,64,.5);color:inherit}
+.act-plate .wm{position:absolute;right:-30px;bottom:-40px;width:190px;height:190px;color:var(--green);opacity:.11;pointer-events:none}
+.act-plate .lbl{font-family:'Raleway';font-weight:800;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--green);position:relative}
+.act-plate h3{font-family:'Raleway';font-weight:900;font-size:clamp(28px,3.2vw,44px);color:var(--green-ink);line-height:1.02;margin-top:16px;position:relative;letter-spacing:-.02em}
+.act-plate .pend{display:block;font-family:'Open Sans',sans-serif;font-style:italic;font-size:12.5px;color:#5b6462;margin-top:14px;position:relative}
+.act-plate .go{margin-top:26px;display:inline-flex;align-items:center;gap:10px;font-family:'Raleway';font-weight:800;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--green-ink);border-bottom:2px solid rgba(0,90,102,.3);padding-bottom:5px;position:relative}
+.act-plate .go svg{width:15px;height:15px;transition:transform .22s}
+.act-plate:hover .go svg{transform:translateX(4px)}
+/* ===== SECTION 6 — FUNDING YOUR GARDEN (index with dot leaders) ===== */
+.funding{padding:88px 0 100px;background:var(--cream)}
+.fund-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:56px;align-items:start}
+.fund-grid .nb-head{margin-bottom:0}
+.fund-list{list-style:none;border-top:2px solid var(--rule)}
+.fund-row{display:flex;align-items:baseline;gap:16px;padding:24px 4px;border-bottom:1px solid var(--line);transition:background .2s,padding .2s;color:inherit}
+.fund-row:hover{background:rgba(255,255,255,.75);padding-left:12px;color:inherit}
+.fund-row .idx{font-family:'Bebas Neue';font-size:22px;letter-spacing:.06em;color:var(--accent);line-height:1;flex:none;min-width:24px}
+.fund-row .nm{font-family:'Raleway';font-weight:800;font-size:clamp(16px,1.5vw,19.5px);color:var(--green-ink);line-height:1.3;flex:0 1 auto;text-wrap:pretty}
+.fund-row:hover .nm{color:var(--accent)}
+.fund-row .led{flex:1 1 24px;min-width:20px;border-bottom:2px dotted rgba(0,90,102,.32);transform:translateY(-5px)}
+.fund-row .mk{font-family:'Open Sans';font-style:italic;font-size:12px;color:var(--muted);white-space:nowrap;flex:none}
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:'Raleway';color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+/* ===== RESPONSIVE ===== */
+@media (max-width:1100px){
+  .act-grid,.fund-grid{grid-template-columns:1fr;gap:36px}
+  .arc-grid{grid-template-columns:1fr;gap:18px}
+}
+@media (max-width:1024px){.nav-links{display:none}.foot-grid{grid-template-columns:1fr 1fr;gap:28px}}
+@media (max-width:860px){
+  .hero{padding-top:60px}
+  .hero h1{max-width:none}
+  .hero-index a{flex:1 1 44%;border-bottom:1px solid rgba(255,255,255,.13)}
+  .spec{grid-template-columns:60px 1fr;column-gap:16px;padding:24px 22px 24px 0}
+  .plate::before{left:60px}
+  .spec .go{grid-column:2;margin-top:16px}
+  .act-plate{padding:30px 26px 28px}
+}
+@media (max-width:760px){
+  #atlasMap{height:420px}
+  .atlas-console{padding:18px 14px;border-radius:18px}
+  .console-masthead{flex-direction:column;align-items:flex-start;gap:8px}
+  .map-legend{position:static;margin:10px 0 0;border-radius:14px;justify-content:flex-start}
+  .atlas-poi{top:auto;left:0;right:0;bottom:0;width:100%;max-height:84vh;transform:translateY(105%);border-radius:20px 20px 0 0}
+  .atlas-poi.open{transform:translateY(0)}
+  table.ledger td,table.ledger thead th button{padding-left:12px;padding-right:12px}
+  .fund-row{flex-wrap:wrap}
+  .fund-row .led{display:none}
+  .fund-row .mk{margin-left:40px}
+}
+@media (max-width:600px){.foot-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About Us <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="About-Us.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="sourcing-local-food.html">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="ma-fresh-grant.html" class="active" aria-current="page">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="#">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- SECTION 1 — HERO (locked client copy, verbatim) -->
+<section class="hero" data-screen-label="School garden resources hero">
+  <div class="wrap">
+    <span class="hero-flag"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg>A Field Guide for Educators &amp; Volunteers</span>
+    <h1>School Garden <span class="accent-italic">Resources</span></h1>
+    <p class="lede">Everything you need to start, maintain, and teach in a garden at your school — getting started guides, classroom activities, curriculum, funding, and the national networks that support garden educators year-round.</p>
+    <nav class="hero-index" aria-label="On this page">
+      <a href="#map"><span class="n">01</span><span class="t">The Map</span></a>
+      <a href="#getting-started"><span class="n">02</span><span class="t">Getting Started</span></a>
+      <a href="#webinars"><span class="n">03</span><span class="t">Webinar Recordings</span></a>
+      <a href="#activities"><span class="n">04</span><span class="t">Activities &amp; Lessons</span></a>
+      <a href="#funding"><span class="n">05</span><span class="t">Funding</span></a>
+    </nav>
+  </div>
+</section>
+
+<!-- SECTION 2 — MAP OF SCHOOL GARDENS (locked heading and subheading) -->
+<section class="atlas-shell" id="map" data-screen-label="Map of school gardens">
+  <div class="wrap">
+    <div class="nb-head">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg><span>Live from the MFTS sheet</span></span>
+      <h2>Map of School Gardens in <span class="accent-italic">Massachusetts</span></h2>
+      <!-- PLACEHOLDER href: "let us know" points to the garden submission form. No URL was supplied by the client. Replace before launch. -->
+      <p>Want to know what's growing nearby? Check out our map of school gardens, and if you have a garden that's not listed, please <a href="#">let us know</a>!</p>
+    </div>
+    <div class="atlas-console">
+      <div class="console-masthead">
+        <div class="console-id"><span class="sig">The Garden Register</span><span class="sub">Kept by MFTS staff</span></div>
+        <div class="console-count" id="countWrap" aria-live="polite"><b id="countN">0</b><span id="countLbl">gardens shown</span></div>
+      </div>
+      <div class="filter-row">
+        <span class="flbl">Filter</span>
+        <div class="dd">
+          <button class="dd-trigger" type="button" id="distTrigger" aria-haspopup="true" aria-expanded="false"><span id="distTxt">District: All</span><svg class="dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+          <!-- options are built from the fetched sheet, alphabetical, All default -->
+          <div class="dd-pop" id="distPop" role="radiogroup" aria-label="Filter by school district"></div>
+        </div>
+        <button class="filter-clear" id="filterClear" type="button">Clear filter</button>
+      </div>
+      <div class="map-frame">
+        <div id="atlasMap" tabindex="0" role="application" aria-label="Map of school gardens in Massachusetts. The table view below offers the same records as an accessible list."></div>
+        <div class="map-loading" id="mapLoading"><span><span class="dot"></span>Loading the garden register</span></div>
+        <div class="map-hint" id="mapHint" aria-hidden="true"><span id="mapHintTxt">Use ctrl + scroll to zoom the map</span></div>
+        <div class="map-empty" id="mapEmpty"><span>No school gardens match this filter</span></div>
+        <div class="map-legend">
+          <span class="litem"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#005A66" stroke="#fff" stroke-width="1.6"></circle><path d="M16.4 7.6C10.6 8.9 9.3 12.9 8 16.2l1.2.4.6-1.5c.3.1.6.2 1 .2 7 0 8.9-11 8.9-11-.6 1.3-5.2 1.4-8.4 2.1s-4.5 3.4-4.5 4.7 1.1 2.4 1.1 2.4c2.1-5.9 8.5-5.9 8.5-5.9z" fill="#fff"></path></svg>School garden</span>
+        </div>
+      </div>
+      <p class="cache-note" id="cacheNote"><span class="dotc"></span><span>Showing cached data. The live garden sheet could not be reached just now, so this map shows a small saved snapshot.</span></p>
+      <div class="table-bar">
+        <button class="table-toggle" id="tableToggle" type="button" aria-expanded="false" aria-controls="ledgerSheet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+          <span id="tableToggleTxt">Show the garden list</span>
+        </button>
+        <span class="table-hint">Every garden, sortable. Select a row to open its record.</span>
+      </div>
+      <div class="ledger-sheet" id="ledgerSheet" hidden="">
+        <div class="ledger-scroll">
+          <table class="ledger">
+            <caption style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">School gardens in Massachusetts: school name and school district</caption>
+            <thead><tr>
+              <th aria-sort="ascending" data-col="name"><button type="button" data-sort="name">School name <span class="arr"></span></button></th>
+              <th data-col="district"><button type="button" data-sort="district">District <span class="arr"></span></button></th>
+            </tr></thead>
+            <tbody id="ledgerBody"></tbody>
+          </table>
+        </div>
+        <div class="ledger-empty" id="ledgerEmpty">
+          <svg class="leaf" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg>
+          <h4>No gardens match that district</h4>
+          <p>Set the district filter back to all to see every garden on record.</p>
+          <button id="ledgerReset" type="button">Clear filter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 — GETTING STARTED (locked copy, locked labels, URLs, descriptions) -->
+<section class="getting" id="getting-started" data-screen-label="Getting started">
+  <div class="wrap">
+    <div class="nb-head">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg><span>Start here</span></span>
+      <h2>Getting <span class="accent-italic">Started</span></h2>
+      <p>These guides walk a new garden team through the whole process, from breaking ground to building an outdoor classroom.</p>
+    </div>
+    <div class="plate">
+      <a class="spec" href="https://www.ecoliteracy.org/sites/default/files/CEL-getting-started.pdf" target="_blank" rel="noopener">
+        <span class="idx">01</span>
+        <span>
+          <h3>Getting Started: A Guide for Creating School Gardens as Outdoor Classrooms</h3>
+          <p>A foundational planning guide from the Center for Ecoliteracy covering design, curriculum integration, and long-term sustainability of a school garden.</p>
+          <span class="src">Center for Ecoliteracy, PDF</span>
+        </span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="spec" href="https://www.lifelab.org/school-garden-resources" target="_blank" rel="noopener">
+        <span class="idx">02</span>
+        <span>
+          <h3>School Garden Resources</h3>
+          <p>Life Lab's core resource hub for garden-based learning, covering everything from raised beds to garden-enhanced nutrition education.</p>
+          <span class="src">Life Lab, resource hub</span>
+        </span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="spec" href="https://www.massfarmtoschool.org/announcement/school-gardens-101-recording-2-9-22/" target="_blank" rel="noopener">
+        <span class="idx">03</span>
+        <span>
+          <h3>School Gardens 101 Webinar</h3>
+          <p>Our webinar featuring guest speakers from Healthy Chelsea and Salem Public Schools</p>
+          <span class="src">Mass. Farm to School, recording</span>
+        </span>
+        <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 — WEBINAR RECORDINGS (locked copy, locked labels, URLs, descriptions) -->
+<section class="webinars on-ink" id="webinars" data-screen-label="Webinar recordings">
+  <div class="wrap">
+    <div class="nb-head">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg><span>Watch on demand</span></span>
+      <h2>Webinar <span class="accent-italic">Recordings</span></h2>
+      <p>Can't attend live? These archives hold years of recorded sessions on lesson planning, classroom management, and building a garden program that lasts.</p>
+    </div>
+    <div class="arc-grid">
+      <a class="arc" href="https://www.massfarmtoschool.org/guide/school-garden-webinar-recordings/" target="_blank" rel="noopener">
+        <span class="wm"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg></span>
+        <span class="tag">Our archive</span>
+        <h3>Mass. Farm to School's School Garden Webinars</h3>
+        <p>A full archive of Massachusetts Farm to School's "School Garden 101" sessions, including planning, lesson design, and seasonal maintenance.</p>
+        <span class="open">Open the archive <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="arc" href="https://www.sgsonetwork.org/webinar-library/" target="_blank" rel="noopener">
+        <span class="wm"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg></span>
+        <span class="tag">National network</span>
+        <h3>School Garden Support Organization's Webinar Archive</h3>
+        <p>A deep, searchable archive of national webinars on every facet of running a garden education program, presented roughly ten times a year.</p>
+        <span class="open">Open the archive <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5 — GARDEN ACTIVITIES & LESSONS (locked copy) -->
+<section class="activities" id="activities" data-screen-label="Garden activities and lessons">
+  <div class="wrap">
+    <div class="act-grid">
+      <div class="nb-head">
+        <span class="mark"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg><span>In the beds</span></span>
+        <h2>Garden Activities &amp; <span class="accent-italic">Lessons</span></h2>
+        <p>Hands-on tasks that turn a garden bed into a lesson — seed saving, transplanting, summer upkeep, and getting produce safely from soil to cafeteria tray.</p>
+      </div>
+      <!-- PLACEHOLDER href: links to Mass. Farm to School's Lesson Plans. No URL was supplied by the client. Replace before launch. -->
+      <a class="act-plate" href="#">
+        <span class="wm"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg></span>
+        <span class="lbl">Lesson library</span>
+        <h3>Garden Lesson Plans</h3>
+        <span class="pend">[ Mass. Farm to School lesson plans URL pending ]</span>
+        <span class="go">Open the lesson plans <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6 — FUNDING YOUR GARDEN (locked copy) -->
+<section class="funding" id="funding" data-screen-label="Funding your garden">
+  <div class="wrap">
+    <div class="fund-grid">
+      <div class="nb-head">
+        <span class="mark"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg><span>Grants and mini grants</span></span>
+        <h2>Funding Your <span class="accent-italic">Garden</span></h2>
+        <p>A shortlist of funding sources for building, renovating, or supplying a school garden.</p>
+      </div>
+      <!-- PLACEHOLDER hrefs: no funder URLs were supplied by the client. All three are placeholders. Replace before launch; do not guess. -->
+      <ul class="fund-list">
+        <li><a class="fund-row" href="#"><span class="idx">01</span><span class="nm">Whole Kids Foundation</span><span class="led"></span><span class="mk">[ URL pending ]</span></a></li>
+        <li><a class="fund-row" href="#"><span class="idx">02</span><span class="nm">KidsGardening Youth Garden Grants</span><span class="led"></span><span class="mk">[ URL pending ]</span></a></li>
+        <li><a class="fund-row" href="#"><span class="idx">03</span><span class="nm">Massachusetts Agriculture in the Classroom Mini Grants</span><span class="led"></span><span class="mk">[ URL pending ]</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- POI DETAIL MODULE (uniform markup across all Atlas maps; this map shows the type chip, the school name, and the district only) -->
+<div class="atlas-poi-scrim" id="poiScrim"></div>
+<aside class="atlas-poi" id="poiPanel" role="dialog" aria-modal="true" aria-labelledby="poiName" hidden="">
+  <div class="atlas-poi-head">
+    <span class="wm"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"></path></svg></span>
+    <button class="atlas-poi-close" id="poiClose" type="button" aria-label="Close details">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+    </button>
+    <div class="atlas-poi-chips" id="poiChips"></div>
+    <h3 id="poiName"></h3>
+  </div>
+  <div class="atlas-poi-body" id="poiBody"></div>
+</aside>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="sourcing-local-food.html">Source Local Food</a></li>
+          <li><a href="food-hub-listings.html">Food Hub Listings</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="About-Us.html">What is Farm to School?</a></li>
+          <li><a href="About-Us.html#mission-vision">Mission &amp; Vision</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="MFTS-Events-v1-Calendar.html">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="ma-fresh-grant.html">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+<script>
+/* ============================================================================
+   SCHOOL GARDENS — LIVE DATA LAYER
+   Source of truth is the client's School Gardens Google Sheet. MFTS staff edit
+   the sheet, this map follows. Nothing about the gardens is hardcoded except the
+   ten-record offline snapshot at the bottom of this block.
+   ========================================================================== */
+const SHEET_CSV='https://docs.google.com/spreadsheets/d/1PYsTh5iLyvsCTe5K5dPUkrv-pmQ-oUP_8G3nqP5luOU/gviz/tq?tqx=out:csv&gid=0';
+/* Parsing is BY COLUMN NAME. NOTE THE SHEET'S COLUMN ORDER: Longitude comes
+   BEFORE Latitude. Renaming or reordering columns in the sheet breaks parsing
+   until these names are updated. Trailing empty columns are ignored. */
+const SHEET_COLUMNS={name:'School Name',district:'School District',location:'Location',lng:'Longitude',lat:'Latitude'};
+/* Massachusetts envelope, used only to catch a swapped or malformed coordinate
+   pair. Rows outside it are skipped and logged, never nudged into place. */
+const MA_BOUNDS={latMin:41.0,latMax:43.2,lngMin:-73.9,lngMax:-69.6};
+/* Offline snapshot: exact values from the live sheet. Only rendered if the live
+   fetch fails, alongside the quiet cached-data notice. */
+const SNAPSHOT=[
+  ["Wildwood Elementary","Amherst Public Schools","Amherst",42.387313,-72.5131081],
+  ["Stratton Elementary School","Arlington Public Schools","Arlington",42.4289331,-71.1673305],
+  ["Henry Grew School","Boston Public Schools","Boston",42.2568042,-71.127079],
+  ["Monument Mountain Regional High School","Berkshire Hills Regional School District","Great Barrington",42.2492263,-73.3284038],
+  ["Codman Academy Charter School","Charter School","Dorchester",42.2898154,-71.0713294],
+  ["Greenfield Middle School","Greenfield Public Schools","Greenfield",42.5956809,-72.5964647],
+  ["Quashnet Elementary School","Mashpee Public Schools","Mashpee",41.6234933,-70.4931103],
+  ["Pittsfield High School","Pittsfield Public Schools","Pittsfield",42.4469785,-73.2482027],
+  ["Truro Central School","Truro Public Schools","Truro",42.018155,-70.0709951],
+  ["Dr. Arthur F. Sullivan Middle School","Worcester Public Schools","Worcester",42.2438591,-71.8608031]
+];
+/* ---------------------------------------------------------------------------
+AIRTABLE ALTERNATIVE PIPELINE (commented; swap for loadGardens()).
+The Airtable API must never be called directly from the browser. Supported
+route is Airtable -> Air WP Sync plugin -> custom post type "atlas_poi" ->
+/wp-json, consumed here. Everything downstream expects the same POI shape.
+
+// async function loadGardens(){
+//   const res=await fetch('/wp-json/wp/v2/atlas_poi?per_page=100&_fields=acf&atlas_tag=garden');
+//   const rows=await res.json();
+//   return rows.map(function(r,i){return {
+//     id:'g'+i, name:(r.acf.school_name||'').trim(),
+//     entityType:'garden', programs:['garden'],
+//     district:(r.acf.school_district||'').trim(),
+//     town:(r.acf.location||'').trim(),
+//     lat:parseFloat(r.acf.latitude), lng:parseFloat(r.acf.longitude)
+//   };});
+// }
+--------------------------------------------------------------------------- */
+</script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const state={district:'all',sort:'name',dir:1,tableOpen:false,selectedId:null};
+let RECORDS=[],interacted=false,visibleSet=[];
+
+/* ===== CSV PARSER (quoted fields may carry commas, doubled quotes, newlines) ===== */
+function parseCSV(text){
+  const rows=[];let row=[],cell='',q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else q=false; }
+      else cell+=c;
+    } else if(c==='"'){q=true;}
+    else if(c===','){row.push(cell);cell='';}
+    else if(c==='\r'){}
+    else if(c==='\n'){row.push(cell);rows.push(row);row=[];cell='';}
+    else cell+=c;
+  }
+  if(cell!==''||row.length){row.push(cell);rows.push(row);}
+  return rows;
+}
+function num(v){const n=parseFloat(String(v==null?'':v).trim());return isFinite(n)?n:null;}
+function inMA(lat,lng){return lat>=MA_BOUNDS.latMin&&lat<=MA_BOUNDS.latMax&&lng>=MA_BOUNDS.lngMin&&lng<=MA_BOUNDS.lngMax;}
+function toRecord(i,name,district,town,lat,lng){
+  return {id:'g'+i,name:name,entityType:'garden',programs:['garden'],district:district,town:town,lat:lat,lng:lng};
+}
+function fromCSV(text){
+  const rows=parseCSV(text);
+  if(!rows.length)throw new Error('empty sheet');
+  const head=rows[0].map(h=>h.trim());
+  const ix=n=>head.indexOf(n);
+  const iName=ix(SHEET_COLUMNS.name),iDist=ix(SHEET_COLUMNS.district),iTown=ix(SHEET_COLUMNS.location),iLat=ix(SHEET_COLUMNS.lat),iLng=ix(SHEET_COLUMNS.lng);
+  if(iName<0||iDist<0||iLat<0||iLng<0)throw new Error('sheet columns renamed or reordered');
+  const out=[],skipped=[];
+  for(let r=1;r<rows.length;r++){
+    const c=rows[r];
+    const name=(c[iName]||'').trim();
+    if(!name)continue; /* rows with no School Name are skipped silently */
+    const lat=num(c[iLat]),lng=num(c[iLng]);
+    if(lat==null||lng==null||!inMA(lat,lng)){skipped.push(name+' (row '+(r+1)+')');continue;}
+    out.push(toRecord(out.length,name,(c[iDist]||'').trim(),iTown<0?'':(c[iTown]||'').trim(),lat,lng));
+  }
+  if(skipped.length)console.warn('[School gardens map] Skipped '+skipped.length+' row(s) with missing or out of range coordinates: '+skipped.join('; ')+'. Nothing is geocoded at runtime, so these gardens do not appear until the sheet carries valid coordinates.');
+  return out;
+}
+function fromSnapshot(){return SNAPSHOT.map(function(s,i){return toRecord(i,s[0],s[1],s[2],s[3],s[4]);});}
+/* Two schools sharing one coordinate pair would stack into a single clickable
+   pin, so identical pairs are fanned out by a few dozen metres. */
+function nudgeCollisions(list){
+  const byKey={};
+  list.forEach(function(r){
+    const k=r.lat.toFixed(5)+','+r.lng.toFixed(5);
+    (byKey[k]=byKey[k]||[]).push(r);
+  });
+  Object.keys(byKey).forEach(function(k){
+    const g=byKey[k];
+    if(g.length<2)return;
+    const R=0.00042;
+    g.forEach(function(r,j){
+      const a=(2*Math.PI*j)/g.length;
+      r.lat=r.lat+R*Math.sin(a)*0.7;
+      r.lng=r.lng+R*Math.cos(a);
+    });
+  });
+  return list;
+}
+
+/* ===== MAP ===== */
+const TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'; /* production: swap to MapTiler Tidewater style or self-hosted Protomaps PMTiles (one-line change) */
+const map=L.map('atlasMap',{scrollWheelZoom:false,zoomControl:true,attributionControl:true}).setView([42.15,-71.7],8);
+L.tileLayer(TILE_URL,{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',maxZoom:18}).addTo(map);
+const markerLayer=L.layerGroup().addTo(map);
+let markers={};
+/* Inline-SVG divIcon, Atlas family encoding: circle + glyph, Tidewater color.
+   One entity type on this map, so one pin: the garden leaf. 44px touch target. */
+const PIN_GARDEN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="var(--pin-garden)" stroke="#fff" stroke-width="1.6"/><path d="M16.4 7.6C10.6 8.9 9.3 12.9 8 16.2l1.2.4.6-1.5c.3.1.6.2 1 .2 7 0 8.9-11 8.9-11-.6 1.3-5.2 1.4-8.4 2.1s-4.5 3.4-4.5 4.7 1.1 2.4 1.1 2.4c2.1-5.9 8.5-5.9 8.5-5.9z" fill="var(--pin-garden-ink)"/></svg>';
+function pinIcon(){return L.divIcon({className:'atlas-pin atlas-pin--garden',html:'<span class="pinbox">'+PIN_GARDEN+'</span>',iconSize:[44,44],iconAnchor:[22,22]});}
+/* scroll guards: never hijack page scroll */
+const mapEl=$('#atlasMap'),hint=$('#mapHint'),hintTxt=$('#mapHintTxt');
+const isMac=/Mac|iPhone|iPad/.test(navigator.platform||'');
+let hintT=null;
+function flashHint(msg){hintTxt.textContent=msg;hint.classList.add('show');clearTimeout(hintT);hintT=setTimeout(function(){hint.classList.remove('show');},1400);}
+mapEl.addEventListener('wheel',function(e){
+  if(e.ctrlKey||e.metaKey){e.preventDefault();hint.classList.remove('show');
+    const pt=map.mouseEventToContainerPoint(e);
+    map.setZoomAround(map.containerPointToLatLng(pt),map.getZoom()+(e.deltaY<0?1:-1));
+  }else{flashHint('Use '+(isMac?'\u2318':'ctrl')+' + scroll to zoom the map');}
+},{passive:false});
+if(matchMedia('(pointer:coarse)').matches){
+  map.dragging.disable();
+  mapEl.addEventListener('touchstart',function(e){if(e.touches.length>=2){map.dragging.enable();hint.classList.remove('show');}},{passive:true});
+  mapEl.addEventListener('touchmove',function(e){if(e.touches.length===1)flashHint('Use two fingers to move the map');},{passive:true});
+  mapEl.addEventListener('touchend',function(e){if(e.touches.length<2)map.dragging.disable();},{passive:true});
+}
+
+/* ===== FILTER (one district dropdown, radio-backed, built from the sheet) ===== */
+const distTrigger=$('#distTrigger'),distPop=$('#distPop'),distTxt=$('#distTxt');
+function closeDD(){distPop.classList.remove('open');distTrigger.setAttribute('aria-expanded','false');}
+/* Schools whose district cell is empty (several vocational and agricultural
+   schools) are reachable under All districts only. No district is invented for
+   them, so they get no dropdown option. */
+function buildDistrictDD(){
+  const seen={},list=[];
+  RECORDS.forEach(function(r){if(r.district&&!seen[r.district]){seen[r.district]=1;list.push(r.district);}});
+  list.sort(function(a,b){return a.localeCompare(b);});
+  distPop.innerHTML='<label class="dd-opt"><input type="radio" name="ddDistrict" value="all" checked=""><span>All districts</span></label>'+
+    list.map(function(d){return '<label class="dd-opt"><input type="radio" name="ddDistrict" value="'+esc(d)+'"><span>'+esc(d)+'</span></label>';}).join('');
+}
+distTrigger.addEventListener('click',function(){
+  const open=!distPop.classList.contains('open');
+  distPop.classList.toggle('open',open);
+  distTrigger.setAttribute('aria-expanded',String(open));
+});
+distPop.addEventListener('change',function(e){
+  if(!e.target||e.target.type!=='radio')return;
+  state.district=e.target.value;
+  distTxt.textContent='District: '+(e.target.value==='all'?'All':e.target.value);
+  distTrigger.classList.toggle('is-set',e.target.value!=='all');
+  closeDD();interacted=true;render();fitFiltered();
+});
+document.addEventListener('click',function(e){if(!e.target.closest('.dd'))closeDD();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDD();});
+function resetFilter(){
+  const first=distPop.querySelector('input');
+  distPop.querySelectorAll('input').forEach(function(i,k){i.checked=k===0;});
+  state.district='all';distTxt.textContent='District: All';distTrigger.classList.remove('is-set');
+  if(first)first.checked=true;
+}
+function clearFilter(){resetFilter();interacted=true;render();fitFiltered();}
+$('#filterClear').addEventListener('click',clearFilter);
+$('#ledgerReset').addEventListener('click',clearFilter);
+function matches(r){return state.district==='all'||r.district===state.district;}
+
+/* ===== RENDER ===== */
+function addPin(r){
+  const m=L.marker([r.lat,r.lng],{icon:pinIcon(),keyboard:true,title:r.name,alt:r.name+(r.district?', '+r.district:'')});
+  m.on('click',function(){openPoi(r.id,m.getElement());});
+  m.on('mouseover',function(){const row=document.querySelector('tr[data-id="'+r.id+'"]');if(row)row.classList.add('is-hot');});
+  m.on('mouseout',function(){const row=document.querySelector('tr[data-id="'+r.id+'"]');if(row)row.classList.remove('is-hot');});
+  m.addTo(markerLayer);markers[r.id]=m;
+}
+/* One pin per garden at every zoom level. No clustering. */
+function paintMap(){
+  markerLayer.clearLayers();markers={};
+  visibleSet.forEach(addPin);
+  $('#mapEmpty').classList.toggle('show',visibleSet.length===0);
+  refreshSelected();
+}
+function sortSet(set){
+  const d=state.dir;
+  const key=function(r){return (state.sort==='district'?(r.district||'zzzz'):r.name).toLowerCase();};
+  return set.slice().sort(function(a,b){
+    const ka=key(a),kb=key(b);
+    if(ka<kb)return -1*d;
+    if(ka>kb)return 1*d;
+    /* town is the secondary sort; it is never displayed */
+    const ta=(a.town||'').toLowerCase(),tb=(b.town||'').toLowerCase();
+    if(ta<tb)return -1;
+    if(ta>tb)return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
+function renderTable(set){
+  $('#ledgerBody').innerHTML=sortSet(set).map(function(r){
+    return '<tr data-id="'+r.id+'" tabindex="0" role="button" aria-label="Open record for '+esc(r.name)+'">'+
+      '<td class="org">'+esc(r.name)+'</td>'+
+      /* "Not listed" is UI microcopy for an empty source cell, never an invented district */
+      '<td class="dist">'+(r.district?esc(r.district):'<span class="nodist">Not listed</span>')+'</td>'+
+    '</tr>';
+  }).join('');
+  $('#ledgerEmpty').classList.toggle('show',set.length===0);
+  document.querySelectorAll('table.ledger thead th').forEach(function(th){
+    if(th.dataset.col===state.sort)th.setAttribute('aria-sort',state.dir===1?'ascending':'descending');
+    else th.removeAttribute('aria-sort');
+  });
+  refreshSelected();
+}
+function renderCount(set){
+  $('#countN').textContent=set.length;
+  $('#countLbl').textContent=(set.length===1?'garden':'gardens')+' shown';
+  $('#countWrap').classList.toggle('show',interacted||state.tableOpen);
+}
+function render(){
+  const set=RECORDS.filter(matches);
+  visibleSet=set.filter(function(r){return r.lat!=null&&r.lng!=null;});
+  paintMap();renderTable(set);renderCount(set);
+  $('#filterClear').classList.toggle('show',state.district!=='all');
+}
+function refreshSelected(){
+  Object.keys(markers).forEach(function(id){
+    const el=markers[id].getElement();
+    if(el)el.classList.toggle('is-selected',id===state.selectedId);
+  });
+  document.querySelectorAll('#ledgerBody tr').forEach(function(tr){tr.classList.toggle('is-selected',tr.dataset.id===state.selectedId);});
+}
+
+/* ===== POI DETAIL MODULE — the type chip, the school name, the district ===== */
+const poi=$('#poiPanel'),scrim=$('#poiScrim'),poiBody=$('#poiBody');let lastTrigger=null;
+function openPoi(id,trigger){
+  const r=RECORDS.find(function(x){return x.id===id;});if(!r)return;
+  state.selectedId=id;refreshSelected();lastTrigger=trigger||document.activeElement;
+  $('#poiChips').innerHTML='<span class="poi-chip type garden">School Garden</span>';
+  $('#poiName').textContent=r.name;
+  /* District omitted entirely when the source cell is empty: the body is then
+     dropped rather than filled with a substitute. */
+  if(r.district){
+    poiBody.innerHTML='<div class="poi-sec"><span class="plbl">School district</span><p class="poi-district">'+esc(r.district)+'</p></div>';
+    poiBody.hidden=false;
+  }else{
+    poiBody.innerHTML='';poiBody.hidden=true;
+  }
+  poi.hidden=false;scrim.classList.add('open');void poi.offsetWidth;poi.classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(function(){$('#poiClose').focus();},80);
+}
+function closePoi(){
+  poi.classList.remove('open');scrim.classList.remove('open');
+  document.body.style.overflow='';
+  state.selectedId=null;refreshSelected();
+  setTimeout(function(){poi.hidden=true;if(lastTrigger&&lastTrigger.focus)lastTrigger.focus();},320);
+}
+$('#poiClose').addEventListener('click',closePoi);
+scrim.addEventListener('click',closePoi);
+document.addEventListener('keydown',function(e){
+  if(poi.hidden)return;
+  if(e.key==='Escape'){closePoi();return;}
+  if(e.key==='Tab'){
+    const f=poi.querySelectorAll('button,a[href]');if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
+
+/* ===== TABLE CONTROLS ===== */
+$('#ledgerBody').addEventListener('click',function(e){const tr=e.target.closest('tr');if(tr)openPoi(tr.dataset.id,tr);});
+$('#ledgerBody').addEventListener('keydown',function(e){
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  const tr=e.target.closest('tr');if(!tr)return;
+  e.preventDefault();openPoi(tr.dataset.id,tr);
+});
+document.querySelectorAll('table.ledger thead button').forEach(function(b){
+  b.addEventListener('click',function(){
+    const col=b.dataset.sort;
+    if(state.sort===col)state.dir*=-1;else{state.sort=col;state.dir=1;}
+    renderTable(RECORDS.filter(matches));
+  });
+});
+const toggle=$('#tableToggle'),sheet=$('#ledgerSheet');
+toggle.addEventListener('click',function(){
+  state.tableOpen=!state.tableOpen;
+  sheet.hidden=!state.tableOpen;
+  toggle.setAttribute('aria-expanded',String(state.tableOpen));
+  $('#tableToggleTxt').textContent=state.tableOpen?'Hide the garden list':'Show the garden list';
+  renderCount(RECORDS.filter(matches));
+});
+
+/* ===== BOOT: live sheet first, embedded snapshot as fallback ===== */
+function fitTo(list){
+  const pts=list.filter(function(r){return r.lat!=null;}).map(function(r){return [r.lat,r.lng];});
+  if(pts.length)map.fitBounds(L.latLngBounds(pts),{padding:[44,44],maxZoom:13});
+}
+function fitFiltered(){fitTo(RECORDS.filter(matches));}
+async function loadGardens(){
+  const res=await fetch(SHEET_CSV,{cache:'no-store'});
+  if(!res.ok)throw new Error('sheet fetch failed: '+res.status);
+  return fromCSV(await res.text());
+}
+(async function boot(){
+  let cached=false;
+  try{
+    RECORDS=await loadGardens();
+    if(!RECORDS.length)throw new Error('sheet returned no usable rows');
+  }catch(err){
+    console.warn('[School gardens map] Live sheet unavailable, using the embedded snapshot.',err);
+    RECORDS=fromSnapshot();cached=true;
+  }
+  nudgeCollisions(RECORDS);
+  buildDistrictDD();
+  render();fitTo(RECORDS);
+  $('#mapLoading').classList.add('done');
+  if(cached)$('#cacheNote').classList.add('show');
+})();
+})();
+</script>
+</body></html>
