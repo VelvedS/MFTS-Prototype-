@@ -1,0 +1,501 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Institute Application Details — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"><style id="mfts-type">html{--font-display:'Petrona',Georgia,serif;--font-body:'Manrope',system-ui,sans-serif}</style>
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:var(--font-display);font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:var(--font-body);font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:var(--font-body);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--green-light)}
+.nav-links a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-body);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;transform:translateY(-2px)}
+
+/* ===== PAGE HERO ===== */
+.hero{background:var(--green-ink) url('assets/Webster_Salads.jpg') center/cover no-repeat;color:#fff;padding:78px 0 70px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.82),rgba(0,58,64,.82)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:var(--font-body);font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#A8C663;margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:#A8C663}
+.hero h1{font-family:var(--font-display);font-weight:700;font-size:clamp(38px,4.8vw,70px);color:#fff;line-height:1.02;letter-spacing:-.025em}
+.hero h1 em{font-family:var(--font-display);font-style:italic;font-weight:500;color:#A8C663;font-size:.94em}
+.hero .lede{font-family:var(--font-body);font-weight:400;font-size:20px;line-height:1.55;color:rgba(245,239,227,.92);max-width:780px;margin:26px auto 0}
+/* ===== SHARED BANDS ===== */
+.band{padding:84px 0;scroll-margin-top:96px}
+.band.white{background:#fff;border-top:1px solid var(--line)}
+.band.cream{background:var(--cream)}
+.band-head{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-bottom:38px;padding-bottom:22px;border-bottom:2px solid var(--line)}
+.band-head h2{font-size:clamp(30px,3.6vw,46px);color:var(--green-ink);line-height:1.05;display:flex;align-items:flex-start;gap:14px}
+.band-head h2::before{content:'';flex-shrink:0;width:26px;height:26px;margin-top:.14em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.band-head .note{font-family:var(--font-body);font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:9px;padding-bottom:6px}
+.band-head .note svg{width:14px;height:14px}
+.body-copy{font-size:17px;line-height:1.8;color:#2a2a2a;margin-bottom:20px;text-wrap:pretty}
+.body-copy:last-child{margin-bottom:0}
+.body-copy a{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.body-copy a:hover{color:var(--green-deep)}
+/* ===== INSTITUTE APPLICATION ===== */
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:start}
+.tl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.tl{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px;display:flex;flex-direction:column;gap:10px;transition:.25s}
+.tl:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 22px 44px -32px rgba(0,90,102,.4)}
+.tl .when{font-family:var(--font-body);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.tl p{font-size:15.5px;line-height:1.68;color:#2a2a2a}
+.steps{list-style:none;counter-reset:s;display:grid;gap:0}
+.steps li{counter-increment:s;display:grid;grid-template-columns:46px minmax(0,1fr);gap:18px;align-items:baseline;padding:16px 0;border-bottom:1px dashed rgba(0,90,102,.22);font-size:16.5px;line-height:1.6;color:#2a2a2a}
+.steps li:first-child{padding-top:0}
+.steps li:last-child{border-bottom:0}
+.steps li::before{content:counter(s,decimal-leading-zero);font-family:var(--font-display);font-weight:400;font-size:25px;color:var(--highlight);letter-spacing:.04em}
+.steps li a{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.tick{list-style:none;display:grid;gap:0}
+.tick li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:14px;align-items:baseline;padding:13px 0;border-bottom:1px dashed rgba(0,90,102,.22);font-size:16px;line-height:1.6;color:#2a2a2a}
+.tick li:last-child{border-bottom:0}
+.tick li::before{content:'';width:8px;height:8px;border-radius:2px;background:var(--highlight);transform:translateY(-.15em)}
+.callout{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:26px 30px;margin:26px 0}
+.band.cream .callout{background:#fff}
+.callout .lbl{display:block;font-family:var(--font-body);font-weight:800;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:9px}
+.callout p{font-size:16.5px;line-height:1.7;color:var(--green-ink);font-weight:600}
+.callout a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.sub-h{font-family:var(--font-display);font-weight:700;font-size:23px;color:var(--green-ink);letter-spacing:-.012em;margin:38px 0 16px}
+.faq{display:grid;gap:10px}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
+.faq details[open]{border-color:var(--accent)}
+.faq summary{list-style:none;cursor:pointer;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:20px;font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--green-ink);line-height:1.35}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'';flex:none;width:13px;height:13px;border-right:2.5px solid var(--accent);border-bottom:2.5px solid var(--accent);transform:rotate(45deg) translateY(-3px);transition:transform .25s}
+.faq details[open] summary::after{transform:rotate(-135deg) translateY(-3px)}
+.faq summary:hover{color:var(--accent)}
+.faq .ans{padding:0 26px 24px}
+.faq .ans p{font-size:16px;line-height:1.78;color:#2a2a2a;margin-bottom:14px}
+.faq .ans p:last-child{margin-bottom:0}
+.faq .ans ul{list-style:none;display:grid;gap:0;margin:6px 0 4px}
+.faq .ans li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px dashed rgba(0,90,102,.2);font-size:15.5px;line-height:1.6;color:#2a2a2a}
+.faq .ans li:last-child{border-bottom:0}
+.faq .ans li::before{content:'';width:7px;height:7px;border-radius:2px;background:var(--highlight);transform:translateY(-.15em)}
+.faq .ans li b{color:var(--green-ink)}
+.cta-strip{background:var(--green-ink);border-radius:var(--radius);padding:36px 42px;display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;position:relative;overflow:hidden}
+.cta-strip::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% -20%,rgba(0,181,175,.36),transparent 58%),radial-gradient(ellipse at -5% 130%,rgba(69,192,190,.2),transparent 55%);pointer-events:none}
+.cta-strip>*{position:relative;z-index:1}
+.cta-strip h3{font-family:var(--font-display);font-weight:700;font-size:22px;color:#fff;line-height:1.22;letter-spacing:-.01em}
+.cta-strip p{font-size:15px;line-height:1.65;color:rgba(245,239,227,.82);margin-top:8px;max-width:640px}
+.closed-tag{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-body);font-weight:800;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px dashed rgba(69,192,190,.55);border-radius:999px;padding:12px 22px}
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:var(--font-body);color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .nav-links{display:none}
+  .split{grid-template-columns:1fr!important;gap:36px}
+  .comp-grid{grid-template-columns:1fr!important}
+  .tl-grid{grid-template-columns:1fr!important}
+  .mat-grid{grid-template-columns:repeat(2,1fr)!important}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:640px){
+  .band{padding:56px 0}
+  .mat-grid{grid-template-columns:1fr!important}
+  .cta-strip{padding:26px 22px!important}
+  .foot-grid{grid-template-columns:1fr}
+}
+
+/* __MFTS_DROPDOWN_CSS__  ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:var(--font-body);font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-What-Is-Farm-To-School.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Our Organization</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="producers-distributors.html">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="donate.html">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false" aria-current="page">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="ma-fresh-grant.html">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="donate.html">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+
+<!-- SECTION 1 — HERO. Doc: Heading + Subheading -->
+<section class="hero" data-screen-label="Application Hero">
+  <div class="wrap">
+    <span class="hero-flag">F2S Institute</span>
+    <h1>Massachusetts Farm to School Institute <em>Application Details</em></h1>
+    <p class="lede">Ready to Apply? Please read the following information to prepare your application.</p>
+  </div>
+</section>
+
+<!-- SECTION 2 — COMMITMENT & TIMELINE -->
+<section class="band white" data-screen-label="Commitment &amp; Timeline">
+  <div class="wrap">
+    <div class="band-head"><h2>Commitment &amp; Timeline</h2></div>
+    <p class="body-copy" style="max-width:900px">Program fee of $600 per accepted team will be due in full in order to secure the team’s spot. Scholarships available.</p>
+    <p class="body-copy" style="max-width:900px;font-weight:600;color:var(--green-ink)">All participating teams are expected to participate in the following:</p>
+    <!-- LOOP: ACF repeater "timeline" — season label + commitment -->
+    <div class="tl-grid" style="margin-top:26px">
+      <div class="tl"><span class="when">Spring</span><p>Identify your farm to school team, that may include educators and other staff, school nutrition staff, coordinators, administrators, and family/community partners.</p></div>
+      <div class="tl"><span class="when">Fall</span><p>Attend a professional development retreat (Thursday, Oct. 1st &amp; Friday, Oct. 2nd, 2026 at Wright-Locke Farm, Winchester, MA) where you will work on farm to school action planning and network with peers.</p></div>
+      <div class="tl"><span class="when">Year Round</span><p>Meet regularly as a team with your coach as you implement your action plan. Join the role-specific (educator, school nutrition staff, coordinator, student leaders) learning communities that will meet throughout the year.</p></div>
+      <div class="tl"><span class="when">End of School Year</span><p>Teams will gather virtually to present and share their work, successes, and challenges of the year.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 — APPLICATION INSTRUCTIONS -->
+<section class="band cream" data-screen-label="Application Instructions">
+  <div class="wrap">
+    <div class="band-head"><h2>Application Instructions</h2></div>
+    <ol class="steps" style="max-width:940px">
+      <li><span>Review application questions (<a href="#">preview questions via Word document</a>)</span></li>
+      <li><span>Assemble a farm to school team (see team member details below)</span></li>
+      <li><span>Submit Application (Parts I &amp; II)</span></li>
+      <li><span><a href="#">Application Part I</a> (Main Application)</span></li>
+      <li><span><a href="#">Application Part II</a> (Individual Team Member Application)</span></li>
+    </ol>
+    <div class="callout">
+      <span class="lbl">Submission Deadline</span>
+      <p>Not currently accepting applications</p>
+    </div>
+    <p class="body-copy">Questions? Please email <a href="mailto:dinah@massfarmtoschool.org">dinah@massfarmtoschool.org</a></p>
+
+    <h3 class="sub-h">Team Member Details</h3>
+    <p class="body-copy" style="max-width:940px"><b>Team Leaders:</b> Please communicate with any potential team members prior to adding them to your application. Once you’ve confirmed their spot on the team, please send “Application Part II” to them to fill out prior to the application deadline.</p>
+    <p class="body-copy" style="max-width:940px"><b>All Teams:</b> Assemble an early education program, individual school, or school district-wide team. Early education and school based teams should have 4-6 members and school districts should have 5-7 members. Teams should be comprised of a diversity of individuals representing all aspects of the school, including, but not limited to:</p>
+    <ul class="tick" style="max-width:940px;margin-top:6px">
+      <li>School nutrition personnel (food service directors, school chefs, kitchen managers)</li>
+      <li>Classroom teachers</li>
+      <li>School administrators or curriculum coordinators</li>
+      <li>School nurses</li>
+      <li>Parents, school board, or community members</li>
+      <li>One district-level administrator *(for district-wide teams only)</li>
+    </ul>
+    <p class="body-copy" style="max-width:940px;margin-top:22px"><b>For School District Teams:</b> In your application, please identify one or two schools in your district in which you will focus efforts on implementing a Farm to School action plan that can serve as an example for other schools within the district. We have found this to be the most successful way to guide district teams through the planning process.</p>
+
+    <!-- Doc: "[application button - when app is open]" — conditional container, hidden while applications are closed. -->
+    <div class="cta-strip" style="margin-top:34px">
+      <div>
+        <h3>Applications are currently closed</h3>
+        <p>The application button appears here when the cycle opens. Until then, email us to be notified.</p>
+      </div>
+      <span class="closed-tag">Application button — shown when open</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 — FAQ. Native <details> accordion, no JS. -->
+<section class="band white" data-screen-label="FAQ">
+  <div class="wrap">
+    <div class="band-head"><h2>FAQ</h2></div>
+    <!-- LOOP: ACF repeater "faq" — question + answer -->
+    <div class="faq">
+      <details>
+        <summary>What is the Massachusetts Farm to School Institute?</summary>
+        <div class="ans">
+          <p>The Massachusetts Farm to School Institute is a unique year-long professional learning opportunity for selected school, district, or early childhood teams from Massachusetts. The Institute supports teams working together to create a culture of equity and wellness, improve food access, increase student leadership, and strengthen local food systems.</p>
+        </div>
+      </details>
+      <details>
+        <summary>What is included in the Institute program?</summary>
+        <div class="ans">
+          <p>Teams selected for the Institute are given support for an entire year. Starting with a fall retreat, teams are joined by an experienced coach that supports the team to develop an action plan inspired by workshops, learning journeys, and the work of other schools. During the school year, team members implement and adapt their plans with the support of their coach. Throughout the year, participants network and learn with peers in similar roles in a professional learning community.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Who can participate in the Institute?</summary>
+        <div class="ans">
+          <p>Any K–12 school or early childhood program in Massachusetts of all different sizes can apply to the Institute. The Institute is designed to support programs in either the early stages of farm to school program development or for those who want to take their programming to the next level. We typically select six to eight teams to participate each year.</p>
+          <p>Teams are welcome to apply as a single school, school district, early childhood program, or as an early childhood collaborative. If an early childhood collaborative applies, each individual program should have at least one representative on the team.</p>
+          <p>All educational institutions are welcome to apply, however, we have a preference for public schools and our programming is tailored to the public school environment.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Who should be on a team, and how should we select people to serve on our team?</summary>
+        <div class="ans">
+          <p>Farm to school efforts are most successful and long-lasting when teams take the time to build commitment and capacity of a diverse set of stakeholders. These stakeholders should include nutrition/food service staff, teachers, administrators, student leaders, nurses, farmers, community partners, and family members. We encourage and seek diverse teams that contain members of different racial and gender identity, experience levels, and program roles. Teams for the Institute’s fall retreat are typically 4-7 members and do not include students, but a full team or farm to school committee can be larger during the school year.</p>
+          <p>Consider inviting people who are already farm to school champions as well as key decision-makers and implementers who have yet to become involved but could provide valuable insights or connections when it comes time to implement your action plan. Your school may already have a group that has been working on farm to school or wellness, or there might be a committee that has worked on these efforts in the past but possibly needs a “refresh” with some new planning and new team members.</p>
+        </div>
+      </details>
+      <details>
+        <summary>I don’t have enough people to assemble a team, can I still participate?</summary>
+        <div class="ans">
+          <p>If you are unable to assemble a full team at this time, the Institute will not be a good fit for you. Instead, we offer a program called SEEDS aimed at helping schools build farm to school teams. Please visit our website for more information about SEEDS.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How are applications evaluated?</summary>
+        <div class="ans">
+          <p>The application is used to gain an understanding of each applicant’s school community and existing farm to school efforts. We aim to build a diverse cohort of teams that have both similarities and opportunities to share lessons learned with others. We are looking for schools that prioritize making their farm to school program inclusive of diverse students and community members, equitable, and incorporating opportunities for youth and family leadership.</p>
+          <p>We use the following criteria to evaluate all applications:</p>
+          <ul>
+            <li><span><b>Team composition:</b> The team has at least one member from each of the following roles: school nutrition, administrator, and educator.</span></li>
+            <li><span><b>Accessibility:</b> We prioritize teams with greater student diversity, and consider metrics such as the percentage of students participating in free and reduced lunch, ethnicity composition of the student body, school location (rural/urban), and other demographic information (e.g. income level and ethnicity composition of the geographic region).  For early childhood programs not enrolled in CACFP, the percentage of children/families receiving state subsidized childcare support can replace free/reduced lunch data.</span></li>
+            <li><span><b>Team readiness:</b> The team demonstrates some experience in farm to school and is in a suitable phase to receive support and grow.</span></li>
+            <li><span><b>3Cs mindset:</b> The team has a good understanding of the 3Cs (classroom, cafeteria, and community) and intends to use an integrated approach to bring the three components together.</span></li>
+            <li><span><b>Equity:</b> The team has clear goals for centering equity in their farm to school work, and demonstrates how the Institute will benefit their equity work.</span></li>
+            <li><span><b>Staying power:</b> The team has a clear commitment to farm to school, and has in-place or identified strategy and additional resources to sustain their work.</span></li>
+            <li><span><b>The “why”:</b> The team has a clear “why” for their farm to school work, and can explain how their goals align with the Institute's vision.</span></li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary>What is the fall retreat?</summary>
+        <div class="ans">
+          <p>The retreat is the annual kick-off event for the Massachusetts Farm to School Institute. As the host, Mass. Farm to School will provide a series of workshops and learning journeys, presented by staff members and external partners, which take place over the two day retreat. Teams will also have time to develop their year-long action plan with their coach. This is a time for teams to gain inspiration, new skills, and build relationships.</p>
+        </div>
+      </details>
+      <details>
+        <summary>What does action planning, coaching, and networking look like for the Institute?</summary>
+        <div class="ans">
+          <p>With the support of a coach, teams spend the school year putting their plans into action and strengthening their capacity to impact classrooms, cafeterias, and communities with lasting change. In the spring, teams regather (virtually) with their peers to share successes, how they adapted to challenges, and begin planning for future years of farm to school programming.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Do you offer professional development hours (PDPs)?</summary>
+        <div class="ans">
+          <p>Massachusetts Farm to School has been authorized by the Department of Elementary and Secondary Education (DESE) to award Professional Development Points (PDPs) to Massachusetts educators. Any educator that chooses can earn 15 PDPs from the Institute Retreat provided that they submit a lesson plan that they will use in their classroom sometime during the school year. This can be a lesson plan designed from your learning during a Retreat workshop or something that is developed from time with your Coach and team. The lesson plan needs to be submitted within 1 month of the Retreat, but the lesson can be taught at a later point in the year.</p>
+        </div>
+      </details>
+      <details>
+        <summary>What does the school year look like after the fall retreat?</summary>
+        <div class="ans">
+          <p>This is a year-long program! Teams will implement their action plans during the school year with the support of their coach. In September, teams attend our retreat to dive into farm to school action planning, network with peers around the region, and explore farm to school possibilities.</p>
+          <p>Once a final draft of the action plan is prepared, teams share their plan with members of their school or program’s administration and any other stakeholders. Institute schools are expected to commit to implementing their Farm to School Action Plan and establishing systems to track progress throughout the year.</p>
+          <p>Teams will establish regular meetings that include their coach (monthly is recommended), focusing on assessing progress, communicating and celebrating successes, and changing course as needed. Teams participate in a virtual, Institute-wide, mid-year check-in; can attend webinars; and provide feedback through data collection, evaluation, and storytelling to support program growth and improvement.</p>
+          <p>At the end of the Institute, all teams will share their successes and challenges through a virtual meeting in the spring with other teams. Teams will also have a final opportunity to work with their coach to create an updated action plan and rubric for the next school year.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Who are the coaches and what is their role?</summary>
+        <div class="ans">
+          <p>Each team who participates in the Institute is assigned an experienced farm to school coach based on school/district/program location and/or the specific needs of a school/district/program. Massachusetts Farm to School provides support for the Institute coaches for the success of the team.</p>
+          <p>Coaches will:</p>
+          <ul>
+            <li><span>Facilitate the development of the team’s action plan</span></li>
+            <li><span>Provide technical assistance where needed</span></li>
+            <li><span>Recommend professional development opportunities</span></li>
+          </ul>
+          <p>Coaches will also add creativity to the planning and implementation process by offering insights, suggestions, and feedback regularly. Most importantly, coaches guide their team, by listening, reflecting, evaluating, and supporting the implementation of their team’s action plan.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Is there a cost to participate in the Institute?</summary>
+        <div class="ans">
+          <p>Thanks to generous funding from the Kendall Foundation, Massachusetts Farm to School is able to provide year-long Institute programming to teams at a cost of $600. This covers all costs of the Retreat, including meals for all teams, and accommodations for teams traveling further than an hour. This also covers the costs of year-long coaching and support. Travel costs and incidentals are the responsibility of the individual teams.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Who hosts the Institute and how do we contact them with any questions?</summary>
+        <div class="ans">
+          <p>Massachusetts Farm to School hosts the Institute.</p>
+          <p>Additional Questions? Email <a href="mailto:dinah@massfarmtoschool.org">dinah@massfarmtoschool.org</a></p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="sourcing-local-food.html">Source Local Food</a></li>
+          <li><a href="producers-distributors.html">Sell To Schools</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="MFTS-What-Is-Farm-To-School.html">What is Farm to School?</a></li>
+          <li><a href="About-Us.html#mission-vision">Our Organization</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="MFTS-Events-v1-Calendar.html">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="ma-fresh-grant.html">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- PRODUCTION NOTES — INSTITUTE APPLICATION INFORMATION
+================================================================================
+Source: "Non Main Navigation Pages" doc > "Institute App Info" (highlighted row).
+All body copy is the client's, verbatim — including the doc's own punctuation.
+
+1) SECTION MAP (doc -> page)
+--------------------------------------------------------------------------------
+  Section 1  -> hero (Heading + Subheading)
+  Section 2  -> Commitment & Timeline. Fee paragraph, then the four seasonal
+                commitments as cards; ACF repeater "timeline" {season, commitment}.
+  Section 3  -> Application Instructions. The five steps are an ordered list with
+                CSS-counter numbering (never typed). Submission Deadline is a
+                callout so the client can flip it between "Not currently accepting
+                applications" and a live date without touching layout.
+                "[application button - when app is open]" is built as a CONDITIONAL
+                container: while closed it shows the closed-state strip; when the
+                ACF flag "applications_open" is true, swap in the .btn-bright
+                Application button (same pattern as MFTS-Institute.html).
+  Section 4  -> FAQ. Native <details>/<summary> accordion — no JavaScript, keyboard
+                accessible, and printable. ACF repeater "faq" {question, answer}.
+
+2) href="#" INVENTORY -> PRODUCTION DESTINATION
+--------------------------------------------------------------------------------
+  topbar links, header nav "#" + .soon items, footer "#"  -> global chrome
+  "preview questions via Word document"                   -> uploaded .docx
+  "Application Part I" / "Application Part II"            -> application form URLs
+  application button (when open)                          -> Part I form
+  mailto dinah@massfarmtoschool.org                       -> live, no change needed
+================================================================================ -->
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+</body>
+</html>

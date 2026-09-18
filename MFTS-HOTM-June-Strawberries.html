@@ -1,0 +1,501 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Harvest of the Month June — Strawberries | Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"><style id="mfts-type">html{--font-display:'Petrona',Georgia,serif;--font-body:'Manrope',system-ui,sans-serif}</style>
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:var(--font-display);font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:var(--font-body);font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:var(--font-body);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--green-light)}
+.nav-links a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-body);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;transform:translateY(-2px)}
+
+/* ===== CROP HERO ===== */
+.hero{background:var(--green-ink) url('https://images.pexels.com/photos/2820144/pexels-photo-2820144.jpeg?auto=compress&cs=tinysrgb&w=1800') center/cover no-repeat;color:#fff;padding:78px 0 70px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.8),rgba(0,58,64,.8)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:var(--font-body);font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#A8C663;margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:#A8C663}
+.hero h1{font-family:var(--font-display);font-weight:700;font-size:clamp(40px,5.2vw,78px);color:#fff;line-height:1;letter-spacing:-.025em}
+.hero h1 em{font-family:var(--font-display);font-style:italic;font-weight:500;color:#A8C663;font-size:.94em}
+.hero .lede{font-family:var(--font-body);font-weight:400;font-size:20px;line-height:1.55;color:rgba(245,239,227,.92);max-width:720px;margin:26px auto 0}
+
+/* ===== AUDIENCE JUMP (Section 2) ===== */
+.audience{background:#fff;border-bottom:1px solid var(--line);padding:40px 0}
+.aud-ask{display:flex;align-items:center;justify-content:center;gap:26px;flex-wrap:wrap;text-align:center}
+.aud-ask .q{font-family:var(--font-display);font-weight:700;font-size:clamp(19px,2vw,25px);color:var(--green-ink);letter-spacing:-.01em}
+.aud-jumps{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.aud-jump{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border-radius:999px;border:2px solid var(--green);color:var(--green);font-family:var(--font-body);font-weight:800;font-size:12.5px;letter-spacing:.07em;text-transform:uppercase;transition:.2s}
+.aud-jump svg{width:14px;height:14px}
+.aud-jump:hover{background:var(--green);color:#fff;transform:translateY(-2px)}
+
+/* ===== RESOURCE BANDS (Sections 3 & 4) ===== */
+.band{padding:84px 0;scroll-margin-top:96px}
+.band.white{background:#fff;border-top:1px solid var(--line)}
+.band.cream{background:var(--cream)}
+.band-head{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-bottom:38px;padding-bottom:22px;border-bottom:2px solid var(--line)}
+.band-head h2{font-size:clamp(30px,3.6vw,46px);color:var(--green-ink);line-height:1.05;display:flex;align-items:flex-start;gap:14px}
+.band-head h2::before{content:'';flex-shrink:0;width:26px;height:26px;margin-top:.14em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.band-head .open-note{font-family:var(--font-body);font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:9px;padding-bottom:6px}
+.band-head .open-note svg{width:14px;height:14px}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.res-card{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:30px 30px 26px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;transition:.25s}
+.band.cream .res-card{background:#fff}
+.res-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:.35s}
+.res-card:hover{transform:translateY(-4px);box-shadow:0 24px 46px -32px rgba(0,90,102,.42)}
+.res-card:hover::before{transform:scaleX(1)}
+.res-kind{font-family:var(--font-body);font-weight:800;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.res-card h3{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--green-ink);line-height:1.22}
+.res-card p{font-size:14.5px;line-height:1.65;color:#3a3a3a;flex:1}
+.res-card .go{margin-top:6px;display:inline-flex;align-items:center;gap:9px;font-family:var(--font-body);font-weight:900;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.res-card .go svg{width:14px;height:14px;stroke-width:3;transition:transform .2s}
+.res-card:hover .go svg{transform:translateX(3px)}
+
+/* locked CTA strip */
+.locked{margin-top:26px;background:var(--green-ink);border-radius:var(--radius);padding:32px 38px;display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;position:relative;overflow:hidden}
+.locked::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% -20%,rgba(0,181,175,.36),transparent 58%),radial-gradient(ellipse at -5% 130%,rgba(69,192,190,.2),transparent 55%);pointer-events:none}
+.locked>*{position:relative;z-index:1}
+.locked .lk-txt{display:flex;align-items:flex-start;gap:18px;max-width:760px}
+.locked .lk-ico{flex:none;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(69,192,190,.5);display:grid;place-items:center;color:var(--gold)}
+.locked .lk-ico svg{width:19px;height:19px}
+.locked h3{font-family:var(--font-display);font-weight:700;font-size:19px;color:#fff;line-height:1.25;letter-spacing:-.01em}
+.locked p{font-size:14.5px;line-height:1.65;color:rgba(245,239,227,.82);margin-top:7px}
+
+/* ===== MONTH STRIP ===== */
+.months{padding:76px 0 88px;background:#fff;border-top:1px solid var(--line)}
+.months-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:26px}
+.months-head h2{font-size:26px;color:var(--green-ink);display:flex;align-items:center;gap:12px}
+.months-head h2::before{content:'';flex:none;width:19px;height:19px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.months-head .all{font-family:var(--font-body);font-weight:800;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);display:inline-flex;align-items:center;gap:9px}
+.months-head .all svg{width:13px;height:13px}
+.months-head .all:hover{color:var(--green-deep)}
+.month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.mo-chip{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:3px;transition:.2s}
+.mo-chip .m{font-family:var(--font-body);font-weight:800;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.mo-chip .c{font-family:var(--font-display);font-weight:400;font-size:24px;line-height:1;color:var(--green-ink);letter-spacing:.02em}
+.mo-chip:hover{background:var(--green);border-color:var(--green);transform:translateY(-3px)}
+.mo-chip:hover .m{color:var(--gold)}
+.mo-chip:hover .c{color:#fff}
+.mo-chip.current{background:var(--green-ink);border-color:var(--green-ink)}
+.mo-chip.current .m{color:#A8C663}
+.mo-chip.current .c{color:#fff}
+
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:var(--font-body);color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .nav-links{display:none}
+  .res-grid{grid-template-columns:repeat(2,1fr)}
+  .month-grid{grid-template-columns:repeat(3,1fr)}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:640px){
+  .band{padding:56px 0}
+  .res-grid{grid-template-columns:1fr}
+  .month-grid{grid-template-columns:repeat(2,1fr)}
+  .locked{padding:26px 22px}
+  .foot-grid{grid-template-columns:1fr}
+}
+
+/* __MFTS_DROPDOWN_CSS__  ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:var(--font-body);font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-What-Is-Farm-To-School.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Our Organization</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="producers-distributors.html">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="donate.html">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false" aria-current="page">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="ma-fresh-grant.html">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="donate.html">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+<!-- SECTION 1 — HERO. FIELDS: month (crop CPT), crop name. Background = crop featured image. -->
+<section class="hero" data-screen-label="Crop Hero">
+  <div class="wrap">
+    <span class="hero-flag">Crop of the Month</span>
+    <h1>Harvest of the Month <em>June</em></h1>
+    <p class="lede">Find everything you need to promote, serve, and teach about Strawberries.</p>
+  </div>
+</section>
+
+<!-- SECTION 2 — AUDIENCE JUMP. Two in-page anchors; both resource sections stay visible below. -->
+<section class="audience" data-screen-label="Audience">
+  <div class="wrap aud-ask">
+    <span class="q">Are you looking for school nutrition resources or education resources?</span>
+    <div class="aud-jumps">
+      <a class="aud-jump" href="#school-nutrition">School Nutrition
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v12M6 12l6 6 6-6"></path></svg>
+      </a>
+      <a class="aud-jump" href="#educators">Educators
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v12M6 12l6 6 6-6"></path></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 — FOR SCHOOL NUTRITION DEPARTMENTS (non-password-protected resources) -->
+<section class="band white" id="school-nutrition" data-screen-label="School Nutrition">
+  <div class="wrap">
+    <div class="band-head">
+      <h2>For School Nutrition Departments</h2>
+      <span class="open-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0"></path></svg>
+        Open access — no password needed
+      </span>
+    </div>
+    <!-- LOOP: guides CPT, guide-type = Recipes, filtered by crop = Tomatoes. Cards below are the loop item; three shown as the standard count. -->
+    <div class="res-grid">
+      <a class="res-card" href="MFTS-Template-Recipe.html">
+        <span class="res-kind">Recipe</span>
+        <h3>Recipe title</h3>
+        <p>Loop item — pulled from the Recipes guide-type, filtered to this month's crop. Serving count and nutrition come from the recipe's own fields.</p>
+        <span class="go">View recipe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="res-card" href="MFTS-Template-Recipe.html">
+        <span class="res-kind">Recipe</span>
+        <h3>Recipe title</h3>
+        <p>Loop item — pulled from the Recipes guide-type, filtered to this month's crop. Serving count and nutrition come from the recipe's own fields.</p>
+        <span class="go">View recipe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="res-card" href="MFTS-Template-Recipe.html">
+        <span class="res-kind">Recipe</span>
+        <h3>Recipe title</h3>
+        <p>Loop item — pulled from the Recipes guide-type, filtered to this month's crop. Serving count and nutrition come from the recipe's own fields.</p>
+        <span class="go">View recipe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+    </div>
+    <!-- Call to Action (doc copy) -->
+    <div class="locked">
+      <div class="lk-txt">
+        <span class="lk-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg></span>
+        <div>
+          <h3>Want to access downloadable materials, register for HOTM, or already registered?</h3>
+          <p>Posters, menu templates, family newsletters, and social graphics for Strawberries live on the registered-participant materials page.</p>
+        </div>
+      </div>
+      <a class="btn btn-bright" href="MFTS-HOTM-Materials-Nutrition.html">Enter password
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 — FOR EDUCATORS (non-password-protected resources) -->
+<section class="band cream" id="educators" data-screen-label="Educators">
+  <div class="wrap">
+    <div class="band-head">
+      <h2>For Educators</h2>
+      <span class="open-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0"></path></svg>
+        Open access — no password needed
+      </span>
+    </div>
+    <!-- LOOP: guides CPT, guide-type = Classroom Lessons, filtered by crop = Tomatoes, grouped by grade band. -->
+    <div class="res-grid">
+      <a class="res-card" href="MFTS-Template-Guide-Download.html">
+        <span class="res-kind">Curriculum Lesson</span>
+        <h3>Elementary</h3>
+        <p>Loop group — lessons tagged Elementary for this month's crop. Each lesson opens on the guide template with its own download.</p>
+        <span class="go">View lessons <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="res-card" href="MFTS-Template-Guide-Download.html">
+        <span class="res-kind">Curriculum Lesson</span>
+        <h3>Secondary</h3>
+        <p>Loop group — lessons tagged Secondary for this month's crop. Each lesson opens on the guide template with its own download.</p>
+        <span class="go">View lessons <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a class="res-card" href="MFTS-Template-Guide-Download.html">
+        <span class="res-kind">Curriculum Lesson</span>
+        <h3>Early Education</h3>
+        <p>Loop group — lessons tagged Early Education for this month's crop. Each lesson opens on the guide template with its own download.</p>
+        <span class="go">View lessons <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+      </a>
+    </div>
+    <!-- Call to Action (doc copy) -->
+    <div class="locked">
+      <div class="lk-txt">
+        <span class="lk-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg></span>
+        <div>
+          <h3>Want to access downloadable materials, register for HOTM, or already registered?</h3>
+          <p>Digital lesson materials and graphics for Strawberries live on the registered-participant materials page for educators.</p>
+        </div>
+      </div>
+      <a class="btn btn-bright" href="MFTS-HOTM-Materials-Educators.html">Enter password
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MONTH STRIP — sibling crop pages -->
+<section class="months" data-screen-label="All Months">
+  <div class="wrap">
+    <div class="months-head">
+      <h2>Browse another month</h2>
+      <a class="all" href="HOTM.html">Harvest of the Month overview
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+    </div>
+    <div class="month-grid">
+      <a class="mo-chip" href="MFTS-HOTM-September-Tomatoes.html"><span class="m">September</span><span class="c">Tomatoes</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-October-Pears.html"><span class="m">October</span><span class="c">Pears</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-November-Kale.html"><span class="m">November</span><span class="c">Kale</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-December-Carrots.html"><span class="m">December</span><span class="c">Carrots</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-January-Apples.html"><span class="m">January</span><span class="c">Apples</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-February-Winter-Squash.html"><span class="m">February</span><span class="c">Winter Squash</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-March-Dairy.html"><span class="m">March</span><span class="c">Dairy</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-April-Potatoes.html"><span class="m">April</span><span class="c">Potatoes</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-May-Seafood.html"><span class="m">May</span><span class="c">Seafood</span></a>
+      <a class="mo-chip current" href="MFTS-HOTM-June-Strawberries.html"><span class="m">June</span><span class="c">Strawberries</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-July-Cucumbers.html"><span class="m">July</span><span class="c">Cucumbers</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-August-Peaches.html"><span class="m">August</span><span class="c">Peaches</span></a>
+    </div>
+    <div class="months-head" style="margin-top:44px">
+      <h2>More featured crops</h2>
+    </div>
+    <div class="month-grid">
+      <a class="mo-chip" href="MFTS-HOTM-Crop-Corn.html"><span class="m">Crop</span><span class="c">Corn</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-Crop-Cranberries.html"><span class="m">Crop</span><span class="c">Cranberries</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-Crop-Collard-Greens.html"><span class="m">Crop</span><span class="c">Collard Greens</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-Crop-Dried-Beans.html"><span class="m">Crop</span><span class="c">Dried Beans</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-Crop-Cabbage.html"><span class="m">Crop</span><span class="c">Cabbage</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-Crop-Herbs.html"><span class="m">Crop</span><span class="c">Herbs</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-Crop-Salad-Greens.html"><span class="m">Crop</span><span class="c">Salad Greens</span></a>
+      <a class="mo-chip" href="MFTS-HOTM-Crop-Melon.html"><span class="m">Crop</span><span class="c">Melon</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="sourcing-local-food.html">Source Local Food</a></li>
+          <li><a href="producers-distributors.html">Sell To Schools</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="MFTS-What-Is-Farm-To-School.html">What is Farm to School?</a></li>
+          <li><a href="About-Us.html#mission-vision">Our Organization</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="MFTS-Events-v1-Calendar.html">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="ma-fresh-grant.html">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- PRODUCTION NOTES — HOTM CROP PAGE (June / Strawberries)
+================================================================================
+Source: "Non Main Navigation Pages" doc > "HOTM Crop Pages" (highlighted row
+"Crop Pages"). Section numbering below matches the doc's Section 1-4.
+
+1) PAGE MODEL
+--------------------------------------------------------------------------------
+  One page per crop, all from this template. Build as a CPT "crop" (or a
+  Harvest-of-the-Month page template) with fields:
+    month          -> "September" (empty on the 8 crop-only pages)
+    crop_name      -> "Tomatoes"
+    featured_image -> hero background
+  Heading: "Harvest of the Month {month}"; crop-only pages read
+  "Harvest of the Month: {crop_name}" with no month.
+  Subheading (locked doc copy): "Find everything you need to promote, serve, and
+  teach about {crop_name}."
+
+2) SECTION 2 — AUDIENCE
+--------------------------------------------------------------------------------
+  The doc asks whether a show/hide filter is possible. Per client decision this is
+  built as TWO JUMP LINKS: both audience sections stay on the page and the links
+  scroll to them (#school-nutrition / #educators). No JS, no hidden content — better
+  for SEO and for printing. If a true show/hide filter is wanted later, the same
+  two buttons can toggle a class on the two <section> elements.
+
+3) SECTIONS 3 & 4 — OPEN RESOURCES
+--------------------------------------------------------------------------------
+  School Nutrition -> Loop Grid: guides CPT, guide-type = Recipes, filtered to this
+                      crop. Cards link to the recipe single (MFTS-Template-Recipe).
+  Educators        -> Loop Grid: guides CPT, guide-type = Classroom Lessons,
+                      filtered to this crop, grouped by grade band
+                      (Elementary / Secondary / Early Education).
+  Card titles and copy in this file are LOOP PLACEHOLDERS, not client copy — they
+  are replaced by real post titles at build time. Card count follows the query.
+
+4) CALL TO ACTION (locked doc copy)
+--------------------------------------------------------------------------------
+  "Want to access downloadable materials, register for HOTM, already registered?
+  Visit ['webpage'] & enter password" — rendered as the dark .locked strip at the
+  end of each audience section, pointing at the matching registered-participant
+  materials page.
+
+5) href="#" INVENTORY -> PRODUCTION DESTINATION
+--------------------------------------------------------------------------------
+  topbar links, header nav "#" + .soon items, footer "#"  -> global chrome
+  month strip + featured crops                            -> sibling crop pages
+  recipe / lesson cards                                   -> loop item permalinks
+  "Enter password" buttons                                -> HOTM materials pages
+================================================================================ -->
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+</body>
+</html>

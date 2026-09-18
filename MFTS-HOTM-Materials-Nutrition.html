@@ -1,0 +1,528 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HOTM Promotional Materials: School Nutrition — Massachusetts Farm to School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"><style id="mfts-type">html{--font-display:'Petrona',Georgia,serif;--font-body:'Manrope',system-ui,sans-serif}</style>
+<style>
+:root{
+  /* MFTS Nova v2 — Tidewater color scheme */
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --green-light:#007C89; --green-lighter:#00B5AF;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bridge:#88B03F;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:#1a1a1a;background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:var(--font-display);font-style:italic;font-weight:500;color:var(--accent)}
+.eyebrow{font-family:var(--font-body);font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--accent)}
+
+/* ===== TOPBAR / HEADER (shared chrome) ===== */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+.topbar a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:var(--font-body);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--green-light);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--green-light)}
+.nav-links a.active::after{width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-body);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:#007C89;color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}.btn-outline:hover{background:var(--green);color:#fff}
+.btn-bright{background:#A8C663;color:var(--green-ink)}.btn-bright:hover{background:#fff;transform:translateY(-2px)}
+
+/* ===== PAGE HERO ===== */
+.hero{background:var(--green-ink) url('assets/BristolAg_CafeteriaWorkers.jpg') center/cover no-repeat;color:#fff;padding:78px 0 70px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,58,64,.82),rgba(0,58,64,.82)),radial-gradient(ellipse at 80% 10%,rgba(0,181,175,.22),transparent 55%),radial-gradient(ellipse at 12% 95%,rgba(69,192,190,.16),transparent 55%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;max-width:1000px}
+.hero-flag{display:inline-flex;align-items:center;gap:12px;font-family:var(--font-body);font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#A8C663;margin-bottom:26px;justify-content:center}
+.hero-flag::before,.hero-flag::after{content:'';width:28px;height:2px;background:#A8C663}
+.hero h1{font-family:var(--font-display);font-weight:700;font-size:clamp(38px,4.8vw,70px);color:#fff;line-height:1.02;letter-spacing:-.025em}
+.hero h1 em{font-family:var(--font-display);font-style:italic;font-weight:500;color:#A8C663;font-size:.94em}
+.hero .lede{font-family:var(--font-body);font-weight:400;font-size:20px;line-height:1.55;color:rgba(245,239,227,.92);max-width:780px;margin:26px auto 0}
+/* ===== SHARED BANDS ===== */
+.band{padding:84px 0;scroll-margin-top:96px}
+.band.white{background:#fff;border-top:1px solid var(--line)}
+.band.cream{background:var(--cream)}
+.band-head{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-bottom:38px;padding-bottom:22px;border-bottom:2px solid var(--line)}
+.band-head h2{font-size:clamp(30px,3.6vw,46px);color:var(--green-ink);line-height:1.05;display:flex;align-items:flex-start;gap:14px}
+.band-head h2::before{content:'';flex-shrink:0;width:26px;height:26px;margin-top:.14em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.band-head .note{font-family:var(--font-body);font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:9px;padding-bottom:6px}
+.band-head .note svg{width:14px;height:14px}
+.body-copy{font-size:17px;line-height:1.8;color:#2a2a2a;margin-bottom:20px;text-wrap:pretty}
+.body-copy:last-child{margin-bottom:0}
+.body-copy a{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.body-copy a:hover{color:var(--green-deep)}
+/* ===== MATERIALS PAGES ===== */
+.gate-note{background:var(--sand);border-bottom:1px solid var(--line);padding:14px 0}
+.gate-note .wrap{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;text-align:center}
+.gate-note span{font-family:var(--font-body);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--green-deep)}
+.gate-note svg{width:15px;height:15px;flex:none;color:var(--green)}
+.mat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.mat{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px 24px;display:flex;flex-direction:column;gap:11px;transition:.25s;position:relative;overflow:hidden}
+.band.cream .mat{background:#fff}
+.mat::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:.35s}
+.mat:hover{transform:translateY(-4px);box-shadow:0 24px 46px -32px rgba(0,90,102,.42)}
+.mat:hover::before{transform:scaleX(1)}
+.mat .kind{font-family:var(--font-body);font-weight:800;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.mat h3{font-family:var(--font-display);font-weight:700;font-size:18.5px;color:var(--green-ink);line-height:1.28}
+.mat .fmt{font-family:var(--font-body);font-weight:700;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.mat .go{margin-top:auto;padding-top:8px;display:inline-flex;align-items:center;gap:9px;font-family:var(--font-body);font-weight:900;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.mat .go svg{width:14px;height:14px;stroke-width:3;transition:transform .2s}
+.mat:hover .go svg{transform:translateX(3px)}
+.inline-note{font-family:var(--font-body);font-weight:700;font-size:13px;letter-spacing:.02em;color:var(--muted);margin-top:20px;display:flex;align-items:center;gap:10px}
+.inline-note::before{content:'';flex:none;width:6px;height:6px;border-radius:50%;background:var(--highlight)}
+.includes{display:flex;flex-wrap:wrap;gap:10px 12px;margin-bottom:30px}
+.includes li{list-style:none;display:flex;gap:10px;align-items:center;font-size:14.5px;font-weight:600;color:var(--green-ink);line-height:1.3;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 18px}
+.band.white .includes li{background:var(--cream)}
+.acc{display:grid;gap:10px}
+.acc details{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
+.band.white .acc details{background:var(--cream)}
+.acc details[open]{border-color:var(--accent)}
+.acc summary{list-style:none;cursor:pointer;padding:20px 26px;display:flex;align-items:center;gap:18px;font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--green-ink);line-height:1.3}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary .mo{font-family:var(--font-body);font-weight:800;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);min-width:96px}
+.acc summary .arw{margin-left:auto;flex:none;width:12px;height:12px;border-right:2.5px solid var(--accent);border-bottom:2.5px solid var(--accent);transform:rotate(45deg) translateY(-3px);transition:transform .25s}
+.acc details[open] summary .arw{transform:rotate(-135deg) translateY(-3px)}
+.acc summary:hover{color:var(--accent)}
+.acc .inner{padding:0 26px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.file{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 18px;display:flex;align-items:center;gap:13px;transition:.2s}
+.acc details .file{background:#fff}
+.file:hover{border-color:var(--accent);transform:translateY(-2px)}
+.file .ico{flex:none;width:32px;height:32px;border-radius:8px;background:var(--cream);display:grid;place-items:center;color:var(--accent)}
+.file .ico svg{width:16px;height:16px}
+.file .t{font-family:var(--font-body);font-weight:700;font-size:14px;color:var(--green-ink);line-height:1.3}
+.file .f{font-family:var(--font-body);font-weight:700;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+@media (max-width:1024px){.acc .inner{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.acc .inner{grid-template-columns:1fr}.acc summary{flex-wrap:wrap;gap:8px}}
+/* ===== FOOTER (canonical) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px;border-top:1px solid rgba(255,255,255,.1)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:var(--font-body);color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:1024px){
+  .nav-links{display:none}
+  .split{grid-template-columns:1fr!important;gap:36px}
+  .comp-grid{grid-template-columns:1fr!important}
+  .tl-grid{grid-template-columns:1fr!important}
+  .mat-grid{grid-template-columns:repeat(2,1fr)!important}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:640px){
+  .band{padding:56px 0}
+  .mat-grid{grid-template-columns:1fr!important}
+  .cta-strip{padding:26px 22px!important}
+  .foot-grid{grid-template-columns:1fr}
+}
+
+/* __MFTS_DROPDOWN_CSS__  ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:var(--font-body);font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--green-light)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-What-Is-Farm-To-School.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Our Organization</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="producers-distributors.html">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="donate.html">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false" aria-current="page">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="ma-fresh-grant.html">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="donate.html">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+</header>
+
+
+<!-- Registered-participant note. Per client decision the page is shown UNLOCKED; the
+     real page sits behind the site's password gate (see production notes). -->
+<div class="gate-note">
+  <div class="wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+    <span>Registered participants only — this page is password protected on the live site</span>
+  </div>
+</div>
+
+<!-- SECTION 1 — HERO -->
+<section class="hero" data-screen-label="Materials Hero">
+  <div class="wrap">
+    <span class="hero-flag">Harvest of the Month</span>
+    <h1>Promotional <em>Materials</em></h1>
+    <p class="lede">For registered Harvest of the Month participants — School Nutrition</p>
+  </div>
+</section>
+
+<!-- SECTION 1 (cont.) — intro copy -->
+<section class="band white" data-screen-label="Intro">
+  <div class="wrap">
+    <p class="body-copy" style="max-width:940px">This page features digital &amp; print-ready resources available only for registered Harvest of the Month participants. These resources are intended to help you promote your program to students, staff and families.</p>
+    <p class="body-copy" style="max-width:940px">We encourage you to use these materials widely and ask that you do not alter the graphics except in the cases where we have explicitly provided a template for you to adapt, such as the menu template. Please contact Dena at <a href="mailto:dena@massfarmtoschool.org">dena@massfarmtoschool.org</a> with any questions about the materials.</p>
+  </div>
+</section>
+
+<!-- SECTION 2 — PRINT READY MATERIALS -->
+<section class="band cream" data-screen-label="Print Ready">
+  <div class="wrap">
+    <div class="band-head"><h2>Print Ready Materials</h2></div>
+    <div class="mat-grid">
+      <a class="mat" href="#"><span class="kind">Print files</span><h3>Access Print Material Files</h3><span class="fmt">Posters, Stickers, Cards</span><span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+      <a class="mat" href="#"><span class="kind">Template</span><h3>Menu Templates</h3><span class="fmt">All Months, Microsoft Word Format</span><span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+      <a class="mat" href="#"><span class="kind">Template</span><h3>Cafeteria Signage</h3><span class="fmt">All Months, Canva Template</span><span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 — SOCIAL MEDIA TEMPLATES -->
+<section class="band white" data-screen-label="Social Templates">
+  <div class="wrap">
+    <div class="band-head"><h2>Social Media Templates</h2></div>
+    <div class="mat-grid">
+      <a class="mat" href="#"><span class="kind">Canva</span><h3>Harvest by Crop Instagram Templates</h3><span class="fmt">All Months, Canva Template</span><span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+      <a class="mat" href="#"><span class="kind">Canva</span><h3>Harvest by Crop Instagram Templates Updated Size</h3><span class="fmt">All Months, Canva Template</span><span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+      <a class="mat" href="#"><span class="kind">Canva</span><h3>Local Foods Highlight Instagram Template</h3><span class="fmt">Canva</span><span class="go">Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+    </div>
+    <p class="inline-note">Note: Static social images can be found for each month below.</p>
+  </div>
+</section>
+
+<!-- SECTION 4 — MATERIALS ORGANIZED BY CROP. Accordion, one panel per crop. -->
+<section class="band cream" data-screen-label="By Crop">
+  <div class="wrap">
+    <div class="band-head"><h2>Materials Organized by Crop</h2></div>
+    <p class="body-copy" style="font-weight:600;color:var(--green-ink);margin-bottom:14px">Materials include:</p>
+    <ul class="includes">
+      <li>Posters</li><li>Menu Templates</li><li>Family Newsletters (Translations available)</li><li>Curriculum</li><li>Social Media Graphics</li>
+    </ul>
+    <!-- LOOP: crop CPT, ordered by month. Each panel's rows are the crop's attached files. -->
+    <div class="acc">
+      <details open>
+        <summary><span class="mo">September</span>Tomatoes<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">October</span>Pears<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">November</span>Kale<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">December</span>Carrots<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">January</span>Apples<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">February</span>Winter Squash<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">March</span>Dairy<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">April</span>Potatoes<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">May</span>Seafood<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">June</span>Strawberries<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">July</span>Cucumbers<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+      <details>
+        <summary><span class="mo">August</span>Peaches<span class="arw"></span></summary>
+        <div class="inner">
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Poster</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Menu Template</span><span class="f">DOCX</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Family Newsletter</span><span class="f">PDF · translations</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Curriculum</span><span class="f">PDF</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Social Media Graphics</span><span class="f">PNG set</span></span></a>
+        <a class="file" href="#"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v13M6.5 11.5L12 17l5.5-5.5M4 20h16"></path></svg></span><span><span class="t">Cafeteria Signage</span><span class="f">Canva</span></span></a>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="sourcing-local-food.html">Source Local Food</a></li>
+          <li><a href="producers-distributors.html">Sell To Schools</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="MFTS-What-Is-Farm-To-School.html">What is Farm to School?</a></li>
+          <li><a href="About-Us.html#mission-vision">Our Organization</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="MFTS-Events-v1-Calendar.html">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="ma-fresh-grant.html">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- PRODUCTION NOTES — HOTM MATERIALS: SCHOOL NUTRITION
+================================================================================
+Source: "Non Main Navigation Pages" doc > "HOTM Materials for Nutrition"
+(highlighted row). All headings and body copy are the client's, verbatim.
+
+1) ACCESS / PASSWORD GATE
+--------------------------------------------------------------------------------
+  Per client decision this prototype is shown UNLOCKED so the layout can be
+  reviewed. On the live site the page is password protected (current password
+  HOTM2025) — implement with the site's existing password-protected page setting or
+  a membership plugin. The .gate-note strip at the top of this file stands in for
+  that gate and should be REMOVED at build time (or kept as a logged-in reminder).
+
+2) SECTION MAP (doc -> page)
+--------------------------------------------------------------------------------
+  Section 1 -> hero + intro copy ("Promotional Materials")
+  Section 2 -> Print Ready Materials, three cards
+  Section 3 -> Social Media Templates, three cards + the doc's "Note:" line
+  Section 4 -> Materials Organized by Crop. The doc asks how to handle the
+               expandable area: built as a native <details>/<summary> accordion —
+               no JavaScript, keyboard accessible, printable, and it degrades to a
+               plain list if CSS fails. One panel per crop, ordered by month.
+
+3) RESOURCE ROWS ARE PLACEHOLDERS
+--------------------------------------------------------------------------------
+  The six rows inside each crop panel are the material TYPES the doc lists
+  (Posters, Menu Templates, Family Newsletters with translations, Curriculum,
+  Social Media Graphics, plus Cafeteria Signage). They are labelled placeholders,
+  not real files — the live files sit behind the password at
+  massfarmtoschool.org/harvest-of-the-month-digital-resources/ and should be
+  attached per crop as an ACF repeater {title, file, format}. Panels with no files
+  should collapse rather than render empty rows.
+
+4) href="#" INVENTORY -> PRODUCTION DESTINATION
+--------------------------------------------------------------------------------
+  topbar links, header nav "#" + .soon items, footer "#"  -> global chrome
+  Print / social template cards                           -> Drive + Canva links
+  every file row inside the crop accordion                -> attached file URL
+  mailto dena@massfarmtoschool.org                        -> live, no change needed
+================================================================================ -->
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+</body>
+</html>

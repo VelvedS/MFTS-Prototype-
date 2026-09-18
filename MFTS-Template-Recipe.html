@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Creamiest Chickpea Curry — MFTS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"><style id="mfts-type">html{--font-display:'Petrona',Georgia,serif;--font-body:'Manrope',system-ui,sans-serif}</style>
+<style>
+:root{
+  --green:#005A66; --green-deep:#003A40; --green-ink:#003A40;
+  --accent:#007C89; --highlight:#00B5AF;
+  --cream:#EBF5F4; --sand:#E8DCC4; --gold:#45C0BE;
+  --muted:#4D4D4F; --line:rgba(0,90,102,.14); --radius:16px;
+  --bright:#A8C663;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:#1a1a1a;background:#EBF5F4;-webkit-font-smoothing:antialiased;line-height:1.6}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+.accent-italic{font-family:var(--font-display);font-style:italic;font-weight:500;color:var(--accent)}
+
+/* TOPBAR / HEADER (shared chrome — identical across MFTS Nova v2 pages) */
+.topbar{background:var(--green-ink);color:rgba(255,255,255,.8);font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:.03em;padding:10px 0;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:3px solid #00662C}
+.topbar a{color:#A8C663}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:80px;gap:32px}
+.logo{display:inline-flex;align-items:center}
+.logo img{height:44px;width:auto;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;font-family:var(--font-body);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-ink)}
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a.active{color:var(--green)}
+.nav-links a.active::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:2px;background:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-body);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:14px 26px;border-radius:999px;border:2px solid transparent;transition:all .25s;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+
+/* ===== POST SYSTEM — full-width single, white body (shared by all post singles) ===== */
+.crumb-bar{background:#fff;border-bottom:1px solid var(--line);padding:16px 0}
+.crumb{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-family:var(--font-body);font-weight:700;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.crumb a{color:var(--green)}
+.crumb a:hover{color:var(--green-deep);text-decoration:underline}
+.crumb .sep{color:rgba(0,90,102,.32)}
+.crumb .here{color:var(--green-ink)}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:999px;font-family:var(--font-body);font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;line-height:1}
+.chip-term{background:rgba(0,124,137,.1);color:var(--accent)}
+.chip-news{background:var(--bright);color:var(--green-ink)}
+.chip-grade{background:var(--green-ink);color:#fff}
+.chip-sm{padding:5px 11px;font-size:9.5px;letter-spacing:.1em}
+.post-hero{background:var(--cream);border-bottom:1px solid var(--line);padding:56px 0 50px}
+.kicker-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.pubdate{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-body);font-weight:700;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.pubdate svg{width:15px;height:15px;flex:none}
+.post-hero h1{font-size:clamp(36px,4.3vw,62px);color:var(--green-ink);letter-spacing:-.027em;margin-top:22px;max-width:18em}
+.post-hero h1.long{font-size:clamp(30px,3.4vw,46px);max-width:24em}
+.hero-split{display:grid;grid-template-columns:minmax(0,1fr) 44%;gap:56px;align-items:center}
+.hero-split h1{max-width:none;font-size:clamp(32px,3.6vw,52px)}
+.hero-shot{position:relative;border-radius:var(--radius);overflow:hidden;background:var(--sand);align-self:stretch;min-height:300px}
+.hero-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-meta{display:flex;align-items:center;gap:14px 40px;flex-wrap:wrap;margin-top:32px;padding-top:26px;border-top:1px solid var(--line)}
+.meta-item{display:flex;align-items:baseline;gap:9px;font-family:var(--font-body);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.meta-item b{font-weight:900;color:var(--green-ink);letter-spacing:.04em;font-size:13px}
+.meta-item .big{font-family:var(--font-display);font-weight:400;font-size:27px;line-height:.8;color:var(--green);letter-spacing:.02em}
+.hero-jump{display:inline-flex;align-items:center;gap:10px;padding:13px 24px;border-radius:999px;border:2px solid var(--green);color:var(--green);font-family:var(--font-body);font-weight:800;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;transition:.2s}
+.hero-jump svg{width:14px;height:14px}
+.hero-jump:hover{background:var(--green);color:#fff}
+.post-body{background:#fff;padding-bottom:24px}
+.lead{position:relative;border-radius:var(--radius);overflow:hidden;margin:44px 0 0;background:var(--sand)}
+.lead img{width:100%;aspect-ratio:21/9;object-fit:cover}
+.photo-credit{position:absolute;bottom:0;left:0;right:0;padding:18px 24px 13px;background:linear-gradient(transparent,rgba(0,58,64,.82));color:rgba(255,255,255,.92);font-family:var(--font-body);font-weight:700;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;z-index:2}
+.row{display:grid;grid-template-columns:216px minmax(0,1fr);gap:40px;padding:48px 0;border-top:1px solid var(--line);align-items:start}
+.row.no-top{border-top:0}
+.row.top-pad{padding-top:52px}
+.row-label{position:sticky;top:104px}
+.row-label h2{font-family:var(--font-display);font-weight:700;font-size:23px;color:var(--green-ink);letter-spacing:-.01em;display:flex;align-items:center;gap:11px}
+.row-label h2::before{content:'';flex:none;width:18px;height:18px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.row-label .sub{margin-top:10px;font-family:var(--font-body);font-weight:700;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.prose p{font-size:17px;line-height:1.8;color:#262626;margin-bottom:24px;text-wrap:pretty}
+.prose p:last-child{margin-bottom:0}
+.prose p.standfirst{font-size:20.5px;line-height:1.66;color:var(--green-ink);font-weight:500}
+.prose a{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.prose a:hover{color:var(--green-deep)}
+figure.inline{margin:38px 0}
+figure.inline .shot{position:relative;border-radius:var(--radius);overflow:hidden;background:var(--sand)}
+figure.inline img{width:100%;aspect-ratio:16/9;object-fit:cover}
+figure.inline figcaption{font-family:var(--font-body);font-weight:700;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding-top:11px;line-height:1.45}
+.ing-list{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 64px}
+.ing-list li{padding:15px 0;border-bottom:1px dashed rgba(0,90,102,.22);font-size:15.5px;line-height:1.5;color:#232323}
+.amt{font-family:var(--font-display);font-weight:700;color:var(--green-ink);font-variant-numeric:tabular-nums}
+.of{color:var(--muted);font-size:13.5px}
+.step{display:grid;grid-template-columns:56px minmax(0,1fr);gap:22px;padding:20px 0;border-bottom:1px dashed rgba(0,90,102,.22)}
+.step:first-of-type{padding-top:0}
+.step:last-of-type{border-bottom:0;padding-bottom:0}
+.step .n{font-family:var(--font-display);font-weight:400;font-size:42px;line-height:.8;color:var(--accent);letter-spacing:.02em}
+.step p{font-size:16.5px;line-height:1.72;color:#262626;text-wrap:pretty}
+.nutri-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:30px 32px}
+.nutri-grid .k{display:block;font-family:var(--font-body);font-weight:800;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.nutri-grid .v{font-family:var(--font-display);font-weight:400;font-size:32px;line-height:.9;color:var(--green);letter-spacing:.02em}
+.nutri-grid .v small{font-family:var(--font-body);font-weight:700;font-size:12px;color:var(--muted);margin-left:4px}
+.contents-list{list-style:none;counter-reset:c;display:grid}
+.contents-list li{counter-increment:c;display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;align-items:baseline;padding:16px 0;border-bottom:1px dashed rgba(0,90,102,.22);font-size:16.5px;line-height:1.5;color:#262626}
+.contents-list li:first-child{padding-top:0}
+.contents-list li:last-child{border-bottom:0}
+.contents-list li::before{content:counter(c,decimal-leading-zero);font-family:var(--font-display);font-weight:400;font-size:24px;color:var(--highlight);letter-spacing:.04em}
+.q-list{list-style:none}
+.q-list li{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:clamp(19px,1.9vw,25px);line-height:1.36;color:var(--green-ink);padding:17px 0;border-bottom:1px dashed rgba(0,90,102,.22)}
+.q-list li:first-child{padding-top:0}
+.q-list li:last-child{border-bottom:0}
+.q-overview{margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+.q-overview .lbl{display:block;font-family:var(--font-body);font-weight:800;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.q-overview p{font-size:17px;line-height:1.75;color:#262626}
+.dl-row{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:24px 30px}
+.dl-row .t{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--green-ink);letter-spacing:-.01em}
+.dl-row .m{font-family:var(--font-body);font-weight:700;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+.pill-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 28px;border-radius:999px;background:var(--green);color:#fff;font-family:var(--font-body);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--green);transition:.2s;white-space:nowrap}
+.pill-btn svg{width:15px;height:15px}
+.pill-btn:hover{background:var(--green-deep);border-color:var(--green-deep);transform:translateY(-2px)}
+.sourced{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;border-top:1px solid var(--line);padding:22px 0 48px;font-family:var(--font-body);font-weight:700;font-size:12.5px;letter-spacing:.03em;color:var(--muted)}
+.sourced a{color:var(--green);text-decoration:underline;text-underline-offset:3px}
+.sourced a:hover{color:var(--green-deep)}
+.article-foot{border-top:1px solid var(--line);padding:24px 0 48px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.filed{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.filed .lbl{font-family:var(--font-body);font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.share-btns{display:flex;gap:8px}
+.share-btns a{width:38px;height:38px;border-radius:50%;background:var(--cream);display:grid;place-items:center;color:var(--green);transition:.2s}
+.share-btns a:hover{background:var(--green);color:#fff}
+.share-btns svg{width:14px;height:14px}
+/* ===== RELATED BAND ===== */
+.post-related{background:var(--cream);border-top:1px solid var(--line);padding:64px 0 72px}
+.rel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:26px}
+.rel-head h2{font-family:var(--font-display);font-weight:700;font-size:25px;color:var(--green-ink);letter-spacing:-.015em;display:flex;align-items:center;gap:12px}
+.rel-head h2::before{content:'';flex:none;width:19px;height:19px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2388AF3F'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>") no-repeat center/contain}
+.rel-head .all{font-family:var(--font-body);font-weight:800;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);display:inline-flex;align-items:center;gap:9px}
+.rel-head .all:hover{color:var(--green-deep)}
+.rel-head .all svg{width:13px;height:13px}
+.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.rel-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 26px 24px;display:flex;flex-direction:column;gap:12px;transition:transform .25s,box-shadow .25s,border-color .25s}
+.rel-card:hover{transform:translateY(-4px);box-shadow:0 24px 46px -30px rgba(0,90,102,.38);border-color:var(--accent)}
+.rel-card .chip{align-self:flex-start}
+.rel-card h3{font-family:var(--font-display);font-weight:700;font-size:17.5px;line-height:1.28;color:var(--green-ink);letter-spacing:-.01em}
+.rel-card .more{margin-top:auto;padding-top:6px;display:inline-flex;align-items:center;gap:8px;font-family:var(--font-body);font-weight:800;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.rel-card .more svg{width:13px;height:13px;transition:transform .2s}
+.rel-card:hover .more svg{transform:translateX(3px)}
+.tax-row{margin-top:30px;padding-top:26px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tax-row .lbl{font-family:var(--font-body);font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.tax-row a{display:inline-flex;padding:9px 18px;border-radius:999px;border:1.5px solid rgba(0,90,102,.25);background:#fff;font-family:var(--font-body);font-weight:700;font-size:12.5px;color:var(--green);transition:.2s}
+.tax-row a:hover{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ===== FOOTER (canonical, matches MFTS Nova) ===== */
+footer{background:var(--green-ink);color:#b5c9b8;padding:80px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1)}
+.foot-brand img{height:48px;margin-bottom:16px;display:block}
+.foot-brand p{font-size:14px;max-width:300px;color:#8da89a;line-height:1.6}
+.socials{display:flex;gap:10px;margin-top:20px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;transition:.2s}
+.socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--green-ink)}
+footer h5{font-family:var(--font-body);color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:14px}
+footer a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;padding-top:28px;font-size:12px;color:#6b8a78;flex-wrap:wrap;gap:12px}
+.foot-bottom a:hover{color:#00662C}
+
+/* RESPONSIVE */
+@media (max-width:1100px){
+  .nav-links{display:none}
+  .hero-split{grid-template-columns:1fr;gap:32px;align-items:start}
+  .hero-shot{min-height:0;aspect-ratio:16/8}
+  .row{grid-template-columns:1fr;gap:22px;padding:38px 0}
+  .row-label{position:static}
+  .rel-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:820px){
+  .ing-list{grid-template-columns:1fr}
+  .nutri-grid{grid-template-columns:repeat(3,1fr)}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media (max-width:600px){
+  .rel-grid{grid-template-columns:1fr}
+  .nutri-grid{grid-template-columns:repeat(2,1fr)}
+  .step{grid-template-columns:40px minmax(0,1fr);gap:14px}
+  .step .n{font-size:32px}
+  .lead img{aspect-ratio:16/10}
+  .dl-row{padding:20px 22px}
+  .foot-grid{grid-template-columns:1fr}
+}
+
+/* ===== DROPDOWN NAV (submenus) ===== */
+.nav-links > li.has-dropdown{position:relative}
+.nav-links > li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.nav-caret{width:11px;height:11px;flex:none;opacity:.7;transition:transform .25s}
+.nav-links > li.has-dropdown:hover .nav-caret,.nav-links > li.has-dropdown.open .nav-caret{transform:rotate(180deg)}
+.nav-links .dropdown{position:absolute;top:calc(100% + 15px);left:50%;transform:translateX(-50%) translateY(6px);min-width:238px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 46px -20px rgba(0,58,64,.38);padding:10px;list-style:none;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60}
+.nav-links > li.has-dropdown:hover > .dropdown,.nav-links > li.has-dropdown:focus-within > .dropdown,.nav-links > li.has-dropdown.open > .dropdown{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nav-links .dropdown::before{content:"";position:absolute;top:-16px;left:0;right:0;height:16px}
+.nav-links .dropdown a{display:block;padding:9px 14px;border-radius:9px;font-family:var(--font-body);font-weight:600;font-size:13px;letter-spacing:.01em;text-transform:none;color:var(--green-ink);white-space:nowrap;transition:background .15s,color .15s}
+.nav-links .dropdown a::after{display:none!important}
+.nav-links .dropdown a:hover{background:rgba(0,124,137,.09);color:var(--accent)}
+.nav-links .dropdown a.soon{color:var(--muted,#5a6b6d);opacity:.55;cursor:default}
+.nav-links .dropdown a.soon:hover{background:transparent;color:var(--muted,#5a6b6d)}
+</style>
+</head>
+<body>
+
+<!-- ELEMENTOR: Header template > Announcement Bar (global, static text widget) -->
+<div class="topbar">
+  <span>#F2S Month is October — <a href="#">make your pledge</a></span>
+  <span>MA FRESH Grant applications open — <a href="#">apply now</a></span>
+</div>
+
+<!-- ELEMENTOR: Header template > global site header (Site Logo + Nav Menu + Button). Inherited byte-for-byte from MFTS Nova v2 pages — do not edit here. -->
+<header>
+  <div class="wrap header-inner">
+    <a class="logo" href="Home.html"><img src="assets/mfts-logo.png" alt="Massachusetts Farm to School"></a>
+    <ul class="nav-links">
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">About <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-What-Is-Farm-To-School.html">What is Farm to School</a></li>
+        <li><a href="Our-Team.html">Our Team</a></li>
+        <li><a href="About-Us.html#mission-vision">Our Organization</a></li>
+        <li><a href="Our-Impact.html">Our Impact</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Stories &amp; Events <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Events-v1-Calendar.html">Upcoming Events</a></li>
+        <li><a href="MFTS-News.html">News</a></li>
+        <li><a href="Podcast.html">Podcast</a></li>
+        <li><a href="MFTS-Webinar-Archive.html">Webinar Archive</a></li>
+        <li><a href="MFTS-Conference.html">Conference</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="active" aria-haspopup="true" aria-expanded="false" aria-current="page">Get Involved <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="MFTS-Educator.html">Educators</a></li>
+        <li><a href="MFTS-Food-Service.html">Food Service</a></li>
+        <li><a href="producers-distributors.html">Producer / Distributor</a></li>
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocate</a></li>
+        <li><a href="MFTS-Students-Families.html">Students &amp; Families</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Make Change <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="#" class="soon" title="Coming soon — page not built yet">Advocacy Coalition</a></li>
+        <li><a href="donate.html">Donate</a></li>
+        </ul>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Programs <svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></a>
+        <ul class="dropdown">
+        <li><a href="HOTM.html">Harvest of the Month</a></li>
+        <li><a href="MFTS-Institute.html">F2S Institute</a></li>
+        <li><a href="ma-fresh-grant.html">MA FRESH Grant</a></li>
+        <li><a href="MFTS-Northeast-Food-for-Schools.html">NFS Challenge</a></li>
+        <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        <li><a href="MFTS-Terrific-Trays.html">Terrific Trays</a></li>
+        </ul>
+      </li>
+    </ul>
+    <a class="btn btn-green" href="donate.html">Donate
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</header>
+
+<!-- ELEMENTOR: Single template (guides / Recipes) > Breadcrumbs widget. -->
+<div class="crumb-bar">
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="MFTS-Educator.html">Get Involved</a>
+      <span class="sep">/</span>
+      <a href="school-garden-resources.html">Guides</a>
+      <span class="sep">/</span>
+      <!-- FIELD: post title (dynamic) -->
+      <span class="here">Creamiest Chickpea Curry</span>
+    </nav>
+  </div>
+</div>
+
+<!-- ELEMENTOR: Single template > title hero (full width, cream) > 2 columns: title + details left, featured image right -->
+<section class="post-hero">
+  <div class="wrap hero-split">
+    <div class="hero-txt">
+      <div class="kicker-row">
+        <!-- FIELD: taxonomy term list — guide-type (dynamic, first term) -->
+        <span class="chip chip-term">Recipes</span>
+      </div>
+      <!-- FIELD: post title (dynamic) -->
+      <h1>Creamiest Chickpea Curry</h1>
+      <div class="hero-meta">
+        <!-- FIELD: serving count — custom field "serving_count" (ACF). Collapses when empty. -->
+        <span class="meta-item">Serving <span class="big">50</span></span>
+        <!-- FIELD: taxonomy term (dynamic) -->
+        <span class="meta-item">Guide type <b>Recipes</b></span>
+      </div>
+    </div>
+    <!-- FIELD: featured image (dynamic, size large). Fallback: guide-type default image. -->
+    <figure class="hero-shot">
+      <img src="assets/BristolAg_CafeteriaWorkers.jpg" alt="School nutrition staff plating a scratch-cooked entrée on the serving line">
+      <!-- FIELD: featured image photo credit — custom field "photo_credit" (collapses when empty) -->
+      <figcaption class="photo-credit">Photo Credit: Bristol County Agricultural High School</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ELEMENTOR: Single template > content (full width, white) -->
+<div class="post-body">
+  <div class="wrap">
+
+    <!-- ELEMENTOR: Ingredients row. Source: repeater field "ingredients" (ACF) OR the ingredients list inside post content. Rows loop into <li>. -->
+    <section class="row no-top top-pad">
+      <div class="row-label">
+        <h2>Ingredients</h2>
+        <!-- FIELD: serving count (dynamic) -->
+        <p class="sub">Yields 50 servings</p>
+      </div>
+      <ul class="ing-list">
+          <li><span><span class="amt">5 lb 13 oz</span> <span class="of">of</span> Potatoes, yellow, fresh</span></li>
+          <li><span><span class="amt">About 3 No. 10 cans</span> <span class="of">of</span> Garbanzo beans (chickpeas), canned, low-sodium, undrained</span></li>
+          <li><span><span class="amt">¾ cup</span> <span class="of">of</span> Olive oil</span></li>
+          <li><span><span class="amt">3 lb</span> <span class="of">of</span> *Onions, yellow, fresh, minced</span></li>
+          <li><span><span class="amt">3 Tbsp</span> <span class="of">of</span> Garlic, fresh, minced</span></li>
+          <li><span><span class="amt">About 1 ½ No. 10 cans</span> <span class="of">of</span> Tomatoes, canned, diced, undrained</span></li>
+          <li><span><span class="amt">1 cup</span> <span class="of">of</span> Curry powder</span></li>
+          <li><span><span class="amt">¼ cup</span> <span class="of">of</span> Cumin, ground</span></li>
+          <li><span><span class="amt">1 Tbsp 2 tsp</span> <span class="of">of</span> Salt</span></li>
+          <li><span><span class="amt">2 qt</span> <span class="of">of</span> Water</span></li>
+          <li><span><span class="amt">2 qt</span> <span class="of">of</span> Soy milk, unsweetened</span></li>
+          <li><span><span class="amt">1 cup</span> <span class="of">of</span> Cornstarch</span></li>
+      </ul>
+    </section>
+
+    <!-- ELEMENTOR: Directions row. Source: post content (ordered list) OR repeater field "steps". Step number is generated by the loop, not typed. -->
+    <section class="row">
+      <div class="row-label"><h2>Directions</h2></div>
+      <div>
+        <div class="step"><span class="n">1</span><p>Wash and scrub potatoes. Dice potatoes to uniform size, approximately, ½-inch pieces.</p></div>
+        <div class="step"><span class="n">2</span><p>Drain and rinse garbanzo beans.</p></div>
+        <div class="step"><span class="n">3</span><p>Heat oil on medium-high heat in a large brazier pan or tilt skillet. Add onion and sauté for 5-7 minutes, until soft. Add garlic and sauté for another 2 minutes.</p></div>
+        <div class="step"><span class="n">4</span><p>Add tomatoes (do not drain), potatoes, curry powder, cumin, salt, garbanzo beans, and water. Stir well. Cover and simmer until potatoes are tender, about 25 minutes, or longer if needed.</p></div>
+        <div class="step"><span class="n">5</span><p>Whisk together soy milk and cornstarch until fully combined. Add to pan all at once and stir curry until bubbly and thickened (Heat to 135 °F or higher for at least 15 seconds. Hold for hot service at 135 °F or higher.).</p></div>
+        <div class="step"><span class="n">6</span><p>Portion 1 ¼ cups with 10 fl oz spoodle.</p></div>
+      </div>
+    </section>
+
+    <!-- ELEMENTOR: Nutrition row. Source: repeater field "nutrition" (label + value pairs, ACF). Whole row hides when the repeater is empty. -->
+    <section class="row">
+      <div class="row-label"><h2>Nutritional Information</h2></div>
+      <div class="nutri-grid">
+          <div><span class="k">Calories</span><span class="v">311<small>kcal</small></span></div>
+          <div><span class="k">Total Fat</span><span class="v">7<small>g</small></span></div>
+          <div><span class="k">Saturated Fat</span><span class="v">1<small>g</small></span></div>
+          <div><span class="k">Sodium</span><span class="v">436<small>mg</small></span></div>
+          <div><span class="k">Cholesterol</span><span class="v">0<small>mg</small></span></div>
+          <div><span class="k">Total Carbohydrates</span><span class="v">50<small>g</small></span></div>
+          <div><span class="k">Dietary Fiber</span><span class="v">3<small>g</small></span></div>
+          <div><span class="k">Protein</span><span class="v">10<small>g</small></span></div>
+          <div><span class="k">Calcium</span><span class="v">74<small>mg</small></span></div>
+          <div><span class="k">Iron</span><span class="v">1<small>mg</small></span></div>
+      </div>
+    </section>
+
+    <!-- ELEMENTOR: source attribution. FIELDS: "source_name" + "source_url" (ACF). Row collapses when source_name is empty. -->
+    <p class="sourced"><span>Sourced from:</span> <a href="#">Wisconsin State Child Nutrition Agency</a></p>
+  </div>
+</div>
+
+<!-- ELEMENTOR: Single template > related section (full width, below the content). -->
+<section class="post-related">
+  <div class="wrap">
+    <!-- ELEMENTOR: Loop Grid > related posts, query: same post type (guides), same taxonomy term (guide-type = Recipes), exclude current post, 3 posts, order by date desc. Heading text = "More " + current term name (dynamic). -->
+    <div class="rel-head">
+      <h2>More Recipes</h2>
+      <!-- FIELD: taxonomy archive link — current term (dynamic) -->
+      <a class="all" href="#">All Recipes <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="rel-grid">
+      <a class="rel-card" href="#">
+        <!-- FIELD: related post title + permalink (loop item) -->
+        <h3>Strawberry Cornbread Panzanella</h3>
+        <span class="more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="rel-card" href="#">
+        <!-- FIELD: related post title + permalink (loop item) -->
+        <h3>Apple, Ham, and Spinach Wrap</h3>
+        <span class="more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="rel-card" href="#">
+        <!-- FIELD: related post title + permalink (loop item) -->
+        <h3>Fish Tacos</h3>
+        <span class="more">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+    <!-- ELEMENTOR: term links row. Source: all terms of the guide-type taxonomy (Loop Grid on terms, or a static Nav Menu of term archives). -->
+    <div class="tax-row">
+      <span class="lbl">All Guides</span>
+        <a href="school-garden-resources.html">School Garden Resources</a>
+        <a href="#">Classroom Lessons</a>
+        <a href="#">Advocate Materials</a>
+        <a href="#">Recipes</a>
+        <a href="#">How-To</a>
+    </div>
+  </div>
+</section>
+
+<!-- ELEMENTOR: Footer template > global site footer. Inherited byte-for-byte from MFTS Nova v2 pages. -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/mfts-logo-white.png" alt="Massachusetts Farm to School">
+        <p>Helping you make farm to school a reality for every student in Massachusetts.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.8l-4.33-5.67L6 22H3.24l7-8-6.55-12h6.9l3.9 5.2zm-1.18 18h1.58L6.97 3.89H5.28z"></path></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M10 9l5 3-5 3z" fill="currentColor"></path></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Local Food</h5>
+        <ul>
+          <li><a href="#">Source Local Food</a></li>
+          <li><a href="#">Sell To Schools</a></li>
+          <li><a href="MFTS-Submit-Your-Tray.html">Terrific Tray Submission</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About Us</h5>
+        <ul>
+          <li><a href="MFTS-What-Is-Farm-To-School.html">What is Farm to School?</a></li>
+          <li><a href="About-Us.html#mission-vision">Our Organization</a></li>
+          <li><a href="Our-Impact.html">Impact</a></li>
+          <li><a href="Our-Team.html">Team &amp; Advisory</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participate</h5>
+        <ul>
+          <li><a href="#">Event Calendar</a></li>
+          <li><a href="MFTS-Institute.html">Institute</a></li>
+          <li><a href="MFTS-Conference.html">Conference</a></li>
+          <li><a href="HOTM.html">Harvest of the Month</a></li>
+          <li><a href="#">MA FRESH</a></li>
+          <li><a href="MFTS-Food-System-Civics.html">Food System Civics</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Massachusetts Farm to School · Fiscally sponsored by TSNE</span>
+      <span><a href="#">Privacy</a> · <a href="#">Accessibility</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- WORDPRESS IMPLEMENTATION NOTES
+================================================================================
+File: MFTS-Template-Recipe.html — RECIPE single (demo: Creamiest Chickpea Curry)
+Design system: MFTS Nova v2 — Tidewater. Chrome (topbar/header/nav/footer) inherited
+unchanged from the existing Nova v2 pages.
+
+1) ELEMENTOR PRO THEME BUILDER PLAN (three Single templates total for post pages)
+--------------------------------------------------------------------------------
+  A. Single: "MFTS Announcement"  -> post type: announcements
+                                     display condition: announcement-type = News
+                                     (file: MFTS-Template-News.html)
+  B. Single: "MFTS Recipe"        -> post type: guides
+                                     display condition: guide-type = Recipes
+                                     THIS FILE. Ingredients / Directions / Nutrition
+                                     blocks + serving count.
+  C. Single: "MFTS Guide (default)" -> post type: guides, all other guide-types
+                                     (How-To, Classroom Lessons, School Garden
+                                     Resources, Advocate Materials). Download card and
+                                     grade-band pill are driven by optional custom
+                                     fields and collapse when empty.
+                                     (files: MFTS-Template-Guide.html = on-page
+                                     resource mode, MFTS-Template-Guide-Download.html
+                                     = download-centric mode; ONE template, two body
+                                     compositions produced by the same conditional
+                                     widgets.)
+  Template order: Recipe condition is more specific than the default guides Single, so
+  set it above (Elementor evaluates the most specific matching condition first).
+
+2) DYNAMIC FIELD INVENTORY (this template)
+--------------------------------------------------------------------------------
+  post title            -> Post Title widget (dynamic: Post Title). Breadcrumb tail
+                           uses the same value.
+  guide-type term       -> Post Terms widget, taxonomy = guide-type, first term only.
+                           Rendered as .chip-term and the "Guide type" hero meta item.
+  featured image        -> Featured Image widget (size large) in the hero's right
+                           column — title and details sit beside it in a 2-column
+                           hero (stacks on mobile). Fallback image set per
+                           guide-type in the widget's fallback option.
+  photo credit          -> custom field "photo_credit" (ACF text). Wrap the
+                           .photo-credit caption in a conditional container so it
+                           disappears when the field is empty.
+  serving count         -> custom field "serving_count" (ACF number). Used twice:
+                           the hero meta value and the Ingredients row sub-label.
+  ingredients           -> ACF repeater "ingredients" with two subfields:
+                           amount (text) + item (text). Loop into <li>:
+                           <span class="amt">{amount}</span> of {item}
+                           Client copy is stored verbatim; the template only styles
+                           the amount. If the client keeps ingredients inside
+                           the_content instead, style ul>li in the same CSS and drop
+                           the repeater.
+  steps                 -> post content ordered list, or ACF repeater "steps".
+                           Step numbers are generated by CSS/loop index — never typed.
+  nutrition             -> ACF repeater "nutrition": label (text), value (number),
+                           unit (text). Section hides when repeater row count = 0.
+  source attribution    -> custom fields "source_name" (text) + "source_url" (URL).
+                           .sourced row hides when source_name is empty.
+
+3) RELATED POSTS + TAXONOMY BOX
+--------------------------------------------------------------------------------
+  Layout: full-width single — cream title hero, then a white body composed of
+  full-width label/content rows (300px sticky label + content, on the 1320px wrap).
+  No sidebar, no boxed cards. Related posts + term links sit in a cream band below.
+  "More Recipes" -> Elementor Loop Grid (skin: list), query:
+       post type = guides
+       taxonomy filter = current post's guide-type term (Related > Term)
+       exclude = current post
+       posts per page = 3
+       order = date DESC
+  Heading is dynamic: "More " + current guide-type term name.
+  "All Recipes" link -> term archive permalink for the current guide-type term.
+  "All Guides" box -> the five guide-type terms. Build as a Nav Menu of term archives
+  (stable order) or a term Loop Grid (auto-updates when a term is added).
+
+4) NATIVE WORDPRESS ALTERNATIVE (no Elementor)
+--------------------------------------------------------------------------------
+  Classic templates work with no markup changes:
+    single-guides.php  -> the same sections; get_field()/get_post_meta() for serving
+                          count, ingredients, nutrition, source.
+    Related posts      -> WP_Query( array(
+                            'post_type' => 'guides',
+                            'posts_per_page' => 3,
+                            'post__not_in' => array( get_the_ID() ),
+                            'tax_query' => array( array(
+                              'taxonomy' => 'guide-type',
+                              'field' => 'term_id',
+                              'terms' => wp_get_post_terms( get_the_ID(), 'guide-type',
+                                         array( 'fields' => 'ids' ) ),
+                            ) ),
+                          ) );
+  Note: the announcements and guides CPTs have REST disabled. That affects only the
+  block editor / REST consumers — Elementor Theme Builder and PHP templates read the
+  post objects directly and are unaffected.
+
+5) href="#" INVENTORY -> PRODUCTION DESTINATION
+--------------------------------------------------------------------------------
+  topbar "make your pledge" / "apply now"   -> existing global header links
+  header nav "#" + .soon items              -> global nav, unchanged from Nova v2
+  header "Donate" button                    -> /donate/
+  "Wisconsin State Child Nutrition Agency"  -> custom field "source_url" (dynamic)
+  related band "Strawberry Cornbread Panzanella",
+  "Apple, Ham, and Spinach Wrap",
+  "Fish Tacos"                              -> loop item permalinks (dynamic)
+  related band "All Recipes"                     -> guide-type term archive (dynamic)
+  "All Guides" box items (Classroom Lessons,
+  Advocate Materials, Recipes, How-To)      -> guide-type term archives
+                                               (School Garden Resources already
+                                               points at its built page)
+  footer "#" links                          -> global footer, unchanged from Nova v2
+================================================================================ -->
+
+<script>
+/* __MFTS_NAV_JS__ */
+(function(){
+  var items=[].slice.call(document.querySelectorAll(".nav-links > li.has-dropdown"));
+  function closeAll(){items.forEach(function(x){x.classList.remove("open");var a=x.querySelector("a");if(a)a.setAttribute("aria-expanded","false");});}
+  items.forEach(function(li){
+    var link=li.querySelector("a");
+    link.addEventListener("click",function(e){e.preventDefault();var open=li.classList.contains("open");closeAll();if(!open){li.classList.add("open");link.setAttribute("aria-expanded","true");}});
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".nav-links"))closeAll();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAll();});
+})();
+</script>
+</body>
+</html>
